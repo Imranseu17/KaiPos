@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.SalesHistoryActivity">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/layout_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:weightSum="7">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_start_date"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2.5dp"
+            android:layout_weight="3">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edt_start_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_event"
+                android:drawableBottom="@color/colorAccent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:hint="Start date"
+                android:inputType="none"
+                android:lines="1"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textIsSelectable="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_end_date"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2.5dp"
+            android:layout_weight="3">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edt_end_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_event"
+                android:drawableBottom="@color/colorAccent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:hint="End date"
+                android:inputType="none"
+                android:lines="1"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textIsSelectable="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/btn_search"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_39sdp"
+            android:layout_marginLeft="@dimen/_2sdp"
+            android:layout_weight="1"
+            android:layout_gravity="right"
+            android:background="@drawable/circle_bg_green"
+            android:padding="@dimen/_10sdp"
+            android:src="@drawable/ic_search"
+            android:tint="@android:color/white" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_below="@+id/layout_date"
+        android:layout_marginLeft="@dimen/_2sdp"
+        android:layout_marginRight="@dimen/_2sdp"
+        android:visibility="visible"
+        android:scrollbars="none" />
+
+</RelativeLayout>

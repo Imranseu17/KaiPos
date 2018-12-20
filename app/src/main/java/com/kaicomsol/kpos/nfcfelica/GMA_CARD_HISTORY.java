@@ -1,0 +1,12 @@
+package com.kaicomsol.kpos.nfcfelica;
+
+import java.util.Calendar;
+
+public class GMA_CARD_HISTORY {
+    public Calendar HistoryTime = Calendar.getInstance();
+    public int HistoryType;
+
+    public GMA_CARD_HISTORY() {
+        this.HistoryTime.clear();
+    }
+}

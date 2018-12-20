@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.AddCardInfoFragment">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_16sdp"
+        android:layout_marginRight="@dimen/_16sdp"
+        app:cardCornerRadius="@dimen/_4sdp"
+        app:cardElevation="@dimen/_5sdp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible"
+                android:padding="@dimen/_10sdp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Card No"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textColor="@color/light_gray"
+                    android:textSize="10sp" />
+
+
+                <TextView
+                    android:id="@+id/txt_card_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="#00000000"
+                    android:hint="--"
+                    android:inputType="text"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textColor="@color/txt_color"
+                    android:textColorHint="@color/light_gray"
+                    android:textSize="17.3sp" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#eff0f4" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28.7dp"
+                    android:text="Meter Serial"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textColor="@color/light_gray"
+                    android:textSize="10sp" />
+
+
+                <TextView
+                    android:id="@+id/txt_meter_serial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="#00000000"
+                    android:hint="--"
+                    android:inputType="text"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textColor="@color/txt_color"
+                    android:textColorHint="@color/light_gray"
+                    android:textSize="17.3sp" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#eff0f4" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28.7dp"
+                    android:text="Issues Date"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textColor="@color/light_gray"
+                    android:textSize="10sp" />
+
+
+                <TextView
+                    android:id="@+id/txt_issue_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="#00000000"
+                    android:hint="--"
+                    android:inputType="text"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textColor="@color/txt_color"
+                    android:textColorHint="@color/light_gray"
+                    android:textSize="17.3sp" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#eff0f4" />
+
+                <TextView
+                    android:id="@+id/txt_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:background="#00000000"
+                    android:text="Status"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:drawableLeft="@drawable/ok"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textColor="@color/txt_color"
+                    android:textColorHint="@color/light_gray"
+                    android:textSize="17.3sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="@dimen/_10sdp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_10sdp"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <TextView
+            android:id="@+id/btn_add"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="@dimen/_5sdp"
+            android:text="Add"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.FontSemiBold"
+            android:textColor="@color/disable"
+            android:textSize="15.4sp" />
+
+        <TextView
+            android:id="@+id/btn_active"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:text="Active"
+            android:textAppearance="@style/TextAppearance.FontSemiBold"
+            android:textColor="@color/disable"
+            android:textSize="15.4sp" />
+        <TextView
+            android:id="@+id/btn_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/delete"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.FontSemiBold"
+            android:textColor="@color/disable"
+            android:textSize="15.4sp" />
+
+        <TextView
+            android:id="@+id/btn_lost"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:text="Lost"
+            android:textAppearance="@style/TextAppearance.FontSemiBold"
+            android:textColor="@color/disable"
+            android:textSize="15.4sp" />
+
+    </LinearLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

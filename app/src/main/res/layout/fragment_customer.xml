@@ -1,0 +1,1236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:id="@+id/layout_customer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:cardCornerRadius="@dimen/_4sdp"
+                app:cardElevation="@dimen/_5sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_customer_code"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_customer_code"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_account_no"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_account_no"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_address"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/light_gray"
+                            android:textSize="10sp" />
+
+
+                        <TextView
+                            android:id="@+id/txt_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="#00000000"
+                            android:hint="--"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/txt_color"
+                            android:textColorHint="@color/txt_color"
+                            android:textSize="17.3sp" />
+
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:background="#eff0f4" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_apartment"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_apartment"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_house"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_house"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_road"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_rood"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_block"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_block"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_sector"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_sector"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_section"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_section"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_zip_code"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_zip_code"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_metro_id"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_metro_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_metro"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_metro"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_zone_id"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_zone_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_zone"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_zone"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_area_id"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_area_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_area"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/light_gray"
+                            android:textSize="10sp" />
+
+
+                        <TextView
+                            android:id="@+id/txt_area"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="#00000000"
+                            android:hint="--"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/txt_color"
+                            android:textColorHint="@color/txt_color"
+                            android:textSize="17.3sp" />
+
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:background="#eff0f4" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_sub_area"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/light_gray"
+                            android:textSize="10sp" />
+
+
+                        <TextView
+                            android:id="@+id/txt_sub_area"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="#00000000"
+                            android:hint="--"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/txt_color"
+                            android:textColorHint="@color/txt_color"
+                            android:textSize="17.3sp" />
+
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:background="#eff0f4" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_title"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_title"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_postal_code"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_postal_code"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_first_name"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_first_name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_last_name"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_last_name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_full_name"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/light_gray"
+                            android:textSize="10sp" />
+
+
+                        <TextView
+                            android:id="@+id/txt_full_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="#00000000"
+                            android:hint="--"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/txt_color"
+                            android:textColorHint="@color/txt_color"
+                            android:textSize="17.3sp" />
+
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:background="#eff0f4" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_email"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/light_gray"
+                            android:textSize="10sp" />
+
+
+                        <TextView
+                            android:id="@+id/txt_email"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="#00000000"
+                            android:hint="--"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/txt_color"
+                            android:textColorHint="@color/txt_color"
+                            android:textSize="17.3sp" />
+
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:background="#eff0f4" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_mobile_number"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/light_gray"
+                            android:textSize="10sp" />
+
+
+                        <TextView
+                            android:id="@+id/txt_number"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="#00000000"
+                            android:hint="--"
+                            android:textAppearance="@style/TextAppearance.FontPath"
+                            android:textColor="@color/txt_color"
+                            android:textColorHint="@color/txt_color"
+                            android:textSize="17.3sp" />
+
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:background="#eff0f4" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_identity_no"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_identity_no"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_balance"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_balance"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_10sdp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/label_status_id"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_status_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_1sdp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lablel_status"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/light_gray"
+                                    android:textSize="10sp" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_status"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:background="#00000000"
+                                    android:drawableLeft="@drawable/ok"
+                                    android:drawablePadding="@dimen/_5sdp"
+                                    android:hint="--"
+                                    android:textAppearance="@style/TextAppearance.FontPath"
+                                    android:textColor="@color/txt_color"
+                                    android:textColorHint="@color/txt_color"
+                                    android:textSize="17.3sp" />
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="5dp"
+                                    android:background="#eff0f4" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
