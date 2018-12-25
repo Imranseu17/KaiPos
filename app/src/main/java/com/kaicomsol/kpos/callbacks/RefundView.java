@@ -8,4 +8,5 @@ public interface RefundView {
     public void onSuccess(Refund refund);
     public void onSuccess(Success message);
     public void onError(String error);
+    public void onLogout(int code);
 }

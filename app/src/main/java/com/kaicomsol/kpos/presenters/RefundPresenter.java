@@ -56,6 +56,11 @@ public class RefundPresenter {
                     public void onResponse(Call<Refund> call, Response<Refund> response) {
                         DebugLog.i(call.request()+" || "+response.code());
 
+                        if (response.code() == 401) {
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()){
                             Refund refund = response.body();
                             if (refund != null) {
@@ -80,6 +85,10 @@ public class RefundPresenter {
                         DebugLog.e(call.request().toString());
                         if (e instanceof HttpException) {
                             int code = ((HttpException) e).response().code();
+                            if (code == 401) {
+                                mViewInterface.onLogout(code);
+                                return;
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             try {
                                 JSONObject jObjError = new JSONObject(responseBody.string());
@@ -114,6 +123,10 @@ public class RefundPresenter {
                 .enqueue(new Callback<Success>() {
                     @Override
                     public void onResponse(Call<Success> call, Response<Success> response) {
+                        if (response.code() == 401) {
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
                         if (response.isSuccessful()){
                             Success success = response.body();
                             mViewInterface.onSuccess(success);
@@ -124,10 +137,13 @@ public class RefundPresenter {
                     @Override
                     public void onFailure(Call<Success> call, Throwable e) {
                         DebugLog.e(call.request().toString());
-                        mViewInterface.onError("ERROR");
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code == 401) {
+                                mViewInterface.onLogout(code);
+                                return;
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code, responseBody);
 

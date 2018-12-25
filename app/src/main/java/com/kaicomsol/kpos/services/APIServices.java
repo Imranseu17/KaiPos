@@ -4,9 +4,11 @@ import com.google.gson.JsonObject;
 import com.kaicomsol.kpos.model.CardData;
 import com.kaicomsol.kpos.model.CustomerData;
 import com.kaicomsol.kpos.model.CustomerInfo;
+import com.kaicomsol.kpos.model.Invoices;
 import com.kaicomsol.kpos.model.Login;
 import com.kaicomsol.kpos.model.Meter;
 import com.kaicomsol.kpos.model.Payment;
+import com.kaicomsol.kpos.model.PaymentID;
 import com.kaicomsol.kpos.model.Refund;
 import com.kaicomsol.kpos.model.SalesHistory;
 import com.kaicomsol.kpos.model.SubData;
@@ -32,8 +34,21 @@ public interface APIServices {
     Call<Login> getLogin(@HeaderMap Map<String, String> headers,
                          @Body JsonObject locationPost);
 
+    @GET("/api/v1/pos/activatePosDevice/")
+    Call<ResponseBody> activatePosDevice(@HeaderMap Map<String, String> headers,
+                                  @Query("token") String token,
+                                  @Query("deviceId") String deviceId);
+
+    @GET("/api/v1/payment/dues/{cardNo}")
+    Call<Invoices> getInvoices(@HeaderMap Map<String, String> headers, @Path("cardNo") String cardNo);
+
+
     @POST("/api/v1/payment/authorizePayment")
     Call<Payment> addPayment(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
+
+
+    @POST("/api/v1/payment/capturePayment")
+    Call<PaymentID> capturePayment(@HeaderMap Map<String, String> headers, @Query("paymentId") String paymentId);
 
     @GET("/api/v2/customerAccount/customerAccounts")
     Call<CustomerData> findCustomer(@HeaderMap Map<String, String> headers,
@@ -82,4 +97,6 @@ public interface APIServices {
 
     @POST("/api/v1/pos/card/lostCard")
     Call<ResponseBody> lostCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
+
+    ///api/v1/pos/activatePosDevice/?token=' + self.state.posToken + '&deviceId=' + socResponce
 }

@@ -69,7 +69,7 @@
             android:id="@+id/btn_login"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="@dimen/_40sdp"
-            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginRight="@dimen/_10sdp"
             android:layout_marginLeft="@dimen/_10sdp"
             android:layout_gravity="bottom|end"

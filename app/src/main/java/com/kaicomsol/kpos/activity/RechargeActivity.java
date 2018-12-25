@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
+import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -18,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
@@ -32,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.gson.Gson;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.CloseClickListener;
 import com.kaicomsol.kpos.callbacks.PaymentView;
@@ -40,6 +43,8 @@ import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
+import com.kaicomsol.kpos.fragment.InvoiceFragment;
+import com.kaicomsol.kpos.model.Invoices;
 import com.kaicomsol.kpos.model.Payment;
 import com.kaicomsol.kpos.model.ReadCard;
 import com.kaicomsol.kpos.presenters.PaymentPresenter;
@@ -68,6 +73,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     private ReadCard readCard;
     private Tag tag;
     private PaymentPresenter mPresenter;
+    private double totalAmount = 0.0;
 
 
     //Bind component
@@ -115,6 +121,22 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         mAdapter.enableForegroundDispatch(RechargeActivity.this,pendingIntent, intentFiltersArray, techListsArray);
     }
 
+    private void showInvoiceDialog(String cardNo){
+
+//        InvoiceFragment invoiceFragment = InvoiceFragment.newInstance(this,"User");
+//        invoiceFragment.setCancelable(false);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("cardNo",cardNo);
+//        invoiceFragment.setArguments(bundle);
+//        invoiceFragment.show(getSupportFragmentManager(), invoiceFragment.getTag());
+    }
+
+    private void getInvoices(String cardNo){
+
+        String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
+        if (checkConnection()) mPresenter.getInvoices(token,cardNo);
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -127,12 +149,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
             if(readCard.readCardArgument.CardGroup.equals("77")
                     && readCard.readCardArgument.CardStatus.equals("06")
                     || readCard.readCardArgument.CardStatus.equals("30")){
-                DebugLog.e(readCard.readCardArgument.CustomerId);
+
                 gas_content.setVisibility(View.VISIBLE);
                 txt_account_no.setText(readCard.readCardArgument.CustomerId);
                 DebugLog.e(readCard.readCardArgument.CustomerId);
                 customerCardDismiss();
                 if (isRecharge) gasRecharge();
+                else getInvoices(readCard.readCardArgument.CardIdm);
 
             }else CustomAlertDialog.showError(this, getString(R.string.err_card_not_valid));
         }else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
@@ -185,7 +208,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               showConfirmDialog();
+                String amount = txt_total_amount.getText().toString().trim();
+                if (totalAmount < Double.parseDouble(amount)) showConfirmDialog();
+                else showErrorDialog("Amount is less then unpaid amount plus payment charge");
             }
         });
         btn_print.setOnClickListener(new View.OnClickListener() {
@@ -307,11 +332,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     }
 
     private void takaToGas(String amount) {
-        double value = Double.parseDouble(amount) / 9.1;
-        txt_taka.setText(amount);
-        txt_price.setText(amount);
-        txt_total_amount.setText(amount);
-        txt_gas.setText(String.valueOf(decimalFormat.format(value)));
+        if (!TextUtils.isEmpty(amount)){
+            double value = Double.parseDouble(amount) / 9.1;
+            txt_taka.setText(amount);
+            txt_price.setText(amount);
+            txt_total_amount.setText(amount);
+            txt_gas.setText(String.valueOf(decimalFormat.format(value)));
+        }
     }
 
     private void addPayment(){
@@ -319,31 +346,75 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         String amount = txt_total_amount.getText().toString().trim();
         String cardIdm = readCard.readCardArgument.CardIdm;
         String cardHistoryNo = readCard.readCardArgument.CardHistoryNo;
+        final String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
         double value = Double.parseDouble(amount) / 9.1;
 
         DebugLog.i(decimalFormat.format(value));
 
+
+        mPresenter.addPayment(token,amount,cardIdm,cardHistoryNo,"1");
         readCard.GasChargeCard(tag, Double.parseDouble(decimalFormat.format(value)),
                 0, 0, 9, "10003419");
-        mPresenter.addPayment(token,amount,cardIdm,readCard.readCardArgument.CardHistoryNo,"1");
+
+    }
+
+    private void capturePayment(String paymentId){
+        String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
+        mPresenter.capturePayment(token, paymentId);
 
     }
 
     @Override
     public void onSuccess(Payment payment) {
 
+            capturePayment(String.valueOf(payment.getPaymentId()));
+            DebugLog.e(String.valueOf(payment.getPaymentId())+" Payment ID ");
             rechargeCardDismiss();
             String amount = txt_total_amount.getText().toString().trim();
             double value = Double.parseDouble(amount) / 9.1;
-
             print(payment.getNewHistoryNo(), amount, value);
 
     }
 
     @Override
+    public void onSuccess(Invoices invoices) {
+
+        if (invoices != null){
+            if (invoices.getInvoices() != null && invoices.getInvoices().size() > 0){
+               String invoiceList = new Gson().toJson(invoices);
+                InvoiceFragment invoiceFragment = InvoiceFragment.newInstance(this);
+                invoiceFragment.setCancelable(false);
+                Bundle bundle = new Bundle();
+                bundle.putString("invoice",invoiceList);
+                invoiceFragment.setArguments(bundle);
+                invoiceFragment.show(getSupportFragmentManager(), invoiceFragment.getTag());
+            }
+        }
+
+    }
+
+    @Override
+    public void onSuccess(int paymentId) {
+         DebugLog.i("ADD GAS capturePayment SUCCESS");
+
+    }
+
+
+
+    @Override
     public void onError(String error) {
-        rechargeCardDismiss();
-        CustomAlertDialog.showError(this, error+"");
+        //rechargeCardDismiss();
+        if (error != null) CustomAlertDialog.showError(this, error);
+    }
+
+    @Override
+    public void onLogout(int code) {
+        SharedDataSaveLoad.remove(RechargeActivity.this, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(RechargeActivity.this, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(RechargeActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private boolean checkConnection() {
@@ -427,33 +498,33 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
         textData.append(getResources().getString(R.string.receipt_print_date_time) + "  " + currentDate);
         textData.append("\n");
-        textData.append("Transaction No.              122097651");
+        textData.append("Transaction No.                122097651");
         textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_prepaid_no) + "               " + readCard.readCardArgument.CustomerId);
+        textData.append(getResources().getString(R.string.receipt_print_prepaid_no) + "                " + readCard.readCardArgument.CustomerId);
         textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_card) + "                 " + readCard.readCardArgument.CardIdm);
+        textData.append(getResources().getString(R.string.receipt_print_card) + "                   " + readCard.readCardArgument.CardIdm);
         textData.append("\n");
 
 
         textData.append("----------------------------------------\n");
 
 
-        textData.append(getResources().getString(R.string.receipt_print_deposit_ammount) + "                " + amount);
+        textData.append(getResources().getString(R.string.receipt_print_deposit_ammount) + "         " + amount);
         textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_previous_balance) + "              0.00");
+        textData.append(getResources().getString(R.string.receipt_print_previous_balance) + "       0.00");
         textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_current_balance) + "                0.00");
+        textData.append(getResources().getString(R.string.receipt_print_current_balance) + "        0.00");
         textData.append("\n");
         textData.append("----------------------------------------\n");
 
 
-        textData.append(getResources().getString(R.string.receipt_print_meter_rent) + "                  0.00");
+        textData.append(getResources().getString(R.string.receipt_print_meter_rent) + "             0.00");
         textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_other_charge) + "               0.00");
+        textData.append(getResources().getString(R.string.receipt_print_other_charge) + "           0.00");
         textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_gas_charge) + "                0.00");
+        textData.append(getResources().getString(R.string.receipt_print_gas_charge) + "             0.00");
         textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_gas_volume) + "                  " + Double.parseDouble(decimalFormat.format(value)));
+        textData.append(getResources().getString(R.string.receipt_print_gas_volume) + "             "+ Double.parseDouble(decimalFormat.format(value)));
         textData.append("\n");
         textData.append("----------------------------------------");
 
@@ -464,7 +535,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         textData.append("  Karnaphuli Gas Co Ltd.");
 
 
-        setTitle(" Print receipts");
+        getSupportActionBar().setTitle("Print receipts");
         showPrintLayout();
         txt_print.setText(textData.toString());
 
@@ -498,7 +569,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                             try {
                                 Thread.sleep(6000);
                                 mPrinter.finish();
-                                Toast.makeText(RechargeActivity.this, "Success", Toast.LENGTH_LONG).show();
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -603,7 +673,27 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
 
     @Override
-    public void onCloseClick() {
-        finish();
+    public void onCloseClick(int id) {
+
+        if (id == 1) finish();
+    }
+
+    @Override
+    public void onCloseClick(double amount) {
+        this.totalAmount = amount;
+    }
+
+    public void showErrorDialog(String message) {
+        new PromptDialog(this)
+                .setDialogType(PromptDialog.DIALOG_TYPE_WRONG)
+                .setAnimationEnable(true)
+                .setTitleText(getString(R.string.error))
+                .setContentText(message)
+                .setPositiveListener(getString(R.string.ok), new PromptDialog.OnPositiveListener() {
+                    @Override
+                    public void onClick(PromptDialog dialog) {
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 }

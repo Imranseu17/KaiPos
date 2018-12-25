@@ -1,8 +1,12 @@
 package com.kaicomsol.kpos.dialogs;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.kaicomsol.kpos.R;
+import com.kaicomsol.kpos.activity.LoginActivity;
+import com.kaicomsol.kpos.activity.SalesHistoryActivity;
+import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 public class CustomAlertDialog {
 

@@ -2,6 +2,7 @@ package com.kaicomsol.kpos.activity;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -171,6 +172,16 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         hideAnimation();
         showEmptyAnimation();
 
+    }
+
+    @Override
+    public void onLogout(int code) {
+        SharedDataSaveLoad.remove(SalesHistoryActivity.this, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(SalesHistoryActivity.this, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(SalesHistoryActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private boolean checkConnection() {

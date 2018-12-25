@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "6981218740",
+    "firebase_url": "https://kpos-cb29e.firebaseio.com",
+    "project_id": "kpos-cb29e",
+    "storage_bucket": "kpos-cb29e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6981218740:android:83a63110e6768ce7",
+        "android_client_info": {
+          "package_name": "com.kaicomsol.kpos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6981218740-83thddmqrkqmgdin86nsumcd2athd5cv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3ag7wxOHt2BM6m4awnKknijw2fV8400o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

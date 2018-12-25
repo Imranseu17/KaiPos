@@ -51,7 +51,11 @@ public class HistoryPresenter {
                 .enqueue(new Callback<SalesHistory>() {
                     @Override
                     public void onResponse(Call<SalesHistory> call, Response<SalesHistory> response) {
-                        DebugLog.i(call.request() + " || " + response.code());
+                        if (response.code() == 401) {
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()) {
                             SalesHistory salesHistory = response.body();
                             if (salesHistory != null) {
@@ -69,6 +73,10 @@ public class HistoryPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code == 401) {
+                                mViewInterface.onLogout(code);
+                                return;
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code,responseBody);
 

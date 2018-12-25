@@ -142,7 +142,7 @@
     <string name="label_tk">টাকা</string>
     <string name="label_submit">জমা দিন</string>
     <string name="label_print_script">মুদ্রণ স্ক্রিপ্ট</string>
-    <string name="label_print">ছাপা</string>
+    <string name="label_print">রি-প্রিন্ট</string>
     <string name="label_zone">মণ্ডল</string>
     <string name="label_address">ঠিকানা</string>
     <string name="label_area">ফোন</string>

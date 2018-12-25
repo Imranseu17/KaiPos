@@ -37,7 +37,7 @@ public class CardCheckDialog extends DialogFragment {
                 if (mCloseClickListener != null){
                     Dialog dialog = getDialog();
                     if (dialog != null) dialog.dismiss();
-                    mCloseClickListener.onCloseClick();
+                    mCloseClickListener.onCloseClick(1);
                 }
             }
         });

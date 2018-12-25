@@ -113,6 +113,17 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
 
     }
 
+    @Override
+    public void onLogout(int code) {
+        SharedDataSaveLoad.remove(AccountListActivity.this, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(AccountListActivity.this, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(AccountListActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+
+    }
+
     private boolean checkConnection() {
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

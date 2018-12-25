@@ -56,7 +56,7 @@ public class ReadCard {
     byte [] TargetIDm,targetServiceCode;
      String strCustomerId, cardGroup, cardStatus,versionNO,cardIDm,credit,unit,
             basicFee,refund1,refund2,untreatedFee,openCount,lidTime,indexValue,LidTime;
-    int size,historyNO,errorNO;
+    public int size,historyNO,errorNO;
     private boolean isChargeCheckFailed = false;
     private static Resources resources = Resources.getSystem();
     public HttpResponsAsync.ReadCardArgument readCardArgument = new HttpResponsAsync.ReadCardArgument();

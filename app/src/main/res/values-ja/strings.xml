@@ -141,7 +141,7 @@
     <string name="label_total_amount">合計金額</string>
     <string name="label_submit">提出する</string>
     <string name="label_print_script">印刷スクリプト</string>
-    <string name="label_print">印刷</string>
+    <string name="label_print">再印刷</string>
     <string name="label_tk">TK</string>
     <string name="label_card_no">カート番号</string>
     <string name="label_zone">ゾーン</string>

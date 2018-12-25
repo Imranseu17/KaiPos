@@ -45,6 +45,12 @@ public class CustomerPresenter {
                 .enqueue(new Callback<CustomerData>() {
                     @Override
                     public void onResponse(Call<CustomerData> call, Response<CustomerData> response) {
+
+                        if (response.code() == 401){
+                           mViewInterface.onLogout(response.code());
+                           return;
+                        }
+
                         if (response.isSuccessful()){
                             CustomerData customerData = response.body();
                             if (customerData != null) {
@@ -65,9 +71,13 @@ public class CustomerPresenter {
                     @Override
                     public void onFailure(Call<CustomerData> call, Throwable e) {
                         DebugLog.e(call.request().toString());
-                        mViewInterface.onError("ERROR");
                         if (e instanceof HttpException) {
                             int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                                return;
+                            }
+
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             try {
                                 JSONObject jObjError = new JSONObject(responseBody.string());

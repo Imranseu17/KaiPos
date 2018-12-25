@@ -179,7 +179,12 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
     }
 
     @Override
-    public void onCloseClick() {
+    public void onCloseClick(int id) {
         finish();
+    }
+
+    @Override
+    public void onCloseClick(double amount) {
+
     }
 }

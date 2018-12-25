@@ -164,7 +164,7 @@
     <string name="label_tk">TK</string>
     <string name="label_submit">Submit</string>
     <string name="label_print_script">Print Script</string>
-    <string name="label_print">Print</string>
+    <string name="label_print">Re-Print</string>
 
     <string-array name="price_list">
         <item>100 TK</item>
@@ -238,5 +238,8 @@
     <string name="bluetooth_enable">Bluetooth enable</string>
     <string name="enable">Enable</string>
     <string name="bluetooth_enabling">Bluetooth enabling...</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
