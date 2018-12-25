@@ -7,4 +7,6 @@ public interface CustomerInfoView {
 
     public void onSuccess(CustomerInfo customerInfo);
     public void onError(String error);
+    public void onLogout(int code);
+
 }

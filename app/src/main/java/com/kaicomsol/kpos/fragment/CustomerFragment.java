@@ -3,6 +3,7 @@ package com.kaicomsol.kpos.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
+import com.kaicomsol.kpos.activity.LoginActivity;
 import com.kaicomsol.kpos.callbacks.CustomerInfoView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.model.CustomerAccountInfo;
@@ -129,6 +131,16 @@ public class CustomerFragment extends Fragment implements CustomerInfoView {
         DebugLog.e("ERROR CUSTOMER");
         hideAnimation();
         showEmptyAnimation();
+    }
+
+    @Override
+    public void onLogout(int code) {
+        SharedDataSaveLoad.remove(activity, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(activity, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(activity, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        activity.finish();
     }
 
     private void dataCustomer(CustomerAccountInfo customerInfo){

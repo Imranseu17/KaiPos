@@ -8,4 +8,5 @@ public interface TransactionView {
 
     public void onSuccess(List<Transaction> transactionList);
     public void onError(String error);
+    public void onLogout(int code);
 }

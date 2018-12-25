@@ -44,6 +44,12 @@ public class MeterPresenter {
                 .enqueue(new Callback<Meter>() {
                     @Override
                     public void onResponse(Call<Meter> call, Response<Meter> response) {
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()){
                             Meter meter = response.body();
                             if (meter != null) {
@@ -66,6 +72,10 @@ public class MeterPresenter {
                         e.printStackTrace();
                         if (e instanceof HttpException) {
                             int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                                return;
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             try {
                                 JSONObject jObjError = new JSONObject(responseBody.string());

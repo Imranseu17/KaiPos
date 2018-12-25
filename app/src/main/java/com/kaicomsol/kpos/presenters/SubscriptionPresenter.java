@@ -46,6 +46,12 @@ public class SubscriptionPresenter {
                 .enqueue(new Callback<SubData>() {
                     @Override
                     public void onResponse(Call<SubData> call, Response<SubData> response) {
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()){
                             SubData subData = response.body();
                             if (subData != null) {
@@ -62,6 +68,10 @@ public class SubscriptionPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                                return;
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code, responseBody);
 

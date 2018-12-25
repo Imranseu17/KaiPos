@@ -45,7 +45,12 @@ public class CardPresenter {
                 .enqueue(new Callback<CardData>() {
                     @Override
                     public void onResponse(Call<CardData> call, Response<CardData> response) {
-                        DebugLog.i(call.request() + " || " + response.code());
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()) {
                             CardData cardData = response.body();
                             if (cardData != null) {
@@ -62,6 +67,9 @@ public class CardPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code, responseBody);
 
@@ -93,7 +101,12 @@ public class CardPresenter {
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        //boolean isCardAdded = response.body();
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()) {
                             mViewInterface.onAddCard(true);
                         } else errorHandle(response.code(), response.errorBody());
@@ -105,6 +118,9 @@ public class CardPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code, responseBody);
 
@@ -134,7 +150,12 @@ public class CardPresenter {
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        DebugLog.i(" || " + response.code());
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()) {
                             //String active = response.body();
                             mViewInterface.onActiveCard("");
@@ -147,6 +168,9 @@ public class CardPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code, responseBody);
 
@@ -174,8 +198,12 @@ public class CardPresenter {
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        DebugLog.i(call.request() + " || " + response.code());
-                        // boolean isDelete = response.body();
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()) {
                             mViewInterface.onDeleteCard(true);
                         } else errorHandle(response.code(), response.errorBody());
@@ -187,6 +215,9 @@ public class CardPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code, responseBody);
 
@@ -216,18 +247,26 @@ public class CardPresenter {
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()) {
-                            //String lost = response.body();
                             mViewInterface.onLostCard("");
                         } else errorHandle(response.code(), response.errorBody());
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable e) {
-                        DebugLog.e(call.request().toString());
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                            }
+
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code, responseBody);
 

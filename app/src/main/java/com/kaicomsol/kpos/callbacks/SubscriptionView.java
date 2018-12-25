@@ -6,4 +6,5 @@ public interface SubscriptionView {
 
     public void onSuccess(SubData subData);
     public void onError(String error);
+    public void onLogout(int code);
 }

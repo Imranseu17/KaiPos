@@ -46,6 +46,12 @@ public class TransactionPresenter {
                 .enqueue(new Callback<List<Transaction>>() {
                     @Override
                     public void onResponse(Call<List<Transaction>> call, Response<List<Transaction>> response) {
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()){
                             List<Transaction> transactionList = response.body();
                             if (transactionList != null) {
@@ -62,6 +68,11 @@ public class TransactionPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                                return;
+                            }
+
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code, responseBody);
 

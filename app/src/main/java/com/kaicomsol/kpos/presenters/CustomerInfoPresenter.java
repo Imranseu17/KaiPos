@@ -46,6 +46,11 @@ public class CustomerInfoPresenter {
                     @Override
                     public void onResponse(Call<CustomerInfo> call, Response<CustomerInfo> response) {
 
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
                         if (response.isSuccessful()) {
                             CustomerInfo customerInfo = response.body();
                             if (customerInfo != null) {
@@ -66,11 +71,14 @@ public class CustomerInfoPresenter {
 
                     @Override
                     public void onFailure(Call<CustomerInfo> call, Throwable e) {
-                        DebugLog.e(call.request().toString());
-                        mViewInterface.onError("ERROR");
+
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
+                            if (code ==401){
+                                mViewInterface.onLogout(code);
+                                return;
+                            }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             errorHandle(code, responseBody);
 

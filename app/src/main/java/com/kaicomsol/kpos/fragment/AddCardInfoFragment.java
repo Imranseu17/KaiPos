@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
+import com.kaicomsol.kpos.activity.LoginActivity;
+import com.kaicomsol.kpos.activity.SalesHistoryActivity;
 import com.kaicomsol.kpos.callbacks.CardInfoView;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
@@ -349,6 +351,16 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     public void onError(String error) {
         showEmptyAnimation();
         CustomAlertDialog.showError(activity, error + "");
+    }
+
+    @Override
+    public void onLogout(int code) {
+        SharedDataSaveLoad.remove(activity, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(activity, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(activity, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        activity.finish();
     }
 
     private void activeButton(TextView textView) {
