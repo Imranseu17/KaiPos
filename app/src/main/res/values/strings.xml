@@ -23,7 +23,7 @@
     <string name="bangla">Bangla</string>
     <string name="english">English</string>
     <string name="japanese">Japanese</string>
-    <string name="email">username/email</string>
+    <string name="email">Enter your Username/Email</string>
     <string name="err_msg_email">Enter valid email address</string>
     <string name="err_msg_password">Password field required</string>
     <string name="err_msg_password_length">Password too short</string>
@@ -66,7 +66,7 @@
     <string name="meterinfo">Meter</string>
 
 
-    <string name="password">Password</string>
+    <string name="password">Enter Password</string>
     <string name="login">Login</string>
     <string name="after_select_charge">After select the charge then tab NFC Card</string>
     <string name="gas_recharge">Gas Recharge</string>

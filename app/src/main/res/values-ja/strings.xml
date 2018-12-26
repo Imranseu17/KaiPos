@@ -44,12 +44,12 @@
     <string name="invoice_card">請求書カード</string>
     <string name="selected_charge">このチャージが選択されている</string>
 
-    <string name="password">パスワード</string>
+    <string name="password">パスワードを入力する</string>
     <string name="login">ログイン</string>
     <string name="bangla">バングラ</string>
     <string name="english">英語</string>
     <string name="japanese">日本人</string>
-    <string name="email">ユーザー名/メールアドレス</string>
+    <string name="email">ユーザー名/ Eメールアドレスを入力してください</string>
     <string name="err_msg_email">有効なメールアドレスを入力してください</string>
     <string name="err_msg_password">パスワード欄が必要です</string>
     <string name="err_msg_password_length">パスワードが短すぎます</string>

@@ -48,8 +48,8 @@
     <string name="bangla">বাংলা</string>
     <string name="english">ইংরেজি</string>
     <string name="japanese">জাপানি</string>
-    <string name="email">ব্যবহারকারীর নাম / ইমেল</string>
-    <string name="password">পাসওয়ার্ড</string>
+    <string name="email">আপনার ব্যবহারকারী নাম/ইমেল লিখুন</string>
+    <string name="password">পাসওয়ার্ড লিখুন</string>
     <string name="login">লগইন</string>
     <string name="err_msg_email">বৈধ ইমেইল ঠিকানা লিখুন</string>
     <string name="err_msg_password">পাসওয়ার্ড ক্ষেত্র প্রয়োজন</string>
