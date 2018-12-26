@@ -11,9 +11,18 @@ public class Login {
     @SerializedName("message")
     @Expose
     private String message;
+    @SerializedName("errors")
+    @Expose
+    private Object errors;
     @SerializedName("token")
     @Expose
     private String token;
+    @SerializedName("posErrMsg")
+    @Expose
+    private String posErrMsg;
+    @SerializedName("posCode")
+    @Expose
+    private Integer posCode;
 
     public String getStatus() {
         return status;
@@ -31,12 +40,36 @@ public class Login {
         this.message = message;
     }
 
+    public Object getErrors() {
+        return errors;
+    }
+
+    public void setErrors(Object errors) {
+        this.errors = errors;
+    }
+
     public String getToken() {
         return token;
     }
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getPosErrMsg() {
+        return posErrMsg;
+    }
+
+    public void setPosErrMsg(String posErrMsg) {
+        this.posErrMsg = posErrMsg;
+    }
+
+    public Integer getPosCode() {
+        return posCode;
+    }
+
+    public void setPosCode(Integer posCode) {
+        this.posCode = posCode;
     }
 
 }

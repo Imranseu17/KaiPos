@@ -10,6 +10,4 @@ public class Constants {
 
     //KGDCL Development BASE URL
     public static String BASE_URL = "http://23.101.20.169:8080";
-
-
 }

@@ -154,7 +154,7 @@
     <string name="label_meter_serial_no">মিটার সিরিয়াল নং</string>
     <string name="title_settings">সেটিংস</string>
     <string name="title_sales_history">বিক্রয় ইতিহাস</string>
-    <string name="label_find_device">ডসার্ভার সেটআপ</string>
+    <string name="label_find_device">সার্ভার সেটআপ</string>
     <string name="label_anguage">ভাষা</string>
     <string name="label_sign_out">সাইন আউট</string>
     <string name="title_select_amount">Select amount</string>

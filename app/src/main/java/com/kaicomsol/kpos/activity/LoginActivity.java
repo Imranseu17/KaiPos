@@ -144,10 +144,23 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     public void onSuccess(Login login) {
 
         hideAnimation();
-        JWT jwt = new JWT(login.getToken());
-        Claim claim = jwt.getClaim("deviceId");
-        if (claim.asString() != null) goDashboard(login.getToken());
-        else goDeviceRegister(login.getToken());
+        switch (login.getPosCode()){
+            case 1:
+                goDashboard(login.getToken());
+                break;
+            case -1:
+                goDeviceRegister(login.getToken());
+                break;
+            case -2:
+                CustomAlertDialog.showError(this,login.getPosErrMsg());
+                break;
+            case -3:
+                CustomAlertDialog.showError(this,login.getPosErrMsg());
+                break;
+            default:
+                CustomAlertDialog.showError(this,"Error occurred Please try again");
+        }
+
     }
 
     @Override
@@ -156,6 +169,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         CustomAlertDialog.showError(this,error);
 
     }
+
 
     private void goDashboard(String token){
         SharedDataSaveLoad.save(this, getString(R.string.preference_access_token), "Bearer "+token);

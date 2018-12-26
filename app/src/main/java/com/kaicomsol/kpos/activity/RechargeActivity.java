@@ -153,8 +153,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         if (response){
             if(readCard.readCardArgument.CardGroup.equals("77")
-                    && readCard.readCardArgument.CardStatus.equals("06")
-                    || readCard.readCardArgument.CardStatus.equals("30")){
+                    && (readCard.readCardArgument.CardStatus.equals("06")
+                    || readCard.readCardArgument.CardStatus.equals("30"))){
 
                 txt_account_no.setText(readCard.readCardArgument.CustomerId);
                 DebugLog.e(readCard.readCardArgument.CustomerId);
@@ -604,7 +604,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
                     @Override
                     public void onFailed() {
-                        CustomAlertDialog.showError(RechargeActivity.this,getString(R.string.bluetooth_print_erro));
+                        //this callback may be running thread so
+                        DebugLog.e("Print Error!");
                     }
 
                 });

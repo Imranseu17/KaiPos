@@ -83,7 +83,7 @@ public class PropertiesFragment extends Fragment {
     public void onResume() {
         super.onResume();
         HttpResponsAsync.ReadCardArgument argument =  NFCData.getInstance().getArgument();
-        adapterData(argument);
+        if (argument != null) adapterData(argument);
 
     }
 
@@ -145,16 +145,17 @@ public class PropertiesFragment extends Fragment {
 
     private String getStatus(String status){
 
-        switch (status){
+        if (status == null) return "N/A";
 
+        switch (status){
             case "15":
-                return "15(Card is Recharged)";
+                return "15 (Card is Recharged)";
             case "30":
-                return "30(Card is Initialized)";
+                return "30 (Card is Initialized)";
             case "06":
-                return "06(Card is Meter Initialized)";
+                return "06 (Card is Meter Initialized)";
             case "05":
-                return "05(Card is Refund)";
+                return "05 (Card is Refund)";
             default:
                 return  "N/A";
         }
@@ -163,12 +164,14 @@ public class PropertiesFragment extends Fragment {
 
     private String getGroup(String group){
 
+        if (group == null) return "N/A";
+
         switch (group){
 
             case "77":
-                return "77(Customer Card)";
+                return "77 (Customer Card)";
             case "88":
-                return "88(Service Card)";
+                return "88 (Service Card)";
             default:
                 return  "N/A";
         }
