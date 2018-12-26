@@ -8,10 +8,36 @@
     android:orientation="vertical"
     tools:context=".activity.RechargeActivity">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/layout_loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Invoice loading..."
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textColor="@color/txt_color"
+                android:textSize="17sp" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/animation_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="visible" />
+
+        </LinearLayout>
 
         <ScrollView
             android:id="@+id/gas_content"
@@ -61,8 +87,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="left"
-                                android:textAppearance="@style/TextAppearance.FontPath"
                                 android:text="204678923536"
+                                android:textAppearance="@style/TextAppearance.FontPath"
                                 android:textColor="@color/txt_color"
                                 android:textSize="17sp" />
 
@@ -158,10 +184,10 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:orientation="horizontal"
                             android:paddingLeft="@dimen/_10sdp"
                             android:paddingRight="@dimen/_10sdp"
-                            android:paddingBottom="@dimen/_5sdp"
-                            android:orientation="horizontal">
+                            android:paddingBottom="@dimen/_5sdp">
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -184,8 +210,8 @@
                                     android:layout_marginTop="8dp"
                                     android:background="#00000000"
                                     android:hint="100"
-                                    android:text="100"
                                     android:inputType="text"
+                                    android:text="100"
                                     android:textAppearance="@style/TextAppearance.FontPath"
                                     android:textColor="@color/txt_color"
                                     android:textColorHint="@color/txt_color"
@@ -223,8 +249,8 @@
                                     android:layout_marginTop="8dp"
                                     android:background="#00000000"
                                     android:hint="10.99"
-                                    android:text="10.99"
                                     android:inputType="text"
+                                    android:text="10.99"
                                     android:textAppearance="@style/TextAppearance.FontPath"
                                     android:textColor="@color/txt_color"
                                     android:textColorHint="@color/txt_color"
@@ -243,8 +269,8 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
                             android:layout_marginTop="@dimen/_16sdp"
+                            android:orientation="vertical"
                             android:paddingLeft="@dimen/_10sdp"
                             android:paddingRight="@dimen/_10sdp"
                             android:paddingBottom="@dimen/_5sdp">
@@ -294,16 +320,16 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
+                            android:layout_marginLeft="@dimen/_10sdp"
                             android:layout_marginTop="5dp"
                             android:layout_marginRight="@dimen/_10sdp"
-                            android:layout_marginLeft="@dimen/_10sdp"
                             android:background="#eff0f4" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
                             android:layout_marginTop="@dimen/_16sdp"
+                            android:orientation="vertical"
                             android:paddingLeft="@dimen/_10sdp"
                             android:paddingRight="@dimen/_10sdp"
                             android:paddingBottom="@dimen/_5sdp">
@@ -329,8 +355,8 @@
                                     android:layout_height="wrap_content"
                                     android:background="#00000000"
                                     android:hint="100"
-                                    android:text="100"
                                     android:inputType="text"
+                                    android:text="100"
                                     android:textAppearance="@style/TextAppearance.FontPath"
                                     android:textColor="@color/txt_color"
                                     android:textColorHint="@color/light_gray"
@@ -355,9 +381,9 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
+                            android:layout_marginLeft="@dimen/_10sdp"
                             android:layout_marginTop="5dp"
                             android:layout_marginRight="@dimen/_10sdp"
-                            android:layout_marginLeft="@dimen/_10sdp"
                             android:layout_marginBottom="@dimen/_5sdp"
                             android:background="#eff0f4" />
 
@@ -389,15 +415,15 @@
             android:id="@+id/layout_print"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:layout_margin="@dimen/_10sdp">
+            android:layout_margin="@dimen/_10sdp"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/txt_print"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_alignParentTop="true"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="center_horizontal"
                 android:text="@string/label_print_script"
                 android:textAppearance="@style/TextAppearance.FontPath"
@@ -408,8 +434,8 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="@dimen/_150sdp"
                 android:layout_height="@dimen/_44sdp"
-                android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
                 android:background="@drawable/drop_shadow"
                 android:padding="@dimen/_8sdp"
                 android:text="@string/label_print"

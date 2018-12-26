@@ -79,6 +79,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         //init presenter
         txt_version.setText("Version : "+getVersion());
         mPresenter = new LoginPresenter(this);
+        String username = SharedDataSaveLoad.load(this,getString(R.string.preference_user_name));
+        if (!TextUtils.isEmpty(username)) edt_email.setText(username);
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,7 +111,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         if (checkConnection()) {
             showAnimation();
             final String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
-            DebugLog.i(deviceId);
             SharedDataSaveLoad.save(this,getString(R.string.preference_meter_serial), deviceId);
             String email = edt_email.getText().toString().trim();
             String password = edt_password.getText().toString().trim();
@@ -132,6 +133,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             return;
         }
 
+        String username = edt_email.getText().toString().trim();
+        SharedDataSaveLoad.save(this,getString(R.string.preference_user_name),username);
         hideKeyboard(this);
         getLogin();
 

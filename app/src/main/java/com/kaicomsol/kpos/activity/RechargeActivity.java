@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.gson.Gson;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.CloseClickListener;
@@ -78,6 +79,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
     //Bind component
     @BindView(R.id.layout_main) LinearLayout layout_main;
+    @BindView(R.id.layout_loading) LinearLayout layout_loading;
+    @BindView(R.id.animation_view) LottieAnimationView animationView;
     @BindView(R.id.gas_content) ScrollView gas_content;
     @BindView(R.id.txt_account_no) TextView txt_account_no;
     @BindView(R.id.layout_price) LinearLayout layoutPrice;
@@ -134,7 +137,10 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     private void getInvoices(String cardNo){
 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
-        if (checkConnection()) mPresenter.getInvoices(token,cardNo);
+        if (checkConnection()) {
+            showAnimation();
+            mPresenter.getInvoices(token,cardNo);
+        }
     }
 
     @Override
@@ -150,7 +156,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                     && readCard.readCardArgument.CardStatus.equals("06")
                     || readCard.readCardArgument.CardStatus.equals("30")){
 
-                gas_content.setVisibility(View.VISIBLE);
                 txt_account_no.setText(readCard.readCardArgument.CustomerId);
                 DebugLog.e(readCard.readCardArgument.CustomerId);
                 customerCardDismiss();
@@ -379,6 +384,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     @Override
     public void onSuccess(Invoices invoices) {
 
+        hideAnimation();
         if (invoices != null){
             if (invoices.getInvoices() != null && invoices.getInvoices().size() > 0){
                String invoiceList = new Gson().toJson(invoices);
@@ -402,9 +408,21 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
 
     @Override
-    public void onError(String error) {
-        //rechargeCardDismiss();
-        if (error != null) CustomAlertDialog.showError(this, error);
+    public void onError(String error, int code) {
+        switch (code){
+            case 100:
+                if (error != null) CustomAlertDialog.showError(this, error);
+                break;
+            case 200:
+                hideAnimation();
+                break;
+            case 300:
+                break;
+            default:
+                if (error != null) CustomAlertDialog.showError(this, error);
+                break;
+        }
+
     }
 
     @Override
@@ -476,6 +494,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     }
 
     private void showPrintLayout(){
+        layout_loading.setVisibility(View.GONE);
         gas_content.setVisibility(View.GONE);
         layout_print.setVisibility(View.VISIBLE);
     }
@@ -695,5 +714,21 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                         dialog.dismiss();
                     }
                 }).show();
+    }
+
+    public void showAnimation() {
+        gas_content.setVisibility(View.GONE);
+        layout_loading.setVisibility(View.VISIBLE);
+        animationView.setVisibility(View.VISIBLE);
+        animationView.setAnimation("animation_loading.json");
+        animationView.playAnimation();
+        animationView.loop(true);
+    }
+
+    public void hideAnimation() {
+        gas_content.setVisibility(View.VISIBLE);
+        if (animationView.isAnimating()) animationView.cancelAnimation();
+        layout_loading.setVisibility(View.GONE);
+        animationView.setVisibility(View.GONE);
     }
 }
