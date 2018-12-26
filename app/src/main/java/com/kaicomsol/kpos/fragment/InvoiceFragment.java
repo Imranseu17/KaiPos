@@ -43,10 +43,9 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class InvoiceFragment extends DialogFragment implements InvoiceView {
+public class InvoiceFragment extends DialogFragment{
 
     private Activity activity = null;
-    private InvoicePresenter mPresenter;
     private InvoiceAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     private double amount = 0.0;
@@ -91,7 +90,6 @@ public class InvoiceFragment extends DialogFragment implements InvoiceView {
         //setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle);
         View view = inflater.inflate(R.layout.fragment_invoice, container, false);
         ButterKnife.bind(this, view);
-        mPresenter = new InvoicePresenter(this);
         viewConfig();
 
         return view;
@@ -120,20 +118,11 @@ public class InvoiceFragment extends DialogFragment implements InvoiceView {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //if (activity != null) getInvoices();
         if (invoices != null){
             mAdapter =  new InvoiceAdapter(activity, invoices.getInvoices());
             totalAmount(invoices.getInvoices());
             mRecyclerView.setAdapter(mAdapter);
         }
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-//        if (isVisibleToUser && activity != null) {
-//            getInvoices();
-//        }
     }
 
     @Override
@@ -147,66 +136,6 @@ public class InvoiceFragment extends DialogFragment implements InvoiceView {
         }
     }
 
-
-    private void getInvoices(){
-
-        String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
-
-        if (checkConnection()) {
-            showAnimation();
-            mPresenter.getInvoices(token,cardNo);
-        }else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
-    }
-
-    @Override
-    public void onSuccess(Invoices invoices) {
-
-        hideAnimation();
-        if (invoices.getInvoices() != null) {
-            if (invoices.getInvoices().size() > 0) {
-                mAdapter =  new InvoiceAdapter(activity, invoices.getInvoices());
-                totalAmount(invoices.getInvoices());
-                mRecyclerView.setAdapter(mAdapter);
-            }else showEmptyAnimation();
-        }else showEmptyAnimation();
-
-    }
-
-    @Override
-    public void onError(String error) {
-        DebugLog.e(error+"ERRROR");
-        hideAnimation();
-        showEmptyAnimation();
-    }
-
-    private boolean checkConnection() {
-
-        ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
-    }
-
-    public void showAnimation() {
-        mRecyclerView.setVisibility(View.GONE);
-        animationView.setVisibility(View.VISIBLE);
-        animationView.setAnimation("animation_loading.json");
-        animationView.playAnimation();
-        animationView.loop(true);
-    }
-
-    public void showEmptyAnimation() {
-        txt_total_amount.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.GONE);
-        animationView.setVisibility(View.VISIBLE);
-        animationView.setAnimation("empty_box.json");
-        animationView.playAnimation();
-        animationView.loop(false);
-    }
-
-    public void hideAnimation() {
-        mRecyclerView.setVisibility(View.VISIBLE);
-        if (animationView.isAnimating()) animationView.cancelAnimation();
-        animationView.setVisibility(View.GONE);
-    }
 
     private void totalAmount(List<Invoice> invoices){
         for (Invoice invoice: invoices){

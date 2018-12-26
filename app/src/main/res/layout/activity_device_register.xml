@@ -42,7 +42,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:text="20f6ecfe-3b81-4dcf-9a0d-910c6fd0ac67"
                 android:textAppearance="@style/TextAppearance.FontPath"
                 android:hint="Enter pos device register token" />
 

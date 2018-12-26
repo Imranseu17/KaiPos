@@ -67,9 +67,12 @@ public class PaymentPresenter {
                             if (payment != null) {
                                 mViewInterface.onSuccess(payment);
                             } else {
-                                mViewInterface.onError("Error fetching data");
+                                mViewInterface.onError("Error fetching data",100);
                             }
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else {
+                            if (response.code() == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()), 100);
+                            else mViewInterface.onError(APIErrors.getErrorMessage(response.errorBody()), 100);
+                        }
 
 
                     }
@@ -83,17 +86,18 @@ public class PaymentPresenter {
                             if (code == 401){
                                 mViewInterface.onLogout(code);
                                 return;
+                            }else {
+                                ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                                if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), 100);
+                                else mViewInterface.onError(APIErrors.getErrorMessage(responseBody), 100);
                             }
-                            ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                            errorHandle(code, responseBody);
-
                         }else if(e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error");
+                            mViewInterface.onError("Server connection error", 100);
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException");
+                            mViewInterface.onError("IOException", 100);
                         } else {
-                            mViewInterface.onError("Unknown exception");
+                            mViewInterface.onError("Unknown exception", 100);
                         }
                     }
                 });
@@ -118,7 +122,10 @@ public class PaymentPresenter {
 
                         if (response.isSuccessful()) {
                             mViewInterface.onSuccess(1);
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else {
+                            if (response.code() == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()), 300);
+                            else mViewInterface.onError(APIErrors.getErrorMessage(response.errorBody()), 300);
+                        }
 
 
                     }
@@ -132,17 +139,18 @@ public class PaymentPresenter {
                             if (code == 401){
                                 mViewInterface.onLogout(code);
                                 return;
-                            }
-                            ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                            errorHandle(code, responseBody);
-
+                            }else {
+                                    ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                                    if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), 300);
+                                    else mViewInterface.onError(APIErrors.getErrorMessage(responseBody), 300);
+                                }
                         }else if(e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error");
+                            mViewInterface.onError("Server connection error", 300);
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException");
+                            mViewInterface.onError("IOException", 300);
                         } else {
-                            mViewInterface.onError("Unknown exception");
+                            mViewInterface.onError("Unknown exception", 300);
                         }
                     }
                 });
@@ -171,10 +179,10 @@ public class PaymentPresenter {
                                 mViewInterface.onSuccess(invoices);
                             } else {
                                // mViewInterface.onError("Error fetching data");
-                                mViewInterface.onError(null);
+                                mViewInterface.onError(null, 200);
                             }
                         }else {
-                            mViewInterface.onError(null);
+                            mViewInterface.onError(null, 200);
 //                            try {
 //                                JSONObject jObjError = new JSONObject(response.errorBody().string());
 //                                mViewInterface.onError(jObjError.getString("message"));
@@ -191,7 +199,7 @@ public class PaymentPresenter {
                         if (code == 401){
                             mViewInterface.onLogout(code);
                             return;
-                        }else mViewInterface.onError(null);
+                        }else mViewInterface.onError(null, 200);
 //                        if (e instanceof HttpException) {
 //                            int code = ((HttpException) e).response().code();
 //                            ResponseBody responseBody = ((HttpException) e).response().errorBody();
@@ -213,9 +221,5 @@ public class PaymentPresenter {
                 });
     }
 
-    private void errorHandle(int code, ResponseBody responseBody){
-        if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
-        else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
-    }
 
 }
