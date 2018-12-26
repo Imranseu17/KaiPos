@@ -59,7 +59,7 @@
             android:name=".activity.HomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.RefundActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -101,7 +101,9 @@
             android:name=".activity.SettingsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.SalesHistoryActivity" />
+        <activity android:name=".activity.SalesHistoryActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

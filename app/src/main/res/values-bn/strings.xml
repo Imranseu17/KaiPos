@@ -45,10 +45,10 @@
     <string name="invoice_card">চালান কার্ড</string>
     <string name="selected_charge">এই চার্জ নির্বাচিত হয়</string>
 
-    <string name="bangla">Bangla</string>
-    <string name="english">English</string>
-    <string name="japanese">Japanese</string>
-    <string name="email">Enter email address</string>
+    <string name="bangla">বাংলা</string>
+    <string name="english">ইংরেজি</string>
+    <string name="japanese">জাপানি</string>
+    <string name="email">ব্যবহারকারীর নাম / ইমেল</string>
     <string name="password">পাসওয়ার্ড</string>
     <string name="login">লগইন</string>
     <string name="err_msg_email">বৈধ ইমেইল ঠিকানা লিখুন</string>
@@ -154,7 +154,7 @@
     <string name="label_meter_serial_no">মিটার সিরিয়াল নং</string>
     <string name="title_settings">সেটিংস</string>
     <string name="title_sales_history">বিক্রয় ইতিহাস</string>
-    <string name="label_find_device">ডিভাইস খুঁজুন</string>
+    <string name="label_find_device">ডসার্ভার সেটআপ</string>
     <string name="label_anguage">ভাষা</string>
     <string name="label_sign_out">সাইন আউট</string>
     <string name="title_select_amount">Select amount</string>
@@ -186,7 +186,7 @@
     <string name="customer_Id">গ্রাহক আইডি</string>
     <string name="card_Group">কার্ড গ্রুপ</string>
     <string name="credit">ধার</string>
-    <string name="unit">একক</string>
+    <string name="unit">ট্যারিফ পরিমাণ</string>
     <string name="basic_fee">বেসিক ফি</string>
     <string name="refund1">ফেরত 1</string>
     <string name="refund2">ফেরত 2</string>

@@ -101,10 +101,10 @@ public class PropertiesFragment extends Fragment {
 //        String formatDate = targetFormat.format(date);
 
         cardList.add(new Card(getString(R.string.version_No), argument.VersionNo));
-        cardList.add(new Card(getString(R.string.card_status), argument.CardStatus));
+        cardList.add(new Card(getString(R.string.card_status), getStatus(argument.CardStatus)));
         cardList.add(new Card(getString(R.string.card_Id), argument.CardIdm));
         cardList.add(new Card(getString(R.string.customer_Id),argument.CustomerId));
-        cardList.add(new Card(getString(R.string.card_Group), argument.CardGroup));
+        cardList.add(new Card(getString(R.string.card_Group), getGroup(argument.CardGroup)));
         cardList.add(new Card(getString(R.string.credit), argument.Credit));
         cardList.add(new Card(getString(R.string.unit), argument.Unit));
         cardList.add(new Card(getString(R.string.basic_fee), argument.BasicFee));
@@ -141,6 +141,38 @@ public class PropertiesFragment extends Fragment {
         animationView.setAnimation("empty_box.json");
         animationView.playAnimation();
         animationView.loop(false);
+    }
+
+    private String getStatus(String status){
+
+        switch (status){
+
+            case "15":
+                return "15(Card is Recharged)";
+            case "30":
+                return "30(Card is Initialized)";
+            case "06":
+                return "06(Card is Meter Initialized)";
+            case "05":
+                return "05(Card is Refund)";
+            default:
+                return  "N/A";
+        }
+
+    }
+
+    private String getGroup(String group){
+
+        switch (group){
+
+            case "77":
+                return "77(Customer Card)";
+            case "88":
+                return "88(Service Card)";
+            default:
+                return  "N/A";
+        }
+
     }
 
 

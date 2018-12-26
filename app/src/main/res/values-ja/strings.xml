@@ -49,7 +49,7 @@
     <string name="bangla">バングラ</string>
     <string name="english">英語</string>
     <string name="japanese">日本人</string>
-    <string name="email">メールアドレスを入力してください</string>
+    <string name="email">ユーザー名/メールアドレス</string>
     <string name="err_msg_email">有効なメールアドレスを入力してください</string>
     <string name="err_msg_password">パスワード欄が必要です</string>
     <string name="err_msg_password_length">パスワードが短すぎます</string>
@@ -155,7 +155,7 @@
     <string name="label_meter_serial_no">メーターシリアル番号</string>
     <string name="title_settings">設定</string>
     <string name="title_sales_history">販売履歴</string>
-    <string name="label_find_device">デバイスを見つける</string>
+    <string name="label_find_device">サーバー設定</string>
     <string name="label_anguage">言語</string>
     <string name="label_sign_out">サインアウト</string>
     <string name="title_select_amount">金額を選択</string>
@@ -186,7 +186,7 @@
     <string name="customer_Id">顧客ID</string>
     <string name="card_Group">カードグループ</string>
     <string name="credit">クレジット</string>
-    <string name="unit">単位</string>
+    <string name="unit">関税額</string>
     <string name="basic_fee">基本料金</string>
     <string name="refund1">払い戻し1</string>
     <string name="refund2">払い戻し2</string>
