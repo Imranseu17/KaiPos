@@ -144,6 +144,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     public void onSuccess(Login login) {
 
         hideAnimation();
+
         switch (login.getPosCode()){
             case 1:
                 goDashboard(login.getToken());
