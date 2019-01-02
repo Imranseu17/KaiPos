@@ -196,28 +196,15 @@ public class PaymentPresenter {
                     @Override
                     public void onFailure(Call<Invoices> call, Throwable e) {
                         e.printStackTrace();
-                        int code = ((HttpException) e).response().code();
-                        if (code == 401) {
-                            mViewInterface.onLogout(code);
-                            return;
-                        } else mViewInterface.onError(null, 200);
-//                        if (e instanceof HttpException) {
-//                            int code = ((HttpException) e).response().code();
-//                            ResponseBody responseBody = ((HttpException) e).response().errorBody();
-//                            try {
-//                                JSONObject jObjError = new JSONObject(responseBody.string());
-//                                mViewInterface.onError(jObjError.getString("message"));
-//                            } catch (Exception e2) {
-//                                mViewInterface.onError("Error occurred! Please try again");
-//                            }
-//                        } else if (e instanceof SocketTimeoutException) {
-//
-//                            mViewInterface.onError("Server connection error");
-//                        } else if (e instanceof IOException) {
-//                            mViewInterface.onError("IOException");
-//                        } else {
-//                            mViewInterface.onError("Unknown exception");
-//                        }
+                        if (e instanceof HttpException) {
+                            int code = ((HttpException) e).response().code();
+                            if (code == 401) {
+                                mViewInterface.onLogout(code);
+                                return;
+                              } else mViewInterface.onError(null, 200);
+
+                        }
+
                     }
                 });
     }
@@ -353,13 +340,14 @@ public class PaymentPresenter {
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable e) {
                         e.printStackTrace();
-                        int code = ((HttpException) e).response().code();
-                        DebugLog.e(code+" onFailure()");
-                        if (code == 401) {
-                            mViewInterface.onLogout(code);
-                            return;
-                        } else mViewInterface.onError(null, 201);
+                        if (e instanceof HttpException) {
+                            int code = ((HttpException) e).response().code();
+                            if (code == 401) {
+                                mViewInterface.onLogout(code);
+                                return;
+                            } else mViewInterface.onError(null, 201);
 
+                        }
                     }
                 });
     }
