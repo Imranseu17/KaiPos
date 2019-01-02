@@ -318,4 +318,5 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     public void onCloseClick(double amount) {
 
     }
+
 }

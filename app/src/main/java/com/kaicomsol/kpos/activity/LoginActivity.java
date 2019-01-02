@@ -111,6 +111,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         if (checkConnection()) {
             showAnimation();
             final String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
+            DebugLog.e(deviceId);
             SharedDataSaveLoad.save(this,getString(R.string.preference_meter_serial), deviceId);
             String email = edt_email.getText().toString().trim();
             String password = edt_password.getText().toString().trim();
