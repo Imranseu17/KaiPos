@@ -50,7 +50,7 @@ public interface APIServices {
     @POST("/api/v1/payment/capturePayment")
     Call<PaymentID> capturePayment(@HeaderMap Map<String, String> headers, @Query("paymentId") String paymentId);
 
-    @POST("/api/v1/card/readCard")
+    @POST("/api/v1/pos/card/readCard")
     Call<ResponseBody> readCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 
     @GET("/api/v2/customerAccount/customerAccounts")
