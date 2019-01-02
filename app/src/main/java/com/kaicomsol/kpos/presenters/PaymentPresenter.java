@@ -18,6 +18,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.security.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -228,7 +234,14 @@ public class PaymentPresenter {
         for(int i = 0; i < argument.CardHistory.size(); i++){
             HttpResponsAsync.ReadCardArgumentCardHistory cardHistory = argument.CardHistory.get(i);
             JsonObject objHistory = new JsonObject();
-            objHistory.addProperty("HistoryTime",cardHistory.HistoryTime);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = null;
+            try {
+                date = sdf.parse(cardHistory.HistoryTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            objHistory.addProperty("HistoryTime",date.getTime());
             objHistory.addProperty("HistoryType",cardHistory.HistoryType);
             jsonHistory.add(objHistory);
 
@@ -239,8 +252,15 @@ public class PaymentPresenter {
         for(int i = 0; i < argument.ErrorHistory.size(); i++){
             HttpResponsAsync.ReadCardArgumentErrorHistory errorHistory = argument.ErrorHistory.get(i);
             JsonObject objErrHistory = new JsonObject();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = null;
+            try {
+                date = sdf.parse(errorHistory.ErrorTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             objErrHistory.addProperty("ErrorGroup",errorHistory.ErrorGroup);
-            objErrHistory.addProperty("ErrorTime",errorHistory.ErrorTime);
+            objErrHistory.addProperty("ErrorTime",date.getTime());
             objErrHistory.addProperty("ErrorType",errorHistory.ErrorType);
             arrErrorHistory.add(objErrHistory);
 
@@ -251,7 +271,15 @@ public class PaymentPresenter {
         for(int i = 0; i < argument.LogDay.size(); i++){
             HttpResponsAsync.ReadCardArgumentLogDay logDay = argument.LogDay.get(i);
             JsonObject objLogDay = new JsonObject();
-            objLogDay.addProperty("GasTime",logDay.GasTime);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = null;
+            try {
+                date = sdf.parse(logDay.GasTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            objLogDay.addProperty("GasTime",date.getTime());
             objLogDay.addProperty("GasValue",logDay.GasValue);
             arrLogDay.add(objLogDay);
 
@@ -262,11 +290,25 @@ public class PaymentPresenter {
         for(int i = 0; i < argument.LogHour.size(); i++){
             HttpResponsAsync.ReadCardArgumentLogHour logHour = argument.LogHour.get(i);
             JsonObject objlogHour = new JsonObject();
-            objlogHour.addProperty("GasTime", logHour.GasTime);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = null;
+            try {
+                date = sdf.parse(logHour.GasTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            objlogHour.addProperty("GasTime", date.getTime());
             objlogHour.addProperty("GasValue", logHour.GasValue);
             arrLogHour.add(objlogHour);
         }
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date date = null;
+        try {
+            date = sdf.parse(argument.LidTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         cardObj.addProperty("BasicFee", argument.BasicFee);
         cardObj.addProperty("CardGroup", argument.CardGroup);
@@ -276,7 +318,7 @@ public class PaymentPresenter {
         cardObj.addProperty("Credit", argument.Credit);
         cardObj.addProperty("CustomerId", argument.CustomerId);
         cardObj.addProperty("ErrorNo", argument.ErrorNo);
-        cardObj.addProperty("LidTime", argument.LidTime);
+        cardObj.addProperty("LidTime", date.getTime());
         cardObj.addProperty("OpenCount", argument.OpenCount);
         cardObj.addProperty("Refund1", argument.Refund1);
         cardObj.addProperty("Refund2", argument.Refund2);
