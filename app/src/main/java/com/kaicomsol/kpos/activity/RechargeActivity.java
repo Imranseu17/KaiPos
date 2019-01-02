@@ -48,6 +48,7 @@ import com.kaicomsol.kpos.fragment.InvoiceFragment;
 import com.kaicomsol.kpos.model.Invoices;
 import com.kaicomsol.kpos.model.Payment;
 import com.kaicomsol.kpos.model.ReadCard;
+import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.presenters.PaymentPresenter;
 import com.kaicomsol.kpos.printer.BluetoothPrinter;
 import com.kaicomsol.kpos.utils.DebugLog;
@@ -124,23 +125,18 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         mAdapter.enableForegroundDispatch(RechargeActivity.this,pendingIntent, intentFiltersArray, techListsArray);
     }
 
-    private void showInvoiceDialog(String cardNo){
-
-//        InvoiceFragment invoiceFragment = InvoiceFragment.newInstance(this,"User");
-//        invoiceFragment.setCancelable(false);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("cardNo",cardNo);
-//        invoiceFragment.setArguments(bundle);
-//        invoiceFragment.show(getSupportFragmentManager(), invoiceFragment.getTag());
-    }
-
     private void getInvoices(String cardNo){
 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         if (checkConnection()) {
             showAnimation();
             mPresenter.getInvoices(token,cardNo);
+            readCard(token, readCard.readCardArgument);
         }
+    }
+
+    private void readCard(String token, HttpResponsAsync.ReadCardArgument argument){
+        if (readCard.readCardArgument != null) mPresenter.readCard(token, argument);
     }
 
     @Override
@@ -405,6 +401,10 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
     }
 
+    @Override
+    public void onSuccess(String readCard) {
+
+    }
 
 
     @Override
@@ -415,6 +415,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                 break;
             case 200:
                 hideAnimation();
+                break;
+            case 201:
+               // hideAnimation();
                 break;
             case 300:
                 break;

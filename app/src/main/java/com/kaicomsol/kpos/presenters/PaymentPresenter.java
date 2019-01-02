@@ -1,11 +1,14 @@
 package com.kaicomsol.kpos.presenters;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.kaicomsol.kpos.callbacks.PaymentView;
 import com.kaicomsol.kpos.model.APIErrors;
+import com.kaicomsol.kpos.model.History;
 import com.kaicomsol.kpos.model.Invoices;
 import com.kaicomsol.kpos.model.Payment;
 import com.kaicomsol.kpos.model.PaymentID;
+import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 
@@ -147,6 +150,7 @@ public class PaymentPresenter {
                 });
     }
 
+
     public void getInvoices(String token, String cardNo) {
         Map<String, String> map = new HashMap<>();
         DebugLog.e(cardNo);
@@ -208,6 +212,112 @@ public class PaymentPresenter {
 //                        } else {
 //                            mViewInterface.onError("Unknown exception");
 //                        }
+                    }
+                });
+    }
+
+    public void readCard(String token, HttpResponsAsync.ReadCardArgument argument) {
+        Map<String, String> map = new HashMap<>();
+        map.put("Authorization", token);
+        map.put("Content-Type", "application/json");
+
+        JsonObject rootObject = new JsonObject();
+        JsonObject cardObj = new JsonObject();
+        //get card history
+        JsonArray jsonHistory = new JsonArray();
+        for(int i = 0; i < argument.CardHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentCardHistory cardHistory = argument.CardHistory.get(i);
+            JsonObject objHistory = new JsonObject();
+            objHistory.addProperty("HistoryTime",cardHistory.HistoryTime);
+            objHistory.addProperty("HistoryType",cardHistory.HistoryType);
+            jsonHistory.add(objHistory);
+
+        }
+
+        //get error history
+        JsonArray arrErrorHistory = new JsonArray();
+        for(int i = 0; i < argument.ErrorHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentErrorHistory errorHistory = argument.ErrorHistory.get(i);
+            JsonObject objErrHistory = new JsonObject();
+            objErrHistory.addProperty("ErrorGroup",errorHistory.ErrorGroup);
+            objErrHistory.addProperty("ErrorTime",errorHistory.ErrorTime);
+            objErrHistory.addProperty("ErrorType",errorHistory.ErrorType);
+            arrErrorHistory.add(objErrHistory);
+
+        }
+
+        //get Log Day
+        JsonArray arrLogDay = new JsonArray();
+        for(int i = 0; i < argument.LogDay.size(); i++){
+            HttpResponsAsync.ReadCardArgumentLogDay logDay = argument.LogDay.get(i);
+            JsonObject objLogDay = new JsonObject();
+            objLogDay.addProperty("GasTime",logDay.GasTime);
+            objLogDay.addProperty("GasValue",logDay.GasValue);
+            arrLogDay.add(objLogDay);
+
+        }
+
+        //get Log Hour
+        JsonArray arrLogHour = new JsonArray();
+        for(int i = 0; i < argument.LogHour.size(); i++){
+            HttpResponsAsync.ReadCardArgumentLogHour logHour = argument.LogHour.get(i);
+            JsonObject objlogHour = new JsonObject();
+            objlogHour.addProperty("GasTime", logHour.GasTime);
+            objlogHour.addProperty("GasValue", logHour.GasValue);
+            arrLogHour.add(objlogHour);
+        }
+
+
+        cardObj.addProperty("BasicFee", argument.BasicFee);
+        cardObj.addProperty("CardGroup", argument.CardGroup);
+        cardObj.addProperty("CardHistoryNo", argument.CardHistoryNo);
+        cardObj.addProperty("CardIdm", argument.CardIdm);
+        cardObj.addProperty("CardStatus", argument.CardStatus);
+        cardObj.addProperty("Credit", argument.Credit);
+        cardObj.addProperty("CustomerId", argument.CustomerId);
+        cardObj.addProperty("ErrorNo", argument.ErrorNo);
+        cardObj.addProperty("LidTime", argument.LidTime);
+        cardObj.addProperty("OpenCount", argument.OpenCount);
+        cardObj.addProperty("Refund1", argument.Refund1);
+        cardObj.addProperty("Refund2", argument.Refund2);
+        cardObj.addProperty("Unit", argument.Unit);
+        cardObj.addProperty("UntreatedFee", argument.UntreatedFee);
+        cardObj.addProperty("VersionNo", argument.VersionNo);
+
+        cardObj.add("CardHistory", jsonHistory);
+        cardObj.add("ErrorHistory", arrErrorHistory);
+        cardObj.add("LogDay", arrLogDay);
+        cardObj.add("LogHour", arrLogHour);
+        //this is final json object
+        rootObject.add("cardData", cardObj);
+
+        mApiClient.getAPI()
+                .readCard(map, rootObject)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                        DebugLog.e(response.code()+" onResponse()");
+
+                        if (response.code() == 401) {
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+                        if (response.isSuccessful()){
+                            mViewInterface.onSuccess("readCard");
+                        }else mViewInterface.onError(null, 201);
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable e) {
+                        e.printStackTrace();
+                        int code = ((HttpException) e).response().code();
+                        DebugLog.e(code+" onFailure()");
+                        if (code == 401) {
+                            mViewInterface.onLogout(code);
+                            return;
+                        } else mViewInterface.onError(null, 201);
+
                     }
                 });
     }
