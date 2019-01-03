@@ -42,7 +42,7 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final Card card = cardList.get(position);
         ViewHolder vh = (ViewHolder) holder;
         vh.txt_label.setText(card.getLabel());
-        vh.txt_value.setText(card.getValue() !=null ? card.getValue() : "N/A");
+        vh.txt_value.setText(card.getValue() != null ? card.getValue() : "N/A");
 
     }
 
