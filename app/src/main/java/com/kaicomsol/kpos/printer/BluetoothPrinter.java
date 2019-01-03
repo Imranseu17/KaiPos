@@ -191,7 +191,7 @@ public class BluetoothPrinter {
         protected void onPostExecute(BluetoothSocket bluetoothSocket) {
             if (listener != null) {
                 if (bluetoothSocket != null) listener.onConnected(bluetoothSocket);
-                else listener.onFailed();
+                else if(listener != null)listener.onFailed();
             }
         }
 
