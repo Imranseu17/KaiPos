@@ -380,7 +380,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
     @Override
     public void onSuccess(Invoices invoices) {
-
+        mAdapter.disableForegroundDispatch(this);
         hideAnimation();
         if (invoices != null){
             if (invoices.getInvoices() != null && invoices.getInvoices().size() > 0){
@@ -404,6 +404,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
     @Override
     public void onSuccess(String readCard) {
+        mAdapter.disableForegroundDispatch(this);
 
     }
 
@@ -631,6 +632,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
+                        mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
                         rechargeCardDialog();
                         isRecharge = true;
                     }

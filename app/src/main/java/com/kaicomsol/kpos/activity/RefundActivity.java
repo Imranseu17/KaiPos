@@ -168,6 +168,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
                 }else {
                     rechargeCardDismiss();
                     updateRefund();
+
                 }
 
             }else CustomAlertDialog.showError(this, getString(R.string.not_available_refund));
@@ -207,10 +208,12 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
         rechargeCardDismiss();
         updatedData();
         Toast.makeText(this,message.getMsg(),Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @Override
     public void onError(String error) {
+        mAdapter.disableForegroundDispatch(this);
         CustomAlertDialog.showError(this, error);
     }
 
