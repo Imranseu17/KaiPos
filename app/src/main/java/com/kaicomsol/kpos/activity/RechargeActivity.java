@@ -64,6 +64,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class RechargeActivity extends AppCompatActivity implements PaymentView,CloseClickListener {
 
+    private static final int REQUEST_ENABLE_BT = 0;
     private CardCheckDialog mCardCheckDialog = null;
     private RechargeCardDialog mRechargeCardDialog = null;
     private boolean isRecharge = false;
@@ -676,7 +677,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
                         bluetoothEnabled();
-                        bluetoothPrint();
                         Toast.makeText(RechargeActivity.this,getString(R.string.bluetooth_enabling),Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -690,8 +690,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     }
 
     private void bluetoothEnabled(){
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        mBluetoothAdapter.enable();
+        Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(intent, REQUEST_ENABLE_BT);
     }
 
 
@@ -704,6 +704,21 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     @Override
     public void onCloseClick(double amount) {
         this.totalAmount = amount;
+    }
+
+    //bluetoothPrint();
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case REQUEST_ENABLE_BT:
+                if (resultCode == RESULT_OK){
+                    //bluetooth is on
+                    bluetoothPrint();
+                }else Toast.makeText(this,"Could't on bluetooth",Toast.LENGTH_SHORT).show();
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void showErrorDialog(String message) {
