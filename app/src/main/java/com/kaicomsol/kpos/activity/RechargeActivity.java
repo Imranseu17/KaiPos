@@ -589,13 +589,12 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
                             mPrinter.printText(txt_print.getText().toString());
                             mPrinter.addNewLine();
-                            mPrinter.finish();
-//                            try {
-//                                Thread.sleep(6000);
-//
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
+                            try {
+                                Thread.sleep(5000);
+                                mPrinter.finish();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
 
                         } catch (Exception e) {
 
