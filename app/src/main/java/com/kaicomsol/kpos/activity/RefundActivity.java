@@ -64,8 +64,6 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     @BindView(R.id.btn_submit) ImageView btn_submit;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -200,6 +198,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
 
     @Override
     public void onSuccess(Refund refund) {
+        mAdapter.disableForegroundDispatch(this);
         id = refund.getId();
     }
 
@@ -297,6 +296,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
+                        mAdapter.enableForegroundDispatch(RefundActivity.this, pendingIntent, intentFiltersArray, techListsArray);
                         rechargeCardDialog();
 
                     }
