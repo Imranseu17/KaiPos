@@ -211,6 +211,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
 
     @Override
     public void onError(String error) {
+        mAdapter.disableForegroundDispatch(this);
         CustomAlertDialog.showError(this, error);
     }
 
