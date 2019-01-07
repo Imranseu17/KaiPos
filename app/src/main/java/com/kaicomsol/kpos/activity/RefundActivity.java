@@ -208,7 +208,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
         rechargeCardDismiss();
         updatedData();
         Toast.makeText(this,message.getMsg(),Toast.LENGTH_SHORT).show();
-        finish();
+        //finish();
     }
 
     @Override
@@ -283,10 +283,17 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     public void updatedData(){
         layout_refund.setVisibility(View.VISIBLE);
         txt_account_no.setText(readCard.readCardArgument.CustomerId);
-        txt_credit.setText(readCard.readCardArgument.Credit);
-        txt_refund1.setText(readCard.readCardArgument.Refund1);
-        txt_refund2.setText(readCard.readCardArgument.Refund2);
+        txt_credit.setText(addCredit(readCard.readCardArgument.Credit,readCard.readCardArgument.Refund1));
+        txt_refund1.setText("0.0");
+        txt_refund2.setText("0.0");
 
+    }
+
+    private String addCredit(String credit, String refund1){
+        double cr = Double.parseDouble(credit);
+        double ref1 = Double.parseDouble(refund1);
+
+        return String.valueOf(cr+ref1);
     }
 
     public void showConfirmDialog() {

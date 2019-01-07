@@ -3,6 +3,7 @@ package com.kaicomsol.kpos.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,6 +22,7 @@ import com.kaicomsol.kpos.model.Customer;
 import com.kaicomsol.kpos.model.CustomerData;
 import com.kaicomsol.kpos.model.Like;
 import com.kaicomsol.kpos.presenters.CustomerPresenter;
+import com.kaicomsol.kpos.utils.PaginationScrollListener;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import butterknife.BindView;
@@ -90,7 +92,7 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
         if (checkConnection()){
             showAnimation();
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
-            mPresenter.findCustomerByProperty(token,like);
+            mPresenter.findCustomerByProperty(token, like);
         }else CustomAlertDialog.showError(this,getString(R.string.no_internet_connection));
     }
 
@@ -99,10 +101,10 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
         hideAnimation();
         if (customerData.getCustomerList() != null) {
             if (customerData.getCustomerList().size() > 0) {
-                  mAdapter =  new CustomerAdapter(this,customerData.getCustomerList(), this);
+                  mAdapter =  new CustomerAdapter(this, this);
                   mRecyclerView.setAdapter(mAdapter);
-            }
-            else showEmptyAnimation();
+                  mAdapter.setCustomers(customerData.getCustomerList());
+            }else showEmptyAnimation();
         }
     }
 
