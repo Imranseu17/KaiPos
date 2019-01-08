@@ -19,10 +19,13 @@ import android.widget.RelativeLayout;
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.activity.LoginActivity;
+import com.kaicomsol.kpos.activity.MeterDetailsActivity;
 import com.kaicomsol.kpos.adapter.MeterAdapter;
+import com.kaicomsol.kpos.callbacks.MeterClickListener;
 import com.kaicomsol.kpos.callbacks.MeterView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.model.Meter;
+import com.kaicomsol.kpos.model.MeterList;
 import com.kaicomsol.kpos.presenters.MeterPresenter;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
@@ -33,7 +36,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MeterFragment extends Fragment implements MeterView {
+public class MeterFragment extends Fragment implements MeterView, MeterClickListener {
 
 
     private Activity activity = null;
@@ -112,8 +115,9 @@ public class MeterFragment extends Fragment implements MeterView {
         hideAnimation();
         if (meter.getMeterList() != null) {
             if (meter.getMeterList().size() > 0) {
-                mAdapter =  new MeterAdapter(activity, meter.getMeterList());
+                mAdapter =  new MeterAdapter(activity, this);
                 mRecyclerView.setAdapter(mAdapter);
+                mAdapter.setMeterList(meter.getMeterList());
             }else showEmptyAnimation();
         }else showEmptyAnimation();
 
@@ -162,5 +166,14 @@ public class MeterFragment extends Fragment implements MeterView {
         mRecyclerView.setVisibility(View.VISIBLE);
         if (animationView.isAnimating()) animationView.cancelAnimation();
         animationView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onMeterClick(MeterList meter) {
+
+            SharedDataSaveLoad.saveInt(activity,getString(R.string.preference_meter_type_id), meter.getMeterTypeId());
+
+            Intent intent = new Intent(activity, MeterDetailsActivity.class);
+            startActivity(intent);
     }
 }

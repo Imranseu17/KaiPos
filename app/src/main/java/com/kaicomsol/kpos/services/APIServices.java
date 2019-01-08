@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.kaicomsol.kpos.model.CardData;
 import com.kaicomsol.kpos.model.CustomerData;
 import com.kaicomsol.kpos.model.CustomerInfo;
+import com.kaicomsol.kpos.model.Emergency;
 import com.kaicomsol.kpos.model.Invoices;
 import com.kaicomsol.kpos.model.Login;
 import com.kaicomsol.kpos.model.Meter;
@@ -88,6 +89,9 @@ public interface APIServices {
 
     @GET("/api/v1/customerMeters/{meterSerial}")
     Call<CardData> getMeter(@HeaderMap Map<String, String> headers, @Path("meterSerial") String meterSerial);
+
+    @GET("/api/v1/pos/settings/{meterType}/getMeterEmergencyValue")
+    Call<Emergency> getEmergencyValue(@HeaderMap Map<String, String> headers, @Path("meterType") String meterType);
 
     @POST("/api/v1/customerMeters/card/add")
     Call<ResponseBody> addCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);

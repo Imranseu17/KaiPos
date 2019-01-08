@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.kaicomsol.kpos.callbacks.CardInfoView;
 import com.kaicomsol.kpos.model.APIErrors;
 import com.kaicomsol.kpos.model.CardData;
+import com.kaicomsol.kpos.model.Emergency;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 
@@ -32,6 +33,57 @@ public class CardPresenter {
         if (this.mApiClient == null) {
             this.mApiClient = new APIClient();
         }
+    }
+
+    public void getEmergencyValue(String token, String meterSerial) {
+        Map<String, String> map = new HashMap<>();
+        DebugLog.e(token);
+        map.put("Authorization", token);
+        map.put("Content-Type", "application/json");
+
+        mApiClient.getAPI()
+                .getEmergencyValue(map, meterSerial)
+                .enqueue(new Callback<Emergency>() {
+                    @Override
+                    public void onResponse(Call<Emergency> call, Response<Emergency> response) {
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
+                        if (response.isSuccessful()) {
+                            Emergency emergency = response.body();
+                            if (emergency != null) {
+                                mViewInterface.onEmergencyValue(emergency.getEmergencyValue());
+                            } else {
+                                mViewInterface.onError("Error fetching data");
+                            }
+                        } else errorHandle(response.code(), response.errorBody());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Emergency> call, Throwable e) {
+                        DebugLog.e(call.request().toString());
+                        if (e instanceof HttpException) {
+
+                            int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                            }
+                            ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                            errorHandle(code, responseBody);
+
+                        } else if (e instanceof SocketTimeoutException) {
+
+                            mViewInterface.onError("Server connection error");
+                        } else if (e instanceof IOException) {
+                            mViewInterface.onError("IOException");
+                        } else {
+                            mViewInterface.onError("Unknown exception");
+                        }
+                    }
+                });
     }
 
     public void getMeterInfo(String token, String meterSerial) {

@@ -54,6 +54,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     private Activity activity = null;
     private RechargeCardDialog mRechargeCardDialog = null;
     private CardPresenter mPresenter;
+    private int emergencyValue = 0;
     //NFC card info initial
     ReadCard readCard = new ReadCard();
     private IntentFilter[] intentFiltersArray;
@@ -159,7 +160,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                     readCard.ReadTag(tag);
                     readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
                     final boolean response = readCard.GamInitCard(tag, readCard.readCardArgument.CustomerId,
-                            (byte) 119, 9);
+                            (byte) 119, emergencyValue);
                     if (response) {
                         if (readCard.readCardArgument.CardGroup.equals("77")) {
                             rechargeCardDismiss();
@@ -194,6 +195,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (activity != null) getMeterInfo();
+        if (activity != null) getEmergencyValue();
     }
 
     @Override
@@ -213,6 +215,19 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             mPresenter.getMeterInfo(token, meterSerial);
         } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
     }
+
+    private void getEmergencyValue() {
+
+        String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
+        final int meterTypeId = SharedDataSaveLoad.loadInt(activity,getString(R.string.preference_meter_type_id));
+
+        if (checkConnection()) {
+            showAnimation();
+            mPresenter.getEmergencyValue(token, String.valueOf(meterTypeId));
+        } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
+    }
+
+
 
     private void addCard(String cardIdm) {
 
@@ -278,6 +293,11 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             lostCard();
         }
 
+    }
+
+    @Override
+    public void onEmergencyValue(int emergencyValue) {
+        this.emergencyValue = emergencyValue;
     }
 
     @Override

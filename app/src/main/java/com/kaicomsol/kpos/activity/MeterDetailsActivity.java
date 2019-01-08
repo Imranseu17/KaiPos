@@ -8,12 +8,9 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.ViewPagerAdapter;
 import com.kaicomsol.kpos.fragment.AddCardInfoFragment;
-import com.kaicomsol.kpos.fragment.CustomerFragment;
-import com.kaicomsol.kpos.fragment.MeterFragment;
 import com.kaicomsol.kpos.fragment.SubscriptionFragment;
 import com.kaicomsol.kpos.fragment.TransactionFragment;
 
@@ -21,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class InfoActivity extends AppCompatActivity {
+public class MeterDetailsActivity extends AppCompatActivity {
 
     //bind component
     @BindView(R.id.toolbar)
@@ -34,14 +31,14 @@ public class InfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_info);
+        setContentView(R.layout.activity_meter_details);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Inspect");
+        getSupportActionBar().setTitle("Meter Details");
 
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
@@ -52,8 +49,6 @@ public class InfoActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new CustomerFragment(), getString(R.string.customer));
-        adapter.addFragment(new MeterFragment(), getString(R.string.meter));
         adapter.addFragment(new AddCardInfoFragment(), getString(R.string.card));
         adapter.addFragment(new TransactionFragment(), getString(R.string.transactions));
         adapter.addFragment(new SubscriptionFragment(), getString(R.string.subscriptions));

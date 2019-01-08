@@ -3,7 +3,6 @@ package com.kaicomsol.kpos.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,7 +21,6 @@ import com.kaicomsol.kpos.model.Customer;
 import com.kaicomsol.kpos.model.CustomerData;
 import com.kaicomsol.kpos.model.Like;
 import com.kaicomsol.kpos.presenters.CustomerPresenter;
-import com.kaicomsol.kpos.utils.PaginationScrollListener;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import butterknife.BindView;
@@ -164,7 +162,7 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
         SharedDataSaveLoad.save(this,getString(R.string.preference_card_idm), customer.getCardNo());
         SharedDataSaveLoad.save(this,getString(R.string.preference_card_status), customer.getStatus());
 
-        Intent intent = new Intent(AccountListActivity.this, InfoActivity.class);
+        Intent intent = new Intent(AccountListActivity.this, CustomerDetailsActivity.class);
         startActivity(intent);
 
     }

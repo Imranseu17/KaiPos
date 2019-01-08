@@ -11,6 +11,9 @@ public class MeterList {
     @SerializedName("installationDate")
     @Expose
     private long installationDate;
+    @SerializedName("meterTypeId")
+    @Expose
+    private int meterTypeId;
     @SerializedName("meterType")
     @Expose
     private String meterType;
@@ -31,56 +34,31 @@ public class MeterList {
         return meterSerialNo;
     }
 
-    public void setMeterSerialNo(String meterSerialNo) {
-        this.meterSerialNo = meterSerialNo;
-    }
-
     public long getInstallationDate() {
         return installationDate;
     }
 
-    public void setInstallationDate(long installationDate) {
-        this.installationDate = installationDate;
+    public int getMeterTypeId() {
+        return meterTypeId;
     }
 
     public String getMeterType() {
         return meterType;
     }
 
-    public void setMeterType(String meterType) {
-        this.meterType = meterType;
-    }
-
     public String getStatus() {
         return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public int getTariffId() {
         return tariffId;
     }
 
-    public void setTariffId(int tariffId) {
-        this.tariffId = tariffId;
-    }
-
     public String getTariff() {
         return tariff;
     }
 
-    public void setTariff(String tariff) {
-        this.tariff = tariff;
-    }
-
-    public boolean getPendingInvoice() {
+    public boolean isPendingInvoice() {
         return pendingInvoice;
     }
-
-    public void setPendingInvoice(boolean pendingInvoice) {
-        this.pendingInvoice = pendingInvoice;
-    }
-
 }

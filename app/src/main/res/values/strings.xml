@@ -14,6 +14,7 @@
     <string name="preference_customer_code" translatable="false">preference_customer_code</string>
     <string name="preference_meter_serial" translatable="false">preference_meter_serial</string>
     <string name="preference_card_idm" translatable="false">preference_card_idm</string>
+    <string name="preference_meter_type_id" translatable="false">preference_meter_type_id</string>
     <string name="preference_card_status" translatable="false">preference_card_status</string>
     <string name="app_name" translatable="false">KPOS</string>
 

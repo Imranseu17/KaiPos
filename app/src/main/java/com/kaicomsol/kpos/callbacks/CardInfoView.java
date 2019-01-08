@@ -5,6 +5,7 @@ import com.kaicomsol.kpos.model.CardData;
 
 public interface CardInfoView {
 
+    public void onEmergencyValue(int emergencyValue);
     public void onCard(CardData cardData);
     public void onAddCard(boolean isAdded);
     public void onActiveCard(String active);

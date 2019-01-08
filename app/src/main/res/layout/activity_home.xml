@@ -47,6 +47,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:text="@string/label_add_gas"
+                    android:textSize="15sp"
                     android:textAppearance="@style/TextAppearance.FontPath"
                     android:textStyle="bold" />
 
@@ -87,6 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:text="@string/label_account_search"
+                    android:textSize="15sp"
                     android:textAppearance="@style/TextAppearance.FontPath"
                     android:textStyle="bold" />
 
@@ -136,6 +138,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_8sdp"
                         android:text="@string/label_inspect_card"
+                        android:textSize="15sp"
                         android:textAppearance="@style/TextAppearance.FontPath"
                         android:textStyle="bold" />
 
@@ -176,6 +179,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_8sdp"
                         android:text="@string/label_card_refund"
+                        android:textSize="15sp"
                         android:textAppearance="@style/TextAppearance.FontPath"
                         android:textStyle="bold" />
 
@@ -218,6 +222,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:text="@string/label_sales_history"
+                    android:textSize="15sp"
                     android:textAppearance="@style/TextAppearance.FontPath"
                     android:textStyle="bold" />
 

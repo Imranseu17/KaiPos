@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 
 import com.kaicomsol.kpos.R;
+import com.kaicomsol.kpos.callbacks.CustomerClickListener;
+import com.kaicomsol.kpos.callbacks.MeterClickListener;
+import com.kaicomsol.kpos.model.Customer;
 import com.kaicomsol.kpos.model.MeterList;
 
 import java.text.SimpleDateFormat;
@@ -24,10 +27,16 @@ public class MeterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private Context context;
     private List<MeterList> meterList;;
+    private MeterClickListener listener;
 
-    public MeterAdapter(Context context, List<MeterList> meterList) {
+    public MeterAdapter(Context context, MeterClickListener listener) {
         this.context = context;
+        this.listener = listener;
+    }
+
+    public void setMeterList(List<MeterList> meterList) {
         this.meterList = meterList;
+        notifyDataSetChanged();
     }
 
 
@@ -55,7 +64,7 @@ public class MeterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         vh.txt_status.setText(meter.getStatus() !=null ? meter.getStatus() : "N/A");
         vh.txt_tariff_id.setText(meter.getTariffId() != 0 ? String.valueOf(meter.getTariffId()) : "N/A");
 
-        vh.txt_pending_invoice.setText(String.valueOf(meter.getPendingInvoice()));
+        vh.txt_pending_invoice.setText(String.valueOf(meter.isPendingInvoice()));
         vh.txt_installation_date.setText(formatDate);
 
     }
@@ -73,6 +82,7 @@ public class MeterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         //UI View Bind
+        @BindView(R.id.card_content) CardView card_content;
         @BindView(R.id.txt_meter_serial) TextView txt_meter_serial;
         @BindView(R.id.txt_meter_type) TextView txt_meter_type;
         @BindView(R.id.txt_status) TextView txt_status;
@@ -84,6 +94,12 @@ public class MeterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            card_content.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) listener.onMeterClick(meterList.get(getAdapterPosition()));
+                }
+            });
 
         }
 
