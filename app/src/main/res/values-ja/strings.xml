@@ -76,7 +76,7 @@
     <!--error massage -->
     <string name="pos_key_invalid">POSKeyが無効です</string>
     <string name="titlle_dashboard">ダッシュボード</string>
-    <string name="add_gas">ガスを追加する</string>
+    <string name="add_gas">リチャージガス</string>
     <string name="invoice">請求書</string>
     <string name="properties">プロパティ</string>
     <string name="history">歴史</string>
@@ -105,7 +105,7 @@
     <string name="label_percentage">パーセンテージ</string>
     <string name="label_description">説明</string>
     <string name="label_payment_date">支払期日</string>
-    <string name="label_account_no">アカウントなし</string>
+    <string name="label_account_no">プリペイドコード</string>
     <string name="label_house">家</string>
     <string name="label_road">道路</string>
     <string name="label_block">ブロック</string>
@@ -129,7 +129,7 @@
     <string name="lablel_status">状態</string>
     <string name="label_customer_code">顧客コード</string>
     <string name="label_inspect_card">カードを検査する</string>
-    <string name="label_card_refund">カード払い戻し</string>
+    <string name="label_card_refund">払い戻しガス</string>
     <string name="label_sales_history">カード払い戻し</string>
     <string name="label_please_tag_the">あなたにタグを付けてください</string>
     <string name="label_user">ユーザー</string>
@@ -151,7 +151,7 @@
     <string name="label_metro">地下鉄</string>
     <string name="label_search">サーチ</string>
     <string name="label_add_gas">ガス再チャージ</string>
-    <string name="label_account_search">アカウント検索</string>
+    <string name="label_account_search">顧客を検索</string>
     <string name="label_meter_serial_no">メーターシリアル番号</string>
     <string name="title_settings">設定</string>
     <string name="title_sales_history">販売履歴</string>
@@ -182,10 +182,10 @@
     <string name="confirm_refund_gas">ガスを払い戻してもよろしいですか？</string>
     <string name="version_No">バージョンNO</string>
     <string name="card_status">カードステータス</string>
-    <string name="card_Id">カードID</string>
-    <string name="customer_Id">顧客ID</string>
+    <string name="card_Id">カート番号。</string>
+    <string name="customer_Id">プリペイドコード</string>
     <string name="card_Group">カードグループ</string>
-    <string name="credit">クレジット</string>
+    <string name="credit">ガス量（m3）</string>
     <string name="unit">関税額</string>
     <string name="basic_fee">基本料金</string>
     <string name="refund1">払い戻し1</string>
@@ -204,5 +204,8 @@
     <string name="bluetooth_enable">Bluetooth対応</string>
     <string name="enable">有効にする</string>
     <string name="bluetooth_enabling">Bluetoothを有効にする...</string>
+    <string name="creditRefund">クレジット (m3 )</string>
+    <string name="refund1R">払い戻し1(m3)</string>
+    <string name="refund2R">払い戻し2(m3)</string>
 
 </resources>

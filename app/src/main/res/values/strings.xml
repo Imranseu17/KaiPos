@@ -127,7 +127,7 @@
     <string name="label_percentage">Percentage</string>
     <string name="label_description">Description</string>
     <string name="label_payment_date">Payment date</string>
-    <string name="label_account_no">Account no</string>
+    <string name="label_account_no">Prepaid Code</string>
     <string name="label_house">House</string>
     <string name="label_road">Rood</string>
     <string name="label_block">Block</string>
@@ -151,7 +151,7 @@
     <string name="lablel_status">Status</string>
 
     <string name="label_inspect_card">Inspect Card</string>
-    <string name="label_card_refund">Card Refund</string>
+    <string name="label_card_refund">Refund Gas</string>
     <string name="label_sales_history">Sales History</string>
     <string name="label_please_tag_the">Please tag the</string>
     <string name="label_user">User</string>
@@ -183,8 +183,8 @@
     <string name="label_apartment">Apartment</string>
     <string name="label_metro">Metro</string>
     <string name="label_search">Search</string>
-    <string name="label_add_gas">Gas Recharge</string>
-    <string name="label_account_search">Account Search</string>
+    <string name="label_add_gas">Recharge Gas</string>
+    <string name="label_account_search">Search Customer</string>
     <string name="label_meter_serial_no">Meter Serial No</string>
     <string name="title_settings">Settings</string>
     <string name="title_sales_history">Sales History</string>
@@ -210,17 +210,17 @@
     <string name="delete">Delete</string>
     <string name="no">No</string>
     <string name="warning_exit_app">Are you sure you want to exit the app</string>
-    <string name="account_no">Account no</string>
+    <string name="account_no">Prepaid Code</string>
     <string name="confirmation">Confirmation</string>
     <string name="confirm_recharge_gas">Are you sure you want to recharge gas?</string>
     <string name="confirm_refund_gas">Are you sure you want to refund gas?</string>
 
     <string name="version_No">Version NO</string>
     <string name="card_status">Card Status</string>
-    <string name="card_Id">Card ID</string>
-    <string name="customer_Id">Customer ID</string>
+    <string name="card_Id">Card No.</string>
+    <string name="customer_Id">Prepaid Code</string>
     <string name="card_Group">Card Group</string>
-    <string name="credit">Credit</string>
+    <string name="credit">Gas Volume(m3)</string>
     <string name="unit">Tariff Amount</string>
     <string name="basic_fee">Basic Fee</string>
     <string name="refund1">Refund 1</string>
@@ -239,6 +239,9 @@
     <string name="bluetooth_enable">Bluetooth enable</string>
     <string name="enable">Enable</string>
     <string name="bluetooth_enabling">Bluetooth enabling...</string>
+    <string name="creditRefund">Credit (m3 )</string>
+    <string name="refund1R">Refund1(m3)</string>
+    <string name="refund2R">Refund2(m3)</string>
 
 
 </resources>

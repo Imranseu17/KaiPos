@@ -75,7 +75,7 @@
     <!--error massage -->
     <string name="pos_key_invalid">POSKEY অবৈধ</string>
     <string name="titlle_dashboard">ড্যাশবোর্ড</string>
-    <string name="add_gas">গ্যাস যোগ করুন</string>
+    <string name="add_gas">রিচার্জ গ্যাস</string>
     <string name="invoice">চালান</string>
     <string name="properties">বৈশিষ্ট্য</string>
     <string name="history">ইতিহাস</string>
@@ -105,7 +105,7 @@
     <string name="label_percentage">শতকরা হার</string>
     <string name="label_description">বিবরণ</string>
     <string name="label_payment_date">টাকা প্রদানের তারিখ</string>
-    <string name="label_account_no">হিসাব নাম্বার</string>
+    <string name="label_account_no">হিপ্রিপেইড কোড</string>
     <string name="label_house">গৃহ</string>
     <string name="label_road">রাস্তা</string>
     <string name="label_block">বাধা</string>
@@ -129,7 +129,7 @@
     <string name="lablel_status">অবস্থা</string>
     <string name="label_customer_code">গ্রাহক কোড</string>
     <string name="label_inspect_card">কার্ড পরিদর্শন</string>
-    <string name="label_card_refund">কার্ড ফেরত</string>
+    <string name="label_card_refund">রিফান্ড গ্যাস</string>
     <string name="label_sales_history">বিক্রয় ইতিহাস</string>
     <string name="label_please_tag_the">দয়া করে ট্যাগ করুন</string>
     <string name="label_user">ব্যবহারকারী</string>
@@ -150,7 +150,7 @@
     <string name="label_metro">মেট্রো</string>
     <string name="label_search">অনুসন্ধান</string>
     <string name="label_add_gas">গ্যাস রিচার্জ</string>
-    <string name="label_account_search">অ্যাকাউন্ট অনুসন্ধান</string>
+    <string name="label_account_search">গ্রাহক অনুসন্ধান করুন</string>
     <string name="label_meter_serial_no">মিটার সিরিয়াল নং</string>
     <string name="title_settings">সেটিংস</string>
     <string name="title_sales_history">বিক্রয় ইতিহাস</string>
@@ -182,10 +182,10 @@
 
     <string name="version_No">সংস্করণ নং</string>
     <string name="card_status">কার্ড স্থিতি</string>
-    <string name="card_Id">কার্ড আইডি</string>
-    <string name="customer_Id">গ্রাহক আইডি</string>
+    <string name="card_Id">কার্ড নাম্বার.</string>
+    <string name="customer_Id">Prepaid Code</string>
     <string name="card_Group">কার্ড গ্রুপ</string>
-    <string name="credit">ধার</string>
+    <string name="credit">গ্যাস ভলিউম(এম3)</string>
     <string name="unit">ট্যারিফ পরিমাণ</string>
     <string name="basic_fee">বেসিক ফি</string>
     <string name="refund1">ফেরত 1</string>
@@ -204,5 +204,8 @@
     <string name="bluetooth_enable">ব্লুটুথ সক্রিয়</string>
     <string name="enable">চালু করুন</string>
     <string name="bluetooth_enabling">ব্লুটুথ সক্রিয় করা হচ্ছে ...</string>
+    <string name="creditRefund">ধার (m3 )</string>
+    <string name="refund1R">েরত 1(m3)</string>
+    <string name="refund2R">ফেরত 2(m3)</string>
 
 </resources>
