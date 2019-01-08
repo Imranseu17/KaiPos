@@ -245,6 +245,12 @@
     <string name="creditRefund">Credit (m3 )</string>
     <string name="refund1R">Refund1(m3)</string>
     <string name="refund2R">Refund2(m3)</string>
+    <string name="card_recharged">15 (Card is Recharged)</string>
+    <string name="card_initialized">30 (Card is Initialized)</string>
+    <string name="meter_initialized">06 (Card is Meter Initialized)</string>
+    <string name="card_refund">05 (Card is Refund)</string>
+    <string name="customer_Card">77 (Customer Card)</string>
+    <string name="service_Card">88 (Service Card)</string>
 
 
 </resources>

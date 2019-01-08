@@ -145,8 +145,8 @@
     <string name="label_tk">TK</string>
     <string name="label_card_no">カート番号</string>
     <string name="label_zone">ゾーン</string>
-    <string name="label_cardno">Card No</string>
-    <string name="label_phone">Phone</string>
+    <string name="label_cardno">カート番号</string>
+    <string name="label_phone">電話</string>
     <string name="label_address">住所</string>
     <string name="label_area">エリア</string>
     <string name="label_apartment">アパート</string>
@@ -209,5 +209,11 @@
     <string name="creditRefund">クレジット (m3 )</string>
     <string name="refund1R">払い戻し1(m3)</string>
     <string name="refund2R">払い戻し2(m3)</string>
+    <string name="card_recharged">15（カードは再充電されます）</string>
+    <string name="card_initialized">30（カード初期化中）</string>
+    <string name="meter_initialized">06（カードはメーター初期化済み）</string>
+    <string name="card_refund">05（カード払い戻し）</string>
+    <string name="customer_Card">77（カスタマーカード）</string>
+    <string name="service_Card">88（サービ​​スカード）</string>
 
 </resources>

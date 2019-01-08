@@ -149,13 +149,13 @@ public class PropertiesFragment extends Fragment {
 
         switch (status){
             case "15":
-                return "15 (Card is Recharged)";
+                return getString(R.string.card_recharged);
             case "30":
-                return "30 (Card is Initialized)";
+                return getString(R.string.card_initialized);
             case "06":
-                return "06 (Card is Meter Initialized)";
+                return getString(R.string.meter_initialized);
             case "05":
-                return "05 (Card is Refund)";
+                return getString(R.string.card_refund);
             default:
                 return  "N/A";
         }
@@ -169,9 +169,9 @@ public class PropertiesFragment extends Fragment {
         switch (group){
 
             case "77":
-                return "77 (Customer Card)";
+                return getString(R.string.customer_Card);
             case "88":
-                return "88 (Service Card)";
+                return getString(R.string.service_Card);
             default:
                 return  "N/A";
         }
