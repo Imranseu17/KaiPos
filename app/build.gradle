@@ -9,7 +9,7 @@ android {
         config {
             keyAlias 'kcsl'
             keyPassword '%?kcsl!%'
-            storeFile file('/home/rasel/Documents/kcsl_android.jks')
+            storeFile file('/home/imran/snap/skype/common')
             storePassword '%?kcsl!%'
         }
     }
