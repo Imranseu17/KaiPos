@@ -9,11 +9,18 @@ import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
+import com.kaicomsol.kpos.utils.WaterMarkBg;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,6 +30,8 @@ public class HomeActivity extends AppCompatActivity{
 
     public static HomeActivity home;
 
+    @BindView(R.id.layout_main)
+    LinearLayout layout_main;
     @BindView(R.id.card_gas)
     CardView cardGas;
     @BindView(R.id.line_gas)
@@ -56,6 +65,7 @@ public class HomeActivity extends AppCompatActivity{
 
         ButterKnife.bind(this);
         home = this;
+        //configView();
 
 
         cardGas.setOnClickListener(new View.OnClickListener() {
@@ -136,6 +146,16 @@ public class HomeActivity extends AppCompatActivity{
             }
         });
 
+    }
+
+    private void configView(){
+        SimpleDateFormat createTimeSdf1 = new SimpleDateFormat("yyyy-MM-dd");
+
+        List<String> labels = new ArrayList<>();
+        labels.add("KGDCL");
+        labels.add("Date："+ createTimeSdf1.format(new Date()));
+        labels.add("Copyright by KGDCL");
+        layout_main.setBackground(new WaterMarkBg(HomeActivity.this,labels,-15,13));
     }
 
 

@@ -8,6 +8,8 @@ public class Like implements Parcelable {
     public String account;
     public String customerCode;
     public String metro;
+    public String cardNo;
+    public String phone;
     public String zone;
     public String address;
     public String apartment;
@@ -16,10 +18,13 @@ public class Like implements Parcelable {
     public Like() {
     }
 
+
     protected Like(Parcel in) {
         account = in.readString();
         customerCode = in.readString();
         metro = in.readString();
+        cardNo = in.readString();
+        phone = in.readString();
         zone = in.readString();
         address = in.readString();
         apartment = in.readString();
@@ -31,6 +36,8 @@ public class Like implements Parcelable {
         dest.writeString(account);
         dest.writeString(customerCode);
         dest.writeString(metro);
+        dest.writeString(cardNo);
+        dest.writeString(phone);
         dest.writeString(zone);
         dest.writeString(address);
         dest.writeString(apartment);

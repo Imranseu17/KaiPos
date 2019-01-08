@@ -178,6 +178,8 @@
 
     <string name="label_customer_code">Customer code</string>
     <string name="label_zone">Zone</string>
+    <string name="label_cardno">Card No</string>
+    <string name="label_phone">Phone</string>
     <string name="label_address">Address</string>
     <string name="label_area">Area</string>
     <string name="label_apartment">Apartment</string>

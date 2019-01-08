@@ -145,6 +145,8 @@
     <string name="label_print">রি-প্রিন্ট</string>
     <string name="label_zone">মণ্ডল</string>
     <string name="label_address">ঠিকানা</string>
+    <string name="label_cardno">Card No</string>
+    <string name="label_phone">Phone</string>
     <string name="label_area">ফোন</string>
     <string name="label_apartment">কামরা</string>
     <string name="label_metro">মেট্রো</string>

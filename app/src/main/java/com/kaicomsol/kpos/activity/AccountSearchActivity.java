@@ -40,6 +40,10 @@ public class AccountSearchActivity extends AppCompatActivity {
     TextInputLayout input_layout_zone;
     @BindView(R.id.input_layout_address)
     TextInputLayout input_layout_address;
+    @BindView(R.id.input_layout_cardno)
+    TextInputLayout input_layout_cardno;
+    @BindView(R.id.input_layout_phone)
+    TextInputLayout input_layout_phone;
     @BindView(R.id.input_layout_apartment)
     TextInputLayout input_layout_apartment;
     @BindView(R.id.input_layout_area)
@@ -62,6 +66,11 @@ public class AccountSearchActivity extends AppCompatActivity {
     TextInputEditText edt_area;
     @BindView(R.id.edt_metro)
     TextInputEditText edt_metro;
+
+    @BindView(R.id.edt_cardno)
+    TextInputEditText edt_cardno;
+    @BindView(R.id.edt_phone)
+    TextInputEditText edt_phone;
 
     //button component bind
     @BindView(R.id.btn_search)
@@ -86,6 +95,8 @@ public class AccountSearchActivity extends AppCompatActivity {
                 String account = edt_account.getText().toString().trim();
                 String customerCode = edt_code.getText().toString().trim();
                 String metro = edt_metro.getText().toString().trim();
+                String cardNo = edt_cardno.getText().toString().trim();
+                String phone = edt_phone.getText().toString().trim();
                 String zone = edt_zone.getText().toString().trim();
                 String address = edt_address.getText().toString().trim();
                 String apartment = edt_apartment.getText().toString().trim();
@@ -95,6 +106,8 @@ public class AccountSearchActivity extends AppCompatActivity {
                 like.account = !TextUtils.isEmpty(account) ? "like:"+account : "";
                 like.customerCode = !TextUtils.isEmpty(customerCode) ? "like:"+customerCode : "";
                 like.metro = !TextUtils.isEmpty(metro) ? "like:"+metro : "";
+                like.cardNo = !TextUtils.isEmpty(cardNo) ? "like:"+cardNo : "";
+                like.phone = !TextUtils.isEmpty(phone) ? "like:"+phone : "";
                 like.zone = !TextUtils.isEmpty(zone) ? "like:"+zone : "";
                 like.address = !TextUtils.isEmpty(address) ? "like:"+address : "";
                 like.apartment = !TextUtils.isEmpty(apartment) ? "like:"+apartment : "";

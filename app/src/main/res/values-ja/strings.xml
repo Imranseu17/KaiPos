@@ -145,6 +145,8 @@
     <string name="label_tk">TK</string>
     <string name="label_card_no">カート番号</string>
     <string name="label_zone">ゾーン</string>
+    <string name="label_cardno">Card No</string>
+    <string name="label_phone">Phone</string>
     <string name="label_address">住所</string>
     <string name="label_area">エリア</string>
     <string name="label_apartment">アパート</string>
