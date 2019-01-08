@@ -145,8 +145,8 @@
     <string name="label_print">রি-প্রিন্ট</string>
     <string name="label_zone">মণ্ডল</string>
     <string name="label_address">ঠিকানা</string>
-    <string name="label_cardno">Card No</string>
-    <string name="label_phone">Phone</string>
+    <string name="label_cardno">কার্ড নাম্বার</string>
+    <string name="label_phone">ফোন</string>
     <string name="label_area">ফোন</string>
     <string name="label_apartment">কামরা</string>
     <string name="label_metro">মেট্রো</string>
@@ -209,5 +209,11 @@
     <string name="creditRefund">ধার (m3 )</string>
     <string name="refund1R">েরত 1(m3)</string>
     <string name="refund2R">ফেরত 2(m3)</string>
+    <string name="card_recharged">15 (কার্ড রিচার্জ করা হয়)</string>
+    <string name="card_initialized">30 (কার্ড শুরু হয়)</string>
+    <string name="meter_initialized">06 (কার্ড মিটার প্রারম্ভিক)</string>
+    <string name="card_refund">05 (কার্ড ফেরত)</string>
+    <string name="customer_Card">77 (গ্রাহক কার্ড)</string>
+    <string name="service_Card">88 (পরিষেবা কার্ড)</string>
 
 </resources>
