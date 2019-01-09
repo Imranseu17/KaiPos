@@ -162,12 +162,9 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                     final boolean response = readCard.GamInitCard(tag, readCard.readCardArgument.CustomerId,
                             (byte) 119, emergencyValue);
                     if (response) {
-                        if (readCard.readCardArgument.CardGroup.equals("77")) {
-                            rechargeCardDismiss();
-                            String cardIdm = readCard.readCardArgument.CardIdm;
-                            addCard(cardIdm);
-
-                        } else CustomAlertDialog.showError(activity, getString(R.string.err_card_not_valid));
+                        rechargeCardDismiss();
+                        String cardIdm = readCard.readCardArgument.CardIdm;
+                        addCard(cardIdm);
                     } else CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
 
 
