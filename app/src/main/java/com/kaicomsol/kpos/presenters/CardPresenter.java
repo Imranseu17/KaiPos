@@ -161,7 +161,15 @@ public class CardPresenter {
 
                         if (response.isSuccessful()) {
                             mViewInterface.onAddCard(true);
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else if(response.code() == 406){
+                            try {
+                                JSONObject jObjError = new JSONObject(response.errorBody().string());
+                                mViewInterface.onError(jObjError.getString("message"));
+                            } catch (Exception e) {
+                                mViewInterface.onError(e.getMessage());
+                            }
+
+                        }else errorHandle(response.code(), response.errorBody());
                     }
 
                     @Override
