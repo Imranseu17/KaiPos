@@ -2,6 +2,7 @@ package com.kaicomsol.kpos.presenters;
 
 
 import com.kaicomsol.kpos.callbacks.MeterView;
+import com.kaicomsol.kpos.model.APIErrors;
 import com.kaicomsol.kpos.model.Meter;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
@@ -102,5 +103,18 @@ public class MeterPresenter {
         } catch (Exception e) {
             return e.getMessage();
         }
+    }
+
+    private void errorHandle(int code, ResponseBody responseBody){
+        if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
+        else if(code == 406){
+            try {
+                JSONObject jObjError = new JSONObject(responseBody.string());
+                mViewInterface.onError(jObjError.getString("message"));
+            } catch (Exception e) {
+                mViewInterface.onError(e.getMessage());
+            }
+        }
+        else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }
 }

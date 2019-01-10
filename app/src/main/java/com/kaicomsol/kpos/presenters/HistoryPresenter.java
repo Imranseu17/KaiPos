@@ -94,6 +94,14 @@ public class HistoryPresenter {
 
     private void errorHandle(int code, ResponseBody responseBody){
         if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
+        else if(code == 406){
+            try {
+                JSONObject jObjError = new JSONObject(responseBody.string());
+                mViewInterface.onError(jObjError.getString("message"));
+            } catch (Exception e) {
+                mViewInterface.onError(e.getMessage());
+            }
+        }
         else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }
 }

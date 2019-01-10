@@ -423,6 +423,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                 break;
             case 300:
                 break;
+            case 406:
+                if (error != null) CustomAlertDialog.showError(this, error);
+                break;
             default:
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;

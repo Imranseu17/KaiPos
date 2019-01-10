@@ -363,10 +363,20 @@ public class PaymentPresenter {
             case 401:
                 mViewInterface.onLogout(code);
                 break;
+            case 406:
+                try {
+                    JSONObject jObjError = new JSONObject(responseBody.string());
+                    mViewInterface.onError(jObjError.getString("message"),406);
+                } catch (Exception e) {
+                    mViewInterface.onError(e.getMessage(),406);
+                }
+                break;
             default:
                 mViewInterface.onError(APIErrors.getErrorMessage(responseBody), 100);
         }
     }
+
+
 
 
 }

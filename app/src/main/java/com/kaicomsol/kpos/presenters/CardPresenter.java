@@ -161,14 +161,6 @@ public class CardPresenter {
 
                         if (response.isSuccessful()) {
                             mViewInterface.onAddCard(true);
-                        } else if(response.code() == 406){
-                            try {
-                                JSONObject jObjError = new JSONObject(response.errorBody().string());
-                                mViewInterface.onError(jObjError.getString("message"));
-                            } catch (Exception e) {
-                                mViewInterface.onError(e.getMessage());
-                            }
-
                         }else errorHandle(response.code(), response.errorBody());
                     }
 
@@ -352,6 +344,14 @@ public class CardPresenter {
 
     private void errorHandle(int code, ResponseBody responseBody){
         if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
+        else if(code == 406){
+                try {
+                    JSONObject jObjError = new JSONObject(responseBody.string());
+                    mViewInterface.onError(jObjError.getString("message"));
+                } catch (Exception e) {
+                    mViewInterface.onError(e.getMessage());
+                }
+        }
         else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }
 }
