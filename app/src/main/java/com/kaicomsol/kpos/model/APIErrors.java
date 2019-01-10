@@ -23,6 +23,7 @@ public class APIErrors {
             JSONObject jsonObject = new JSONObject(response.string());
             return jsonObject.getString("message");
         } catch (Exception e) {
+            e.printStackTrace();
             return "Error occurred Please try again";
         }
     }
