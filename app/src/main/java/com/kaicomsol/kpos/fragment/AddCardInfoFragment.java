@@ -132,8 +132,6 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 
-        enableNFCReaderMode();
-        mAdapter.enableForegroundDispatch(getActivity(), pendingIntent, intentFiltersArray, techListsArray);
     }
 
 
@@ -438,6 +436,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     private void rechargeCardDialog() {
         if (mRechargeCardDialog != null) {
             if (!mRechargeCardDialog.isAdded()) {
+                enableNFCReaderMode();
+                mAdapter.enableForegroundDispatch(getActivity(), pendingIntent, intentFiltersArray, techListsArray);
                 mRechargeCardDialog.show(getFragmentManager(), mRechargeCardDialog.getTag());
             }
         }
@@ -445,6 +445,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
     private void rechargeCardDismiss() {
         if (mRechargeCardDialog != null) {
+            mAdapter.disableForegroundDispatch(activity);
             mRechargeCardDialog.dismiss();
         }
     }

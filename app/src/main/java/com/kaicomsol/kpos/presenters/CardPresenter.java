@@ -300,6 +300,9 @@ public class CardPresenter {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
+                        DebugLog.e(response.message());
+                        DebugLog.e(response.toString());
+
                         if (response.code() == 401){
                             mViewInterface.onLogout(response.code());
                             return;
@@ -308,11 +311,16 @@ public class CardPresenter {
                         if (response.isSuccessful()) {
                             mViewInterface.onLostCard("");
                         } else errorHandle(response.code(), response.errorBody());
+
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable e) {
+
+                        DebugLog.e(e.getStackTrace().toString());
+
                         if (e instanceof HttpException) {
+
 
                             int code = ((HttpException) e).response().code();
                             if (code == 401){
