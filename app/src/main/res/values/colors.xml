@@ -42,5 +42,7 @@
     <color name="color_type_wrong">#FFE70E45</color>
     <color name="color_type_warning">#FFB300</color>
     <color name="color_type_success">#00bfa5</color>
+    <color name="placeholder_grey">#AAADC4</color>
+    <color name="placeholder_grey_20">#33AAADC4</color>
 
 </resources>

@@ -34,6 +34,10 @@ android {
 }
 
 dependencies {
+
+    def lifecycle_version = "1.1.1"
+    def paging_version = "1.0.0"
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/ePOS2.jar')
     implementation files('libs/ePOSEasySelect.jar')
@@ -56,6 +60,16 @@ dependencies {
     implementation 'com.google.guava:guava:16.0.1'
     implementation 'joda-time:joda-time:2.10.1'
     implementation 'javax.mail:mail:1.4.7'
+
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+    annotationProcessor "android.arch.lifecycle:compiler:$lifecycle_version"
+    // Room
+    implementation "android.arch.persistence.room:runtime:$lifecycle_version"
+    annotationProcessor "android.arch.persistence.room:compiler:$lifecycle_version"
+    // Paging
+    implementation "android.arch.paging:runtime:$paging_version"
+
     testImplementation 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

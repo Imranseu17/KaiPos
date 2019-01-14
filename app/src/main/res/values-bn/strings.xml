@@ -216,4 +216,11 @@
     <string name="customer_Card">77 (গ্রাহক কার্ড)</string>
     <string name="service_Card">88 (পরিষেবা কার্ড)</string>
 
+    <string name="error_msg">Sorry! Couldn\'t fetch movies.</string>
+    <string name="btn_retry">Retry</string>
+    <string name="error_msg_no_internet">Not connected to internet</string>
+    <string name="error_msg_timeout">The server took too long to respond</string>
+    <string name="error_msg_unknown">An unexpected error occurred</string>
+    <string name="tap_to_reload">Tap to reload</string>
+
 </resources>

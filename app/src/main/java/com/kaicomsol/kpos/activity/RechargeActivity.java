@@ -355,8 +355,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
 
         mPresenter.addPayment(token,amount,cardIdm,cardHistoryNo,"1");
-        readCard.GasChargeCard(tag, Double.parseDouble(decimalFormat.format(value)),
-                0, 0, 9, "10003419");
 
     }
 
@@ -374,6 +372,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
             rechargeCardDismiss();
             String amount = txt_total_amount.getText().toString().trim();
             double value = Double.parseDouble(amount) / 9.1;
+            readCard.GasChargeCard(tag, value,
+                0, 0, 9, "10003419");
             print(payment.getNewHistoryNo(), amount, value);
 
     }

@@ -26,6 +26,7 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.model.Content;
 import com.kaicomsol.kpos.model.SalesHistory;
 import com.kaicomsol.kpos.presenters.HistoryPresenter;
+import com.kaicomsol.kpos.utils.PaginationScrollListener;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import java.text.SimpleDateFormat;
@@ -51,6 +52,13 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     private HistoryPresenter mPresenter;
     private SalesHistoryAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
+
+    private static final int PAGE_START = 1;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    // limiting to 5 for this tutorial, since total pages in actual API is very large. Feel free to modify.
+    private int TOTAL_PAGES = 5;
+    private int currentPage = PAGE_START;
 
     //component bind
     @BindView(R.id.main_view)
@@ -142,6 +150,31 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
                 toDatePickerDialog.show();
             }
         });
+
+        mRecyclerView.addOnScrollListener(new PaginationScrollListener(mLayoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage += 1;
+
+                getSalesHistory();
+            }
+
+            @Override
+            public int getTotalPageCount() {
+                return TOTAL_PAGES;
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
     }
 
     private void getSalesHistory(){
@@ -215,6 +248,11 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     @Override
     public void onHistoryClick(Content content) {
+
+    }
+
+    @Override
+    public void retryPageLoad() {
 
     }
 
