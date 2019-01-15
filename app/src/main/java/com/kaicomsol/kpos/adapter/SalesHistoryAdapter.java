@@ -16,8 +16,10 @@ import android.widget.TextView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.HistoryClickListener;
 import com.kaicomsol.kpos.model.Content;
+import com.kaicomsol.kpos.utils.DebugLog;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,24 +33,27 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final int ITEM = 0;
     private static final int LOADING = 1;
 
-
     private boolean isLoadingAdded = false;
     private boolean retryPageLoad = false;
     
     private String errorMsg;
 
     private Context context;
-    private List<Content> contentList;
+    private List<Content> contentList = new ArrayList<>();
     private HistoryClickListener mCallback;
 
-    public SalesHistoryAdapter(Context context, List<Content> contentList, HistoryClickListener listener) {
+    public SalesHistoryAdapter(Context context, HistoryClickListener listener) {
         this.context = context;
-        this.contentList = contentList;
         this.mCallback = listener;
     }
 
-    public void setCallback(HistoryClickListener mCallback){
-        this.mCallback = mCallback;
+    public void setHistory(List<Content> contentList, int currentPage){
+        if (currentPage == 1){
+            if(this.contentList != null) this.contentList.clear();
+            this.contentList.addAll(contentList);
+        }else  this.contentList.addAll(contentList);
+
+        notifyDataSetChanged();
     }
 
     @Override
@@ -160,19 +165,18 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
 
     protected class LoadingVH extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private ProgressBar mProgressBar;
-        private ImageButton mRetryBtn;
-        private TextView mErrorTxt;
-        private LinearLayout mErrorLayout;
+
+        //UI View Bind
+        @BindView(R.id.loadmore_progress) ProgressBar mProgressBar;
+        @BindView(R.id.loadmore_retry) ImageButton mRetryBtn;
+        @BindView(R.id.loadmore_errortxt) TextView mErrorTxt;
+        @BindView(R.id.loadmore_errorlayout) LinearLayout mErrorLayout;
+
 
         public LoadingVH(View itemView) {
             super(itemView);
 
-            mProgressBar = (ProgressBar) itemView.findViewById(R.id.loadmore_progress);
-            mRetryBtn = (ImageButton) itemView.findViewById(R.id.loadmore_retry);
-            mErrorTxt = (TextView) itemView.findViewById(R.id.loadmore_errortxt);
-            mErrorLayout = (LinearLayout) itemView.findViewById(R.id.loadmore_errorlayout);
-
+            ButterKnife.bind(this,itemView);
             mRetryBtn.setOnClickListener(this);
             mErrorLayout.setOnClickListener(this);
         }
@@ -182,10 +186,8 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             switch (view.getId()) {
                 case R.id.loadmore_retry:
                 case R.id.loadmore_errorlayout:
-
                     showRetry(false, null);
                     mCallback.retryPageLoad();
-
                     break;
             }
         }

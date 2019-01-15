@@ -26,6 +26,7 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.model.Content;
 import com.kaicomsol.kpos.model.SalesHistory;
 import com.kaicomsol.kpos.presenters.HistoryPresenter;
+import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.PaginationScrollListener;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
@@ -93,12 +94,12 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         viewConfig();
         mPresenter = new HistoryPresenter(this);
 
-        getSalesHistory();
+        getSalesHistory(currentPage);
 
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSalesHistory();
+                getSalesHistory(currentPage);
             }
         });
 
@@ -123,7 +124,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     private void viewConfig(){
 
-        String currentDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
+        final String currentDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
         String currentDateFormatted = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(new Date());
 
         startDate = currentDate;
@@ -133,9 +134,12 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         edt_end_date.setText(currentDateFormatted);
 
         dateFormatter = new SimpleDateFormat("MM-dd-yyyy");
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mAdapter =  new SalesHistoryAdapter(this, this);
+        mRecyclerView.setAdapter(mAdapter);
         setDatePickerField();
 
         edt_start_date.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +161,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
                 isLoading = true;
                 currentPage += 1;
 
-                getSalesHistory();
+                getSalesHistoryNext(currentPage);
             }
 
             @Override
@@ -177,24 +181,37 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         });
     }
 
-    private void getSalesHistory(){
+    private void getSalesHistory(int currentPage){
         if (checkConnection()){
             showAnimation();
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
+            mPresenter.getSalesHistory(token, currentPage, startDate, endDate);
+        }else  CustomAlertDialog.showError(this,getString(R.string.no_internet_connection));
+    }
 
-            mPresenter.getSalesHistory(token,startDate,endDate);
-        }else  CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
+    private void getSalesHistoryNext(int currentPage){
+        if (checkConnection()){
+            mAdapter.addLoadingFooter();
+            String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
+            mPresenter.getSalesHistory(token, currentPage, startDate, endDate);
+        }else  CustomAlertDialog.showError(this,getString(R.string.no_internet_connection));
     }
 
 
+
+
     @Override
-    public void onSuccess(SalesHistory salesHistory) {
+    public void onSuccess(SalesHistory salesHistory, int currentPage) {
 
         hideAnimation();
+        if (currentPage > 1){
+            isLoading = false;
+            mAdapter.removeLoadingFooter();
+        }
         if (salesHistory.getContentList() != null) {
+            //TOTAL_PAGES = salesHistory.getTotalPages();
             if (salesHistory.getContentList().size() > 0) {
-                mAdapter =  new SalesHistoryAdapter(this,salesHistory.getContentList(), this);
-                mRecyclerView.setAdapter(mAdapter);
+                mAdapter.setHistory(salesHistory.getContentList(), currentPage);
             }else showEmptyAnimation();
         }
 

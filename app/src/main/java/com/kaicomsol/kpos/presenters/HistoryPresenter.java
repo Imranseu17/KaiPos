@@ -34,7 +34,7 @@ public class HistoryPresenter {
         }
     }
 
-    public void getSalesHistory(String token, String start, String end) {
+    public void getSalesHistory(String token, final int currentPage, String start, String end) {
         Map<String, String> map = new HashMap<>();
         DebugLog.e(token);
         map.put("Authorization", token);
@@ -44,7 +44,7 @@ public class HistoryPresenter {
         jsonObject.addProperty("start", start);
         jsonObject.addProperty("end", end);
         jsonObject.addProperty("pageSize", "5");
-        jsonObject.addProperty("pageNumber", "1");
+        jsonObject.addProperty("pageNumber", currentPage);
 
         mApiClient.getAPI()
                 .getSalesHistory(map, jsonObject)
@@ -59,7 +59,7 @@ public class HistoryPresenter {
                         if (response.isSuccessful()) {
                             SalesHistory salesHistory = response.body();
                             if (salesHistory != null) {
-                                mViewInterface.onSuccess(salesHistory);
+                                mViewInterface.onSuccess(salesHistory, currentPage);
                             } else {
                                 mViewInterface.onError("Error fetching data");
                             }
