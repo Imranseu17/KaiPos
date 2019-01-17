@@ -24,8 +24,8 @@ import com.kaicomsol.kpos.dialogs.CardCheckDialog;
 import com.kaicomsol.kpos.fragment.ErrorFragment;
 import com.kaicomsol.kpos.fragment.HistoryFragment;
 import com.kaicomsol.kpos.fragment.PropertiesFragment;
-import com.kaicomsol.kpos.model.NFCData;
-import com.kaicomsol.kpos.model.ReadCard;
+import com.kaicomsol.kpos.models.NFCData;
+import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 
 import butterknife.BindView;

@@ -5,12 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.model.Transaction;
+import com.kaicomsol.kpos.models.Transaction;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

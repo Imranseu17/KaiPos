@@ -1,7 +1,7 @@
 package com.kaicomsol.kpos.callbacks;
 
 
-import com.kaicomsol.kpos.model.CardData;
+import com.kaicomsol.kpos.models.CardData;
 
 public interface CardInfoView {
 

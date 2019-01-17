@@ -1,7 +1,7 @@
 package com.kaicomsol.kpos.callbacks;
 
 
-import com.kaicomsol.kpos.model.CustomerInfo;
+import com.kaicomsol.kpos.models.CustomerInfo;
 
 public interface CustomerInfoView {
 

@@ -1,21 +1,18 @@
 package com.kaicomsol.kpos.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.CustomerClickListener;
-import com.kaicomsol.kpos.model.Customer;
+import com.kaicomsol.kpos.models.Customer;
 
-import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;

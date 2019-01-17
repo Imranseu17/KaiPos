@@ -1,7 +1,7 @@
 package com.kaicomsol.kpos.callbacks;
 
-import com.kaicomsol.kpos.model.Refund;
-import com.kaicomsol.kpos.model.Success;
+import com.kaicomsol.kpos.models.Refund;
+import com.kaicomsol.kpos.models.Success;
 
 public interface RefundView {
 

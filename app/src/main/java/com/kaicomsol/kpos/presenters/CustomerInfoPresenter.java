@@ -2,8 +2,8 @@ package com.kaicomsol.kpos.presenters;
 
 
 import com.kaicomsol.kpos.callbacks.CustomerInfoView;
-import com.kaicomsol.kpos.model.APIErrors;
-import com.kaicomsol.kpos.model.CustomerInfo;
+import com.kaicomsol.kpos.models.APIErrors;
+import com.kaicomsol.kpos.models.CustomerInfo;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 

@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.model.Card;
+import com.kaicomsol.kpos.models.Card;
 
 import java.util.List;
 

@@ -17,9 +17,9 @@ import com.kaicomsol.kpos.adapter.CustomerAdapter;
 import com.kaicomsol.kpos.callbacks.CustomerClickListener;
 import com.kaicomsol.kpos.callbacks.CustomerView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.model.Customer;
-import com.kaicomsol.kpos.model.CustomerData;
-import com.kaicomsol.kpos.model.Like;
+import com.kaicomsol.kpos.models.Customer;
+import com.kaicomsol.kpos.models.CustomerData;
+import com.kaicomsol.kpos.models.Like;
 import com.kaicomsol.kpos.presenters.CustomerPresenter;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 

@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="@dimen/_5sdp"
+            android:text="Money Receipt"
+            android:textColor="@color/black"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingLeft="@dimen/_10sdp"
+            android:paddingRight="@dimen/_10sdp"
+            android:lines="1"
+            android:text="------------------------------------------------------------------------------------------" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/_10sdp"
+            android:paddingRight="@dimen/_10sdp"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text="Date and Time"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_date_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="15/01/2019 11:19"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="Transaction No."
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_transaction_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:gravity="right"
+                    android:text="1808166"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="Customer Code"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_customer_code"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="2001NM-103624"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="Prepaid No."
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_prepaid_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="117050531020"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="Meter No."
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_meter_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="56899"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="Card No."
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_card_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="012E3D121D982E5F"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="POS ID"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_pos_id"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="KGDCL"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="Operator Name"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_operator_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:text="Kafi"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lines="1"
+                android:text="------------------------------------------------------------------------------------------"
+                android:textAppearance="@style/TextAppearance.FontPath" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="left"
+                    android:text="Deposit Amount (TK)"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txt_deposit_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="1,000.00"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lines="1"
+                android:text="------------------------------------------------------------------------------------------"
+                android:textAppearance="@style/TextAppearance.FontPath" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text="Item"
+                    android:textColor="@color/black"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="Price"
+                    android:textColor="@color/black"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="Qty"
+                    android:textColor="@color/black"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="Amount"
+                    android:textColor="@color/black"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lines="1"
+                android:text="------------------------------------------------------------------------------------------"
+                android:textAppearance="@style/TextAppearance.FontPath" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lines="1"
+                android:text="------------------------------------------------------------------------------------------"
+                android:textAppearance="@style/TextAppearance.FontPath" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="Total"
+                    android:textColor="@color/black"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="70.1"
+                    android:textColor="@color/black"
+                    android:textAppearance="@style/TextAppearance.FontPath"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lines="1"
+                android:text="------------------------------------------------------------------------------------------"
+                android:textAppearance="@style/TextAppearance.FontPath" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Customer Support"
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Karnaphuli Gas Distribution Company Ltd."
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textSize="17sp" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</ScrollView>

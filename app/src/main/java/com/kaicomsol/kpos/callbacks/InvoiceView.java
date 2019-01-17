@@ -1,7 +1,6 @@
 package com.kaicomsol.kpos.callbacks;
 
-import com.kaicomsol.kpos.model.Invoices;
-import com.kaicomsol.kpos.model.Meter;
+import com.kaicomsol.kpos.models.Invoices;
 
 public interface InvoiceView {
 

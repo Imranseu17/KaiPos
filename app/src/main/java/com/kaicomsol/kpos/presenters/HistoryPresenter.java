@@ -2,12 +2,11 @@ package com.kaicomsol.kpos.presenters;
 
 import com.google.gson.JsonObject;
 import com.kaicomsol.kpos.callbacks.HistoryView;
-import com.kaicomsol.kpos.model.APIErrors;
-import com.kaicomsol.kpos.model.SalesHistory;
+import com.kaicomsol.kpos.models.APIErrors;
+import com.kaicomsol.kpos.models.SalesHistory;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;

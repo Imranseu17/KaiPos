@@ -2,8 +2,8 @@ package com.kaicomsol.kpos.presenters;
 
 
 import com.kaicomsol.kpos.callbacks.SubscriptionView;
-import com.kaicomsol.kpos.model.APIErrors;
-import com.kaicomsol.kpos.model.SubData;
+import com.kaicomsol.kpos.models.APIErrors;
+import com.kaicomsol.kpos.models.SubData;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 
@@ -12,7 +12,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;

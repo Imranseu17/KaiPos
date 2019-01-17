@@ -24,7 +24,7 @@ import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.activity.LoginActivity;
 import com.kaicomsol.kpos.adapter.TransactionAdapter;
 import com.kaicomsol.kpos.callbacks.TransactionView;
-import com.kaicomsol.kpos.model.Transaction;
+import com.kaicomsol.kpos.models.Transaction;
 import com.kaicomsol.kpos.presenters.TransactionPresenter;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;

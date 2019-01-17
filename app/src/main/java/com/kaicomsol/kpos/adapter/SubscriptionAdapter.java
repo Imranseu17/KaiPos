@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.model.Subscription;
+import com.kaicomsol.kpos.models.Subscription;
 
 import java.util.List;
 

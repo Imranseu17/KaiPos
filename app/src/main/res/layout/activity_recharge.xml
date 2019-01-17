@@ -418,16 +418,10 @@
             android:layout_margin="@dimen/_10sdp"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/txt_print"
+            <include android:id="@+id/invoice_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:gravity="center_horizontal"
-                android:text="@string/label_print_script"
-                android:textAppearance="@style/TextAppearance.FontPath"
-                android:textSize="16sp" />
+                android:layout_height="match_parent"
+                layout="@layout/invoice_layout"/>
 
             <Button
                 android:id="@+id/btn_print"

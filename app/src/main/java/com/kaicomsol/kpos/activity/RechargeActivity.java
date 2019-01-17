@@ -3,10 +3,13 @@ package com.kaicomsol.kpos.activity;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -18,7 +21,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -37,6 +43,7 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.gson.Gson;
 import com.kaicomsol.kpos.R;
+import com.kaicomsol.kpos.adapter.PrintAdapter;
 import com.kaicomsol.kpos.callbacks.CloseClickListener;
 import com.kaicomsol.kpos.callbacks.PaymentView;
 import com.kaicomsol.kpos.dialogs.CardCheckDialog;
@@ -45,15 +52,22 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.fragment.InvoiceFragment;
-import com.kaicomsol.kpos.model.Invoices;
-import com.kaicomsol.kpos.model.Payment;
-import com.kaicomsol.kpos.model.ReadCard;
+import com.kaicomsol.kpos.models.Invoices;
+import com.kaicomsol.kpos.models.Item;
+import com.kaicomsol.kpos.models.Items;
+import com.kaicomsol.kpos.models.Payment;
+import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.presenters.PaymentPresenter;
 import com.kaicomsol.kpos.printer.BluetoothPrinter;
 import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.PrinterCommands;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
+import com.kaicomsol.kpos.utils.Utils;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -77,7 +91,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     private Tag tag;
     private PaymentPresenter mPresenter;
     private double totalAmount = 0.0;
-
+    private static OutputStream outputStream;
 
     //Bind component
     @BindView(R.id.layout_main) LinearLayout layout_main;
@@ -94,9 +108,19 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     @BindView(R.id.txt_total_amount) TextView txt_total_amount;
     @BindView(R.id.btn_submit) Button btn_submit;
 
+
     //print component bind
     @BindView(R.id.layout_print) RelativeLayout layout_print;
-    @BindView(R.id.txt_print) TextView txt_print;
+    @BindView(R.id.recycler_list) RecyclerView mRecyclerView;
+    @BindView(R.id.txt_date_time) TextView txt_date_time;
+    @BindView(R.id.txt_transaction_no) TextView txt_transaction_no;
+    @BindView(R.id.txt_customer_code) TextView txt_customer_code;
+    @BindView(R.id.txt_prepaid_no) TextView txt_prepaid_no;
+    @BindView(R.id.txt_meter_no) TextView txt_meter_no;
+    @BindView(R.id.txt_card_no) TextView txt_card_no;
+    @BindView(R.id.txt_pos_id) TextView txt_pos_id;
+    @BindView(R.id.txt_operator_name) TextView txt_operator_name;
+    @BindView(R.id.txt_deposit_amount) TextView txt_deposit_amount;
     @BindView(R.id.btn_print) Button btn_print;
 
 
@@ -368,13 +392,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     public void onSuccess(Payment payment) {
 
             capturePayment(String.valueOf(payment.getPaymentId()));
-            DebugLog.e(String.valueOf(payment.getPaymentId())+" Payment ID ");
             rechargeCardDismiss();
             String amount = txt_total_amount.getText().toString().trim();
-            double value = Double.parseDouble(amount) / 9.1;
+            double value = payment.getReceipt().getGasUnit();
             readCard.GasChargeCard(tag, value,
-                0, 0, 9, "10003419");
-            print(payment.getNewHistoryNo(), amount, value);
+                0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
+            //print(payment.getNewHistoryNo(), amount, value);
+            print(payment);
 
     }
 
@@ -398,7 +422,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
     @Override
     public void onSuccess(int paymentId) {
-         DebugLog.i("ADD GAS capturePayment SUCCESS");
+
 
     }
 
@@ -501,76 +525,32 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         v.startAnimation(a);
     }
 
-    private void showPrintLayout(){
+    private void showPrintLayout(Payment payment){
         layout_loading.setVisibility(View.GONE);
         gas_content.setVisibility(View.GONE);
         layout_print.setVisibility(View.VISIBLE);
+
+        //txt_date_time.setText();
+        txt_transaction_no.setText("");
+
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        PrintAdapter mAdapter = new PrintAdapter(payment.getReceipt().getItems().getItems());
+        mRecyclerView.setAdapter(mAdapter);
     }
 
 
-    private void print(int historyNo, String amount, double value) {
+    private void print(Payment payment) {
 
 
-        readCard.WriteStatus(tag, historyNo);
-        Calendar calendar = Calendar.getInstance();
-        final String currentDate = DateFormat.getDateTimeInstance().format(calendar.getTime());
-
-        final StringBuilder textData = new StringBuilder();
-
-
-        textData.append("            Money Receipt       ");
-        textData.append("\n");
-        textData.append("----------------------------------------\n");
-
-
-        textData.append(getResources().getString(R.string.receipt_print_date_time) + "  " + currentDate);
-        textData.append("\n");
-        textData.append("Transaction No.                122097651");
-        textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_prepaid_no) + "                " + readCard.readCardArgument.CustomerId);
-        textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_card) + "                   " + readCard.readCardArgument.CardIdm);
-        textData.append("\n");
-
-
-        textData.append("----------------------------------------\n");
-
-
-        textData.append(getResources().getString(R.string.receipt_print_deposit_ammount) + "         " + amount);
-        textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_previous_balance) + "       0.00");
-        textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_current_balance) + "        0.00");
-        textData.append("\n");
-        textData.append("----------------------------------------\n");
-
-
-        textData.append(getResources().getString(R.string.receipt_print_meter_rent) + "             0.00");
-        textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_other_charge) + "           0.00");
-        textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_gas_charge) + "             0.00");
-        textData.append("\n");
-        textData.append(getResources().getString(R.string.receipt_print_gas_volume) + "             "+ Double.parseDouble(decimalFormat.format(value)));
-        textData.append("\n");
-        textData.append("----------------------------------------");
-
-
-        textData.append("\n");
-        textData.append("  Customer Support <0124587632>");
-        textData.append("\n");
-        textData.append("  Karnaphuli Gas Co Ltd.");
-
+        readCard.WriteStatus(tag, payment.getNewHistoryNo());
+        bluetoothPrint(payment);
 
         getSupportActionBar().setTitle("Print receipts");
-        showPrintLayout();
-        txt_print.setText(textData.toString());
-
-        bluetoothPrint();
-
+        showPrintLayout(payment);
     }
 
-    private void bluetoothPrint(){
+    private void bluetoothPrint(final Payment payment){
 
 
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -590,12 +570,43 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                     public void onConnected() {
 
                         try {
+                            if (mPrinter.isConnected()) {
+                                outputStream = mPrinter.getSocket().getOutputStream();
+                                byte[] printformat = new byte[]{0x1B,0x21,0x03};
+                                outputStream.write(printformat);
+                                printCustom("Money Receipt",3,1);
+                                String dateTime[] = getDateTime();
+                                printCustom(new String(new char[42]).replace("\0", "-"),0,1);
+                                printCustom(getFormatStringByLength("Date and Time.",dateTime[0]+" "+dateTime[1]),0,0);
+                                printCustom(getFormatStringByLength("Transaction No.",String.valueOf(payment.getPaymentId())),0,1);
+                                printCustom(getFormatStringByLength("Customer Code",readCard.readCardArgument.CustomerId),0,0);
+                                printCustom(getFormatStringByLength("Meter No.",payment.getReceipt().getMeterSerialNo()),0,1);
+                                printCustom(getFormatStringByLength("Card No.",payment.getReceipt().getCardNo()),0,0);
+                                printCustom(getFormatStringByLength("POS ID",String.valueOf(payment.getReceipt().getPosId())),0,0);
+                                printCustom(getFormatStringByLength("Operator Name",payment.getReceipt().getOperatorName()),0,0);
+                                printCustom(new String(new char[42]).replace("\0", "-"),0,0);
+                                printCustom(getFormatStringByLength("Deposit Amount(TK)",String.valueOf(payment.getReceipt().getAmountPaid())),0,0);
+                                printCustom(new String(new char[42]).replace("\0", "-"),0,0);
+                                printCustom(getFormatStringByItem("Item","Price","Qty","Amount"),0,0);
+                                printCustom(new String(new char[42]).replace("\0", "-"),0,1);
+                                for (Item item : payment.getReceipt().getItems().getItems()){
+                                    printCustom(getFormatStringByItem(item.getName(),String.valueOf(item.getPrice()),String.valueOf(item.getQuantity()),String.valueOf(decimalFormat.format(item.getTotal()))),0,0);
+                                }
+                                printCustom(new String(new char[42]).replace("\0", "-"),0,0);
+                                printCustom(getFormatStringByTotal("Total:",String.valueOf(decimalFormat.format(payment.getReceipt().getItems().getTotal()))),0,0);
+                                printCustom(new String(new char[42]).replace("\0", "."),0,1);
+                                printCustom("Customer Support ("+readCard.readCardArgument.CustomerId+")",0,1);
+                                printCustom("Karnaphuli Gas Distribution Company Ltd.",0,1);
+                                printNewLine();
+                                printNewLine();
+                                printNewLine();
 
-                            mPrinter.printText(txt_print.getText().toString());
-                            mPrinter.addNewLine();
+
+                            }else DebugLog.e("NOT CONNECTED");
                            try {
                                 Thread.sleep(1000);
                                 mPrinter.finish();
+                                outputStream.flush();
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -659,7 +670,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
-                        bluetoothPrint();
+                        //bluetoothPrint();
                     }
                 })
                 .setPositiveListener(getString(R.string.no), new ChooseAlertDialog.OnPositiveListener() {
@@ -719,7 +730,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
             case REQUEST_ENABLE_BT:
                 if (resultCode == RESULT_OK){
                     //bluetooth is on
-                    bluetoothPrint();
+                    //bluetoothPrint();
                 }else Toast.makeText(this,"Could't on bluetooth",Toast.LENGTH_SHORT).show();
                 break;
         }
@@ -754,5 +765,186 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         if (animationView.isAnimating()) animationView.cancelAnimation();
         layout_loading.setVisibility(View.GONE);
         animationView.setVisibility(View.GONE);
+    }
+
+    //print custom
+    private void printCustom(String msg, int size, int align) {
+
+        //Print config "mode"
+        byte[] cc = new byte[]{0x1B,0x21,0x03};  // 0- normal size text
+        byte[] bb = new byte[]{0x1B,0x21,0x08};  // 1- only bold text
+        byte[] bb2 = new byte[]{0x1B,0x21,0x20}; // 2- bold with medium text
+        byte[] bb3 = new byte[]{0x1B,0x21,0x10}; // 3- bold with large text
+        try {
+            switch (size){
+                case 0:
+                    outputStream.write(cc);
+                    break;
+                case 1:
+                    outputStream.write(bb);
+                    break;
+                case 2:
+                    outputStream.write(bb2);
+                    break;
+                case 3:
+                    outputStream.write(bb3);
+                    break;
+            }
+
+            switch (align){
+                case 0:
+                    //left align
+                    outputStream.write(PrinterCommands.ESC_ALIGN_LEFT);
+                    break;
+                case 1:
+                    //center align
+                    outputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
+                    break;
+                case 2:
+                    //right align
+                    outputStream.write(PrinterCommands.ESC_ALIGN_RIGHT);
+                    break;
+            }
+            outputStream.write(msg.getBytes());
+            outputStream.write(PrinterCommands.LF);
+
+            //outputStream.write(cc);
+            //printNewLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //print photo
+    public void printPhoto(int img) {
+        try {
+            Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+                    img);
+            if(bmp!=null){
+                byte[] command = Utils.decodeBitmap(bmp);
+                outputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
+                printText(command);
+            }else{
+                Log.e("Print Photo error", "the file isn't exists");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("PrintTools", "the file isn't exists");
+        }
+    }
+
+    //print unicode
+    public void printUnicode(){
+        try {
+            outputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
+            printText(Utils.UNICODE_TEXT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    //print new line
+    private void printNewLine() {
+        try {
+            outputStream.write(PrinterCommands.FEED_LINE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void resetPrint() {
+        try{
+            outputStream.write(PrinterCommands.ESC_FONT_COLOR_DEFAULT);
+            outputStream.write(PrinterCommands.FS_FONT_ALIGN);
+            outputStream.write(PrinterCommands.ESC_ALIGN_LEFT);
+            outputStream.write(PrinterCommands.ESC_CANCEL_BOLD);
+            outputStream.write(PrinterCommands.LF);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //print text
+    private void printText(String msg) {
+        try {
+            // Print normal text
+            outputStream.write(msg.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //print byte[]
+    private void printText(byte[] msg) {
+        try {
+            // Print normal text
+            outputStream.write(msg);
+            printNewLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private String leftRightAlign(String str1, String str2) {
+        String ans = str1 +str2;
+        if(ans.length() <31){
+            int n = (31 - str1.length() + str2.length());
+            ans = str1 + new String(new char[n]).replace("\0", " ") + str2;
+        }
+        return ans;
+    }
+
+    private String getFormatStringByLength(String title, String value){
+        String concatenation = title+value;
+        int count = concatenation.length();
+        StringBuilder builder = new StringBuilder();
+        String space = new String(new char[42-count]).replace("\0", " ");
+        builder.append(title);
+        builder.append(space);
+        builder.append(value);
+        return builder.toString();
+    }
+
+    private String getFormatStringByItem(String item, String price, String qty, String amount){
+        StringBuilder builder = new StringBuilder();
+        int count = (qty+amount).length();
+        builder.append(item);
+        builder.append(getSpace(17-item.length()));
+        builder.append(price);
+        builder.append(getSpace(10-price.length()));
+        builder.append(qty);
+        builder.append(getSpace(14-count));
+        builder.append(amount);
+        return builder.toString();
+    }
+
+    private String getFormatStringByTotal(String total, String amount){
+        StringBuilder builder = new StringBuilder();
+        int count = (total+amount).length();
+        builder.append(getSpace(23));
+        builder.append(total);
+        builder.append(getSpace(19-count));
+        builder.append(amount);
+        return builder.toString();
+    }
+
+    private String getSpace(int count){
+        String space = new String(new char[count]).replace("\0", " ");
+        return space;
+    }
+
+
+    private String[] getDateTime() {
+        final Calendar c = Calendar.getInstance();
+        String dateTime [] = new String[2];
+        dateTime[0] = c.get(Calendar.DAY_OF_MONTH) +"/"+ c.get(Calendar.MONTH) +"/"+ c.get(Calendar.YEAR);
+        dateTime[1] = c.get(Calendar.HOUR_OF_DAY) +":"+ c.get(Calendar.MINUTE);
+        return dateTime;
     }
 }

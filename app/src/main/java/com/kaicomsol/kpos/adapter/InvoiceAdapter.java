@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.model.Invoice;
+import com.kaicomsol.kpos.models.Invoice;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

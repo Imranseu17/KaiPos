@@ -16,13 +16,11 @@ import android.view.ViewGroup;
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.CardAdapter;
-import com.kaicomsol.kpos.model.Card;
-import com.kaicomsol.kpos.model.NFCData;
+import com.kaicomsol.kpos.models.Card;
+import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;

@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.model.Like;
+import com.kaicomsol.kpos.models.Like;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

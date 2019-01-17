@@ -4,7 +4,6 @@ package com.kaicomsol.kpos.fragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -22,18 +21,9 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.google.gson.Gson;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.InvoiceAdapter;
-import com.kaicomsol.kpos.adapter.MeterAdapter;
 import com.kaicomsol.kpos.callbacks.CloseClickListener;
-import com.kaicomsol.kpos.callbacks.InvoiceView;
-import com.kaicomsol.kpos.dialogs.CardCheckDialog;
-import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.model.Invoice;
-import com.kaicomsol.kpos.model.Invoices;
-import com.kaicomsol.kpos.model.Meter;
-import com.kaicomsol.kpos.presenters.InvoicePresenter;
-import com.kaicomsol.kpos.presenters.MeterPresenter;
-import com.kaicomsol.kpos.utils.DebugLog;
-import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
+import com.kaicomsol.kpos.models.Invoice;
+import com.kaicomsol.kpos.models.Invoices;
 
 import java.util.List;
 

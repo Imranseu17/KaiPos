@@ -6,11 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.model.History;
+import com.kaicomsol.kpos.models.History;
 
 import java.util.List;
 

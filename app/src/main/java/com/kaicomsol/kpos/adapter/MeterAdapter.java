@@ -6,15 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.callbacks.CustomerClickListener;
 import com.kaicomsol.kpos.callbacks.MeterClickListener;
-import com.kaicomsol.kpos.model.Customer;
-import com.kaicomsol.kpos.model.MeterList;
+import com.kaicomsol.kpos.models.MeterList;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

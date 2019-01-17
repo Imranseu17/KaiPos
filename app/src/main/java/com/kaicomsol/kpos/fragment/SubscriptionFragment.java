@@ -24,12 +24,10 @@ import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.activity.LoginActivity;
 import com.kaicomsol.kpos.adapter.SubscriptionAdapter;
 import com.kaicomsol.kpos.callbacks.SubscriptionView;
-import com.kaicomsol.kpos.model.SubData;
+import com.kaicomsol.kpos.models.SubData;
 import com.kaicomsol.kpos.presenters.SubscriptionPresenter;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
-
-import javax.mail.Quota;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

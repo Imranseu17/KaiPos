@@ -1,6 +1,6 @@
 package com.kaicomsol.kpos.callbacks;
 
-import com.kaicomsol.kpos.model.Meter;
+import com.kaicomsol.kpos.models.Meter;
 
 public interface MeterView {
 

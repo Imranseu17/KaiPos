@@ -1,6 +1,6 @@
 package com.kaicomsol.kpos.callbacks;
 
-import com.kaicomsol.kpos.model.SubData;
+import com.kaicomsol.kpos.models.SubData;
 
 public interface SubscriptionView {
 

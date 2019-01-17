@@ -15,8 +15,7 @@ import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.HistoryClickListener;
-import com.kaicomsol.kpos.model.Content;
-import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.models.Content;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package com.kaicomsol.kpos.callbacks;
 
-import com.kaicomsol.kpos.model.SalesHistory;
+import com.kaicomsol.kpos.models.SalesHistory;
 
 public interface HistoryView {
 

@@ -21,25 +21,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.activity.LoginActivity;
-import com.kaicomsol.kpos.activity.SalesHistoryActivity;
 import com.kaicomsol.kpos.callbacks.CardInfoView;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
-import com.kaicomsol.kpos.model.CardData;
-import com.kaicomsol.kpos.model.MeterCard;
-import com.kaicomsol.kpos.model.ReadCard;
+import com.kaicomsol.kpos.models.CardData;
+import com.kaicomsol.kpos.models.MeterCard;
+import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.presenters.CardPresenter;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

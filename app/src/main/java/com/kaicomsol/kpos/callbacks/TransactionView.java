@@ -1,6 +1,6 @@
 package com.kaicomsol.kpos.callbacks;
 
-import com.kaicomsol.kpos.model.Transaction;
+import com.kaicomsol.kpos.models.Transaction;
 
 import java.util.List;
 

@@ -17,25 +17,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.auth0.android.jwt.Claim;
-import com.auth0.android.jwt.JWT;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.LoginView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.model.Login;
+import com.kaicomsol.kpos.models.Login;
 import com.kaicomsol.kpos.presenters.LoginPresenter;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
-
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -1,20 +1,20 @@
 package com.kaicomsol.kpos.services;
 
 import com.google.gson.JsonObject;
-import com.kaicomsol.kpos.model.CardData;
-import com.kaicomsol.kpos.model.CustomerData;
-import com.kaicomsol.kpos.model.CustomerInfo;
-import com.kaicomsol.kpos.model.Emergency;
-import com.kaicomsol.kpos.model.Invoices;
-import com.kaicomsol.kpos.model.Login;
-import com.kaicomsol.kpos.model.Meter;
-import com.kaicomsol.kpos.model.Payment;
-import com.kaicomsol.kpos.model.PaymentID;
-import com.kaicomsol.kpos.model.Refund;
-import com.kaicomsol.kpos.model.SalesHistory;
-import com.kaicomsol.kpos.model.SubData;
-import com.kaicomsol.kpos.model.Success;
-import com.kaicomsol.kpos.model.Transaction;
+import com.kaicomsol.kpos.models.CardData;
+import com.kaicomsol.kpos.models.CustomerData;
+import com.kaicomsol.kpos.models.CustomerInfo;
+import com.kaicomsol.kpos.models.Emergency;
+import com.kaicomsol.kpos.models.Invoices;
+import com.kaicomsol.kpos.models.Login;
+import com.kaicomsol.kpos.models.Meter;
+import com.kaicomsol.kpos.models.Payment;
+import com.kaicomsol.kpos.models.PaymentID;
+import com.kaicomsol.kpos.models.Refund;
+import com.kaicomsol.kpos.models.SalesHistory;
+import com.kaicomsol.kpos.models.SubData;
+import com.kaicomsol.kpos.models.Success;
+import com.kaicomsol.kpos.models.Transaction;
 
 import java.util.List;
 import java.util.Map;

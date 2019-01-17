@@ -16,8 +16,8 @@ import android.view.ViewGroup;
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.HistoryAdapter;
-import com.kaicomsol.kpos.model.History;
-import com.kaicomsol.kpos.model.NFCData;
+import com.kaicomsol.kpos.models.History;
+import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 
 import java.util.ArrayList;

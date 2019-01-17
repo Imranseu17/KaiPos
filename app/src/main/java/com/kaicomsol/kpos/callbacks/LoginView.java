@@ -1,6 +1,6 @@
 package com.kaicomsol.kpos.callbacks;
 
-import com.kaicomsol.kpos.model.Login;
+import com.kaicomsol.kpos.models.Login;
 
 public interface LoginView {
 

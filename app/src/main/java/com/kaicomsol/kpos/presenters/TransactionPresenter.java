@@ -2,8 +2,8 @@ package com.kaicomsol.kpos.presenters;
 
 
 import com.kaicomsol.kpos.callbacks.TransactionView;
-import com.kaicomsol.kpos.model.APIErrors;
-import com.kaicomsol.kpos.model.Transaction;
+import com.kaicomsol.kpos.models.APIErrors;
+import com.kaicomsol.kpos.models.Transaction;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 

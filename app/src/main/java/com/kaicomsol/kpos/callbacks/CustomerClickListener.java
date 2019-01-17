@@ -1,7 +1,7 @@
 package com.kaicomsol.kpos.callbacks;
 
 
-import com.kaicomsol.kpos.model.Customer;
+import com.kaicomsol.kpos.models.Customer;
 
 public interface CustomerClickListener {
     public void onCustomerClick(Customer customer);

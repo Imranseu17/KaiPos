@@ -2,7 +2,6 @@ package com.kaicomsol.kpos.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -12,30 +11,21 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.crashlytics.android.Crashlytics;
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.callbacks.LoginView;
 import com.kaicomsol.kpos.callbacks.PosDeviceView;
-import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
-import com.kaicomsol.kpos.model.Login;
-import com.kaicomsol.kpos.presenters.LoginPresenter;
 import com.kaicomsol.kpos.presenters.PosDevicePresenter;
-import com.kaicomsol.kpos.utils.DebugLog;
-import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

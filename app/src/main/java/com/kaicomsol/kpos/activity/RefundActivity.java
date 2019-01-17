@@ -27,9 +27,9 @@ import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
-import com.kaicomsol.kpos.model.ReadCard;
-import com.kaicomsol.kpos.model.Refund;
-import com.kaicomsol.kpos.model.Success;
+import com.kaicomsol.kpos.models.ReadCard;
+import com.kaicomsol.kpos.models.Refund;
+import com.kaicomsol.kpos.models.Success;
 import com.kaicomsol.kpos.presenters.RefundPresenter;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 

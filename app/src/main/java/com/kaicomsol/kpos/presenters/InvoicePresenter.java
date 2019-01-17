@@ -1,10 +1,8 @@
 package com.kaicomsol.kpos.presenters;
 
 import com.kaicomsol.kpos.callbacks.InvoiceView;
-import com.kaicomsol.kpos.callbacks.MeterView;
-import com.kaicomsol.kpos.model.APIErrors;
-import com.kaicomsol.kpos.model.Invoices;
-import com.kaicomsol.kpos.model.Meter;
+import com.kaicomsol.kpos.models.APIErrors;
+import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 

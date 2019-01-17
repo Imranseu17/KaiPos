@@ -6,9 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.kaicomsol.kpos.model.Error;
+import com.kaicomsol.kpos.models.Error;
 
 
 import com.kaicomsol.kpos.R;

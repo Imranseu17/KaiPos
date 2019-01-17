@@ -3,26 +3,20 @@ package com.kaicomsol.kpos.presenters;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.kaicomsol.kpos.callbacks.PaymentView;
-import com.kaicomsol.kpos.model.APIErrors;
-import com.kaicomsol.kpos.model.History;
-import com.kaicomsol.kpos.model.Invoices;
-import com.kaicomsol.kpos.model.Payment;
-import com.kaicomsol.kpos.model.PaymentID;
+import com.kaicomsol.kpos.models.APIErrors;
+import com.kaicomsol.kpos.models.Invoices;
+import com.kaicomsol.kpos.models.Payment;
+import com.kaicomsol.kpos.models.PaymentID;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.security.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,9 +74,8 @@ public class PaymentPresenter {
 
                     @Override
                     public void onFailure(Call<Payment> call, Throwable e) {
-                        DebugLog.e(call.request().toString());
+                        e.printStackTrace();
                         if (e instanceof HttpException) {
-
                             int code = ((HttpException) e).response().code();
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
                             getErrorMessage(code, responseBody);

@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
@@ -23,10 +22,9 @@ import com.kaicomsol.kpos.adapter.SalesHistoryAdapter;
 import com.kaicomsol.kpos.callbacks.HistoryClickListener;
 import com.kaicomsol.kpos.callbacks.HistoryView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.model.Content;
-import com.kaicomsol.kpos.model.SalesHistory;
+import com.kaicomsol.kpos.models.Content;
+import com.kaicomsol.kpos.models.SalesHistory;
 import com.kaicomsol.kpos.presenters.HistoryPresenter;
-import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.PaginationScrollListener;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 

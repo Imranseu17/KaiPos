@@ -8,8 +8,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -23,8 +21,8 @@ import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.model.NFCData;
-import com.kaicomsol.kpos.model.ReadCard;
+import com.kaicomsol.kpos.models.NFCData;
+import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
@@ -61,7 +59,6 @@ public class NFCCheckActivity extends AppCompatActivity {
         setContentView(R.layout.activity_nfc_check);
 
         ButterKnife.bind(this);
-
         viewConfig();
 
 
@@ -156,29 +153,18 @@ public class NFCCheckActivity extends AppCompatActivity {
         }
     }
 
-    //authentication for add gas activity
+    //authentication for dashboard activity
     private void activityHome() {
         startActivity(new Intent(NFCCheckActivity.this, HomeActivity.class));
         finish();
     }
 
-    //authentication for add gas activity
+    //authentication for dashboard activity
     private void activityGas(String group) {
         startActivity(new Intent(NFCCheckActivity.this, HomeActivity.class));
         finish();
     }
 
-    //authentication for invoice activity
-    private void activityInvoice(String group) {
-        startActivity(new Intent(NFCCheckActivity.this, HomeActivity.class));
-        finish();
-    }
-
-    //authentication for refund activity
-    private void activityRefund(String group) {
-        startActivity(new Intent(NFCCheckActivity.this, HomeActivity.class));
-        finish();
-    }
 
     //authentication for inspect activity
     private void activityInspect() {
