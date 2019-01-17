@@ -13,7 +13,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingTop="@dimen/_5sdp"
             android:text="Money Receipt"
             android:textColor="@color/black"
             android:textSize="22sp" />
@@ -174,7 +173,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="2">
+                android:weightSum="3">
 
                 <TextView
                     android:layout_width="0dp"
@@ -189,7 +188,7 @@
                     android:id="@+id/txt_card_no"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:gravity="right"
                     android:textAppearance="@style/TextAppearance.FontPath"
                     android:text="012E3D121D982E5F"
@@ -307,7 +306,6 @@
                     android:gravity="left"
                     android:text="Item"
                     android:textColor="@color/black"
-                    android:textAppearance="@style/TextAppearance.FontPath"
                     android:textSize="16sp" />
 
                 <TextView
@@ -317,7 +315,6 @@
                     android:gravity="right"
                     android:text="Price"
                     android:textColor="@color/black"
-                    android:textAppearance="@style/TextAppearance.FontPath"
                     android:textSize="16sp" />
                 <TextView
                     android:layout_width="0dp"
@@ -326,7 +323,6 @@
                     android:gravity="right"
                     android:text="Qty"
                     android:textColor="@color/black"
-                    android:textAppearance="@style/TextAppearance.FontPath"
                     android:textSize="16sp" />
                 <TextView
                     android:layout_width="0dp"
@@ -335,7 +331,6 @@
                     android:gravity="right"
                     android:text="Amount"
                     android:textColor="@color/black"
-                    android:textAppearance="@style/TextAppearance.FontPath"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -391,7 +386,6 @@
                     android:gravity="right"
                     android:text="Total"
                     android:textColor="@color/black"
-                    android:textAppearance="@style/TextAppearance.FontPath"
                     android:textSize="16sp" />
                 <TextView
                     android:layout_width="0dp"
@@ -400,7 +394,6 @@
                     android:gravity="right"
                     android:text="70.1"
                     android:textColor="@color/black"
-                    android:textAppearance="@style/TextAppearance.FontPath"
                     android:textSize="16sp" />
 
             </LinearLayout>

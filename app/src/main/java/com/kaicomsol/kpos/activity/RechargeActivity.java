@@ -70,7 +70,9 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -202,7 +204,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         Bundle args = new Bundle();
         args.putString("msg", "Payment successfully");
         mRechargeCardDialog.setArguments(args);
-        decimalFormat = new DecimalFormat(".##");
+        //decimalFormat = new DecimalFormat(".##");
+        decimalFormat = new DecimalFormat("#,##0.00");
         mPresenter = new PaymentPresenter(this);
         layoutPrice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -530,8 +533,17 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
         gas_content.setVisibility(View.GONE);
         layout_print.setVisibility(View.VISIBLE);
 
-        //txt_date_time.setText();
-        txt_transaction_no.setText("");
+        Date date = new Date(payment.getReceipt().getPaymentDate());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        txt_date_time.setText(dateFormat.format(date));
+        txt_transaction_no.setText(String.valueOf(payment.getPaymentId()));
+        txt_customer_code.setText(readCard.readCardArgument.CustomerId);
+        txt_meter_no.setText(payment.getReceipt().getMeterSerialNo());
+        txt_card_no.setText(payment.getReceipt().getCardNo());
+        txt_pos_id.setText(String.valueOf(payment.getReceipt().getPosId()));
+        txt_operator_name.setText(String.valueOf(payment.getReceipt().getOperatorName()));
+        txt_deposit_amount.setText(String.valueOf(payment.getReceipt().getAmountPaid()));
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -575,9 +587,12 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                                 byte[] printformat = new byte[]{0x1B,0x21,0x03};
                                 outputStream.write(printformat);
                                 printCustom("Money Receipt",3,1);
-                                String dateTime[] = getDateTime();
+
+                                Date date = new Date(payment.getReceipt().getPaymentDate());
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
                                 printCustom(new String(new char[42]).replace("\0", "-"),0,1);
-                                printCustom(getFormatStringByLength("Date and Time.",dateTime[0]+" "+dateTime[1]),0,0);
+                                printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)),0,0);
                                 printCustom(getFormatStringByLength("Transaction No.",String.valueOf(payment.getPaymentId())),0,1);
                                 printCustom(getFormatStringByLength("Customer Code",readCard.readCardArgument.CustomerId),0,0);
                                 printCustom(getFormatStringByLength("Meter No.",payment.getReceipt().getMeterSerialNo()),0,1);

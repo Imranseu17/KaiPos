@@ -21,7 +21,8 @@ public class PrintAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private DecimalFormat decimalFormat;
     public PrintAdapter(List<Item> itemList) {
         this.itemList = itemList;
-        decimalFormat = new DecimalFormat(".##");
+        //decimalFormat = new DecimalFormat(".##");
+        decimalFormat = new DecimalFormat("#,##0.00");
     }
 
     @Override
