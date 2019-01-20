@@ -157,14 +157,14 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        vibrator.vibrate(1000);
+
         readCard.ReadTag(tag);
         boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         if (response){
+            vibrator.vibrate(1000);
             customerCardDismiss();
             viewPager.setVisibility(View.VISIBLE);
             tabLayout.setVisibility(View.VISIBLE);
-            vibrator.cancel();
 
             HttpResponsAsync.ReadCardArgument argument = readCard.readCardArgument;
             NFCData.getInstance().setArgument(argument);
@@ -173,6 +173,7 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
             CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
         }
 
+        vibrator.cancel();
     }
 
 

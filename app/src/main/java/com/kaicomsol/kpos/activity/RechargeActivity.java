@@ -200,12 +200,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         super.onNewIntent(intent);
 
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        vibrator.vibrate(1000);
         if (tag == null) return;
         readCard.ReadTag(tag);
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         if (response) {
-            vibrator.cancel();
+            vibrator.vibrate(1000);
             if (readCard.readCardArgument.CardGroup.equals("77")
                     && (readCard.readCardArgument.CardStatus.equals("06")
                     || readCard.readCardArgument.CardStatus.equals("30"))) {
@@ -218,6 +217,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
             } else CustomAlertDialog.showError(this, getString(R.string.err_card_not_valid));
         } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
+
+        vibrator.cancel();
     }
 
     @Override
