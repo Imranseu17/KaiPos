@@ -645,23 +645,23 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
                                 printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 0);
+                                printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
                                 printCustom(getFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
-                                printCustom(getFormatStringByLength("Customer Code", readCard.readCardArgument.CustomerId), 0, 0);
+                                printCustom(getFormatStringByLength("Prepaid Code", readCard.readCardArgument.CustomerId), 0, 1);
                                 printCustom(getFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
-                                printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 0);
-                                printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 0);
-                                printCustom(getFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 0);
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 0);
-                                printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 0);
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 0);
-                                printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 0);
+                                printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
+                                printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
+                                printCustom(getFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
+                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+                                printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
+                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+                                printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
                                 printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
                                 for (Item item : receipt.getItems().getItems()) {
-                                    printCustom(getFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(item.getQuantity()), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 0);
+                                    printCustom(getFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(item.getQuantity()), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
                                 }
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 0);
-                                printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 0);
+                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+                                printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
                                 printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
                                 printCustom("Customer Support (" + readCard.readCardArgument.CustomerId + ")", 0, 1);
                                 printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
@@ -672,7 +672,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
                             } else DebugLog.e("NOT CONNECTED");
                             try {
-                                Thread.sleep(700);
+                                Thread.sleep(1000);
                                 mPrinter.finish();
                                 outputStream.flush();
                             } catch (InterruptedException e) {

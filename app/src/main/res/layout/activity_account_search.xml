@@ -78,7 +78,7 @@
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/input_layout_zone"
+                    android:id="@+id/input_layout_meter"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -86,11 +86,11 @@
                     android:layout_weight="1">
 
                     <android.support.design.widget.TextInputEditText
-                        android:id="@+id/edt_zone"
+                        android:id="@+id/edt_meter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableBottom="@color/colorAccent"
-                        android:hint="@string/label_zone"
+                        android:hint="Meter Serial No"
                         android:imeOptions="actionNext"
                         android:inputType="numberDecimal"
                         android:maxLines="1"
@@ -194,6 +194,27 @@
                 android:weightSum="2">
 
                 <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_zone"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2.5dp"
+                    android:layout_weight="1">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/edt_zone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableBottom="@color/colorAccent"
+                        android:hint="@string/label_zone"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.FontPath" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
                     android:id="@+id/input_layout_apartment"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
@@ -214,26 +235,6 @@
 
                 </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/input_layout_metro"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="2.5dp"
-                    android:layout_weight="1">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/edt_metro"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableBottom="@color/colorAccent"
-                        android:hint="@string/label_metro"
-                        android:imeOptions="actionDone"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:textAppearance="@style/TextAppearance.FontPath" />
-
-                </android.support.design.widget.TextInputLayout>
 
             </LinearLayout>
 
@@ -246,6 +247,7 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:background="@drawable/drop_shadow"
                 android:padding="@dimen/_8sdp"
+                android:visibility="gone"
                 android:text="@string/label_search"
                 android:textAllCaps="false"
                 android:textAppearance="@style/TextAppearance.FontPath"

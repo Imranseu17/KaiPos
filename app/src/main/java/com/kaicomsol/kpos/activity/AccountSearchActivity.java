@@ -9,6 +9,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -48,8 +49,8 @@ public class AccountSearchActivity extends AppCompatActivity {
     TextInputLayout input_layout_apartment;
     @BindView(R.id.input_layout_area)
     TextInputLayout input_layout_area;
-    @BindView(R.id.input_layout_metro)
-    TextInputLayout input_layout_metro;
+    @BindView(R.id.input_layout_meter)
+    TextInputLayout input_layout_meter;
 
     //edit text bind
     @BindView(R.id.edt_account)
@@ -64,8 +65,8 @@ public class AccountSearchActivity extends AppCompatActivity {
     TextInputEditText edt_apartment;
     @BindView(R.id.edt_area)
     TextInputEditText edt_area;
-    @BindView(R.id.edt_metro)
-    TextInputEditText edt_metro;
+    @BindView(R.id.edt_meter)
+    TextInputEditText edt_meter;
 
     @BindView(R.id.edt_cardno)
     TextInputEditText edt_cardno;
@@ -91,36 +92,40 @@ public class AccountSearchActivity extends AppCompatActivity {
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+              likeSearch();
 
-                String account = edt_account.getText().toString().trim();
-                String customerCode = edt_code.getText().toString().trim();
-                String metro = edt_metro.getText().toString().trim();
-                String cardNo = edt_cardno.getText().toString().trim();
-                String phone = edt_phone.getText().toString().trim();
-                String zone = edt_zone.getText().toString().trim();
-                String address = edt_address.getText().toString().trim();
-                String apartment = edt_apartment.getText().toString().trim();
-                String area = edt_area.getText().toString().trim();
-
-                Like like = new Like();
-                like.account = !TextUtils.isEmpty(account) ? "like:"+account : "";
-                like.customerCode = !TextUtils.isEmpty(customerCode) ? "like:"+customerCode : "";
-                like.metro = !TextUtils.isEmpty(metro) ? "like:"+metro : "";
-                like.cardNo = !TextUtils.isEmpty(cardNo) ? "like:"+cardNo : "";
-                like.phone = !TextUtils.isEmpty(phone) ? "like:"+phone : "";
-                like.zone = !TextUtils.isEmpty(zone) ? "like:"+zone : "";
-                like.address = !TextUtils.isEmpty(address) ? "like:"+address : "";
-                like.apartment = !TextUtils.isEmpty(apartment) ? "like:"+apartment : "";
-                like.area = !TextUtils.isEmpty(area) ? "like:"+area : "";
-
-                Intent intent = new Intent(AccountSearchActivity.this, AccountListActivity.class);
-                intent.putExtra("like", like);
-                startActivity(intent);
-                finish();
             }
         });
 
 
+    }
+
+    private void likeSearch(){
+        String account = edt_account.getText().toString().trim();
+        String customerCode = edt_code.getText().toString().trim();
+        String meterSerial = edt_meter.getText().toString().trim();
+        String cardNo = edt_cardno.getText().toString().trim();
+        String phone = edt_phone.getText().toString().trim();
+        String zone = edt_zone.getText().toString().trim();
+        String address = edt_address.getText().toString().trim();
+        String apartment = edt_apartment.getText().toString().trim();
+        String area = edt_area.getText().toString().trim();
+
+        Like like = new Like();
+        like.account = !TextUtils.isEmpty(account) ? "like:"+account : "";
+        like.customerCode = !TextUtils.isEmpty(customerCode) ? "like:"+customerCode : "";
+        like.meterSerial = !TextUtils.isEmpty(meterSerial) ? "like:"+meterSerial : "";
+        like.cardNo = !TextUtils.isEmpty(cardNo) ? "like:"+cardNo : "";
+        like.phone = !TextUtils.isEmpty(phone) ? "like:"+phone : "";
+        like.zone = !TextUtils.isEmpty(zone) ? "like:"+zone : "";
+        like.address = !TextUtils.isEmpty(address) ? "like:"+address : "";
+        like.apartment = !TextUtils.isEmpty(apartment) ? "like:"+apartment : "";
+        like.area = !TextUtils.isEmpty(area) ? "like:"+area : "";
+
+        Intent intent = new Intent(AccountSearchActivity.this, AccountListActivity.class);
+        intent.putExtra("like", like);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -129,11 +134,21 @@ public class AccountSearchActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()){
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.action_search:
+                likeSearch();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -201,13 +216,13 @@ public class AccountSearchActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean validateMetro() {
-        if (edt_metro.getText().toString().trim().isEmpty()) {
-            input_layout_metro.setError(getString(R.string.err_msg_required));
-            requestFocus(edt_metro);
+    private boolean validateMeter() {
+        if (edt_meter.getText().toString().trim().isEmpty()) {
+            input_layout_meter.setError(getString(R.string.err_msg_required));
+            requestFocus(edt_meter);
             return false;
         } else {
-            input_layout_metro.setErrorEnabled(false);
+            input_layout_meter.setErrorEnabled(false);
         }
 
         return true;

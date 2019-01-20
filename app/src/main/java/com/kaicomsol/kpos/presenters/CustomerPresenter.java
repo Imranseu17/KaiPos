@@ -42,7 +42,7 @@ public class CustomerPresenter {
 
 
         mApiClient.getAPI()
-                .findCustomer(map, like.account, like.customerCode, like.metro, like.zone, like.area, like.address, like.apartment,currentPage,5)
+                .findCustomer(map, like.account, like.customerCode, like.meterSerial, like.zone, like.area, like.address, like.apartment,currentPage,5)
                 .enqueue(new Callback<CustomerData>() {
                     @Override
                     public void onResponse(Call<CustomerData> call, Response<CustomerData> response) {

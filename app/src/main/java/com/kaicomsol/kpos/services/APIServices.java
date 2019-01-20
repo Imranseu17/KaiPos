@@ -63,7 +63,7 @@ public interface APIServices {
     Call<CustomerData> findCustomer(@HeaderMap Map<String, String> headers,
                                     @Query("accountNo") String accountNo,
                                     @Query("customerCode") String customerCode,
-                                    @Query("metro") String metro,
+                                    @Query("meterSerial") String meterSerial,
                                     @Query("zone") String zone,
                                     @Query("area") String area,
                                     @Query("address") String address,
