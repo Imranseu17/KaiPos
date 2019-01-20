@@ -154,10 +154,9 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
                 try {
                     readCard.ReadTag(tag);
-                    readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
-                    final boolean response = readCard.GamInitCard(tag, customerCode,
-                            (byte) 119, emergencyValue);
+                    final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
                     if (response) {
+                        readCard.GamInitCard(tag, customerCode,(byte) 119, emergencyValue);
                         rechargeCardDismiss();
                         String cardIdm = readCard.readCardArgument.CardIdm;
                         addCard(cardIdm);

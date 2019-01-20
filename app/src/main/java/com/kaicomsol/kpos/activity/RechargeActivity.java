@@ -671,7 +671,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
                             } else DebugLog.e("NOT CONNECTED");
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(500);
                                 mPrinter.finish();
                                 outputStream.flush();
                             } catch (InterruptedException e) {
