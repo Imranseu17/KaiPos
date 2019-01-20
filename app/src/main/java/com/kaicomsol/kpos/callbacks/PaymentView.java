@@ -5,7 +5,7 @@ import com.kaicomsol.kpos.models.Payment;
 
 public interface PaymentView {
 
-    public void onSuccess(Payment payment);
+    public void onSuccess(Payment payment, int code);
     public void onSuccess(Invoices invoices);
     public void onSuccess(int paymentId);
     public void onSuccess(String readCard);

@@ -51,6 +51,10 @@ public interface APIServices {
     @POST("/api/v1/payment/capturePayment")
     Call<PaymentID> capturePayment(@HeaderMap Map<String, String> headers, @Query("paymentId") String paymentId);
 
+
+    @GET("/api/v1/payment/receipt")
+    Call<Payment> receiptPayment(@HeaderMap Map<String, String> headers, @Query("paymentId") String paymentId);
+
     @POST("/api/v1/pos/card/readCard")
     Call<ResponseBody> readCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 

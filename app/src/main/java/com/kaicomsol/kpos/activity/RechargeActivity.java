@@ -94,6 +94,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     private PaymentPresenter mPresenter;
     private double totalAmount = 0.0;
     private static OutputStream outputStream;
+    private int paymentId = 0;
 
     //Bind component
     @BindView(R.id.layout_main) LinearLayout layout_main;
@@ -392,16 +393,22 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
     }
 
     @Override
-    public void onSuccess(Payment payment) {
+    public void onSuccess(Payment payment, int code) {
 
-            capturePayment(String.valueOf(payment.getPaymentId()));
-            rechargeCardDismiss();
-            String amount = txt_total_amount.getText().toString().trim();
-            double value = payment.getReceipt().getGasUnit();
-            readCard.GasChargeCard(tag, value,
-                0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
-            //print(payment.getNewHistoryNo(), amount, value);
-            print(payment);
+           if (code == 100){
+               capturePayment(String.valueOf(payment.getPaymentId()));
+               rechargeCardDismiss();
+               String amount = txt_total_amount.getText().toString().trim();
+               double value = payment.getReceipt().getGasUnit();
+               readCard.GasChargeCard(tag, value,
+                       0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
+               //print(payment.getNewHistoryNo(), amount, value);
+               print(payment);
+           }else {
+               bluetoothPrint(payment);
+               getSupportActionBar().setTitle("Print receipts");
+               showPrintLayout(payment);
+           }
 
     }
 
@@ -425,8 +432,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
     @Override
     public void onSuccess(int paymentId) {
-
-
+         this.paymentId = paymentId;
     }
 
     @Override
@@ -685,7 +691,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
-                        //bluetoothPrint();
+                        receiptPayment();
                     }
                 })
                 .setPositiveListener(getString(R.string.no), new ChooseAlertDialog.OnPositiveListener() {
@@ -695,6 +701,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView,C
 
                     }
                 }).show();
+    }
+
+    private void receiptPayment(){
+
+        String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
+        if (checkConnection()) mPresenter.receiptPayment(token, String.valueOf(paymentId));
+        else showErrorDialog(getString(R.string.no_internet_connection));
     }
 
     public void showEnableBluetoothDialog() {
