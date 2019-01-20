@@ -101,7 +101,7 @@
                     android:layout_weight="1"
                     android:gravity="left"
                     android:textAppearance="@style/TextAppearance.FontPath"
-                    android:text="Customer Code"
+                    android:text="Prepaid Code"
                     android:textSize="16sp" />
 
                 <TextView
