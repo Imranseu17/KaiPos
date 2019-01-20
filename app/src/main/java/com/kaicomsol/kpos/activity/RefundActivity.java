@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -53,6 +54,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     private Tag tag;
     private int id = 0;
     private boolean isCardRefund = false;
+    private Vibrator vibrator;
 
     //Bind component
     @BindView(R.id.layout_main) LinearLayout layout_main;
@@ -90,6 +92,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     }
 
     private void viewConfig() {
+
+        readCard = new ReadCard();
         mCardCheckDialog = CardCheckDialog.newInstance(this,"User");
         mRechargeCardDialog = new RechargeCardDialog();
         Bundle args = new Bundle();
@@ -101,6 +105,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
         mPresenter = new RefundPresenter(this);
 
         customerCardDialog();
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,8 +117,6 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     }
 
     private void cardConfig() {
-
-        readCard = new ReadCard();
         pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
@@ -148,11 +151,11 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        vibrator.vibrate(1000);
         readCard.ReadTag(tag);
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         if (response){
             if(readCard.readCardArgument.CardGroup.equals("77") && readCard.readCardArgument.CardStatus.equals("05")){
-
                 if (!isCardRefund){
                     customerCardDismiss();
                     layout_refund.setVisibility(View.VISIBLE);

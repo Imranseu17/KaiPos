@@ -34,29 +34,30 @@ public class CustomerPresenter {
         }
     }
 
-    public void findCustomerByProperty(String token, Like like) {
+    public void findCustomerByProperty(String token, Like like,final int currentPage) {
         Map<String, String> map = new HashMap<>();
         DebugLog.e(token);
         map.put("Authorization", token);
         map.put("Content-Type", "application/json");
 
+
         mApiClient.getAPI()
-                .findCustomer(map, like.account, like.customerCode, like.metro, like.zone, like.area, like.address, like.apartment,"1","10")
+                .findCustomer(map, like.account, like.customerCode, like.metro, like.zone, like.area, like.address, like.apartment,currentPage,5)
                 .enqueue(new Callback<CustomerData>() {
                     @Override
                     public void onResponse(Call<CustomerData> call, Response<CustomerData> response) {
 
                         if (response.code() == 401){
-                           mViewInterface.onLogout(response.code());
-                           return;
+                            mViewInterface.onLogout(response.code());
+                            return;
                         }
 
                         if (response.isSuccessful()){
                             CustomerData customerData = response.body();
                             if (customerData != null) {
-                                mViewInterface.onSuccess(customerData);
+                                mViewInterface.onSuccess(customerData,currentPage);
                             } else {
-                                mViewInterface.onError("Error fetching data");;
+                                mViewInterface.onError("Error fetching data");
                             }
                         }else{
                             try {
@@ -109,5 +110,7 @@ public class CustomerPresenter {
         }
         else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }
+
+
 
 }

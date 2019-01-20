@@ -21,6 +21,7 @@ import com.kaicomsol.kpos.models.Customer;
 import com.kaicomsol.kpos.models.CustomerData;
 import com.kaicomsol.kpos.models.Like;
 import com.kaicomsol.kpos.presenters.CustomerPresenter;
+import com.kaicomsol.kpos.utils.PaginationScrollListener;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import butterknife.BindView;
@@ -34,6 +35,13 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
     private CustomerAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     private Like like = null;
+
+    private static final int PAGE_START = 1;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    // limiting to 5 for this tutorial, since total pages in actual API is very large. Feel free to modify.
+    private int TOTAL_PAGES = 5;
+    private int currentPage = PAGE_START;
 
     //component bind
     @BindView(R.id.main_view)
@@ -54,10 +62,11 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
         getSupportActionBar().setTitle(R.string.account_list);
 
         ButterKnife.bind(this);
-        viewConfig();
         mPresenter = new CustomerPresenter(this);
 
-        findLikeSearch();
+        viewConfig();
+
+        findLikeSearch(currentPage);
 
     }
 
@@ -84,25 +93,62 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter =  new CustomerAdapter(this, this);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addOnScrollListener(new PaginationScrollListener(mLayoutManager) {
+            @Override
+            protected void loadMoreItems() {
+                isLoading = true;
+                currentPage += 1;
+                findLikeSearchNext(currentPage);
+            }
+
+            @Override
+            public int getTotalPageCount() {
+                return TOTAL_PAGES;
+            }
+
+            @Override
+            public boolean isLastPage() {
+                return isLastPage;
+            }
+
+            @Override
+            public boolean isLoading() {
+                return isLoading;
+            }
+        });
     }
 
-    private void findLikeSearch(){
+    private void findLikeSearch(int currentPage){
         if (checkConnection()){
             showAnimation();
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
-            mPresenter.findCustomerByProperty(token, like);
+            mPresenter.findCustomerByProperty(token, like,currentPage);
         }else CustomAlertDialog.showError(this,getString(R.string.no_internet_connection));
     }
 
+    private void findLikeSearchNext(int currentPage){
+        if (checkConnection()){
+            mAdapter.addLoadingFooter();
+            String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
+            mPresenter.findCustomerByProperty(token, like,currentPage);
+        }else CustomAlertDialog.showError(this,getString(R.string.no_internet_connection));
+    }
+
+
     @Override
-    public void onSuccess(CustomerData customerData) {
+    public void onSuccess(CustomerData customerData, int currentPage) {
         hideAnimation();
+        if (currentPage > 1){
+            isLoading = false;
+            mAdapter.removeLoadingFooter();
+        }
         if (customerData.getCustomerList() != null) {
             if (customerData.getCustomerList().size() > 0) {
-                  mAdapter =  new CustomerAdapter(this, this);
-                  mRecyclerView.setAdapter(mAdapter);
-                  mAdapter.setCustomers(customerData.getCustomerList());
-            }else showEmptyAnimation();
+
+                mAdapter.setCustomers(customerData.getCustomerList(), currentPage);
+            } else showEmptyAnimation();
         }
     }
 
@@ -164,6 +210,12 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
 
         Intent intent = new Intent(AccountListActivity.this, CustomerDetailsActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void retryPageLoad() {
+
 
     }
 }
+

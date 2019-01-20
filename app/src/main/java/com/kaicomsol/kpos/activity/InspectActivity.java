@@ -21,6 +21,7 @@ import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.ViewPagerAdapter;
 import com.kaicomsol.kpos.callbacks.CloseClickListener;
 import com.kaicomsol.kpos.dialogs.CardCheckDialog;
+import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.fragment.ErrorFragment;
 import com.kaicomsol.kpos.fragment.HistoryFragment;
 import com.kaicomsol.kpos.fragment.PropertiesFragment;
@@ -159,15 +160,18 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
         vibrator.vibrate(1000);
         readCard.ReadTag(tag);
         boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+        if (response){
+            customerCardDismiss();
+            viewPager.setVisibility(View.VISIBLE);
+            tabLayout.setVisibility(View.VISIBLE);
+            vibrator.cancel();
 
-        customerCardDismiss();
-        viewPager.setVisibility(View.VISIBLE);
-        tabLayout.setVisibility(View.VISIBLE);
-        vibrator.cancel();
-
-        HttpResponsAsync.ReadCardArgument argument = readCard.readCardArgument;
-        NFCData.getInstance().setArgument(argument);
-
+            HttpResponsAsync.ReadCardArgument argument = readCard.readCardArgument;
+            NFCData.getInstance().setArgument(argument);
+        }else {
+            customerCardDismiss();
+            CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
+        }
 
     }
 

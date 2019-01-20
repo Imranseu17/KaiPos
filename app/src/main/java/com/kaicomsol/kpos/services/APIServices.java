@@ -10,6 +10,7 @@ import com.kaicomsol.kpos.models.Login;
 import com.kaicomsol.kpos.models.Meter;
 import com.kaicomsol.kpos.models.Payment;
 import com.kaicomsol.kpos.models.PaymentID;
+import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.models.Refund;
 import com.kaicomsol.kpos.models.SalesHistory;
 import com.kaicomsol.kpos.models.SubData;
@@ -53,7 +54,7 @@ public interface APIServices {
 
 
     @GET("/api/v1/payment/receipt")
-    Call<Payment> receiptPayment(@HeaderMap Map<String, String> headers, @Query("paymentId") String paymentId);
+    Call<Receipt> receiptPayment(@HeaderMap Map<String, String> headers, @Query("paymentId") String paymentId);
 
     @POST("/api/v1/pos/card/readCard")
     Call<ResponseBody> readCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
@@ -67,8 +68,11 @@ public interface APIServices {
                                     @Query("area") String area,
                                     @Query("address") String address,
                                     @Query("apartment") String apartment,
-                                    @Query("pageNumber") String pageNumber,
-                                    @Query("pageSize") String pageSize);
+                                    @Query("pageNumber") int pageNumber,
+                                    @Query("pageSize") int pageSize);
+
+    @POST("/api/v1/pos/card/lostCard")
+    Call<PaymentID> cancelPayment(@HeaderMap Map<String, String> headers, @Query("paymentId") String paymentId);
 
     @GET("/api/v1/customerAccounts/{accountNo}")
     Call<CustomerInfo> getCustomerInfo(@HeaderMap Map<String, String> headers, @Path("accountNo") String accountNo);

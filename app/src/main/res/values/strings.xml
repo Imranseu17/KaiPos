@@ -16,6 +16,7 @@
     <string name="preference_card_idm" translatable="false">preference_card_idm</string>
     <string name="preference_meter_type_id" translatable="false">preference_meter_type_id</string>
     <string name="preference_card_status" translatable="false">preference_card_status</string>
+    <string name="preference_payment_id" translatable="false">preference_payment_id</string>
     <string name="app_name" translatable="false">KPOS</string>
 
     <string name="welcome">Welcome to KGDCL PGM Point of sale</string>

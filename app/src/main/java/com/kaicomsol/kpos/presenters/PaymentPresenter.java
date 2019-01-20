@@ -7,9 +7,11 @@ import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.models.Payment;
 import com.kaicomsol.kpos.models.PaymentID;
+import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.RechargeStatus;
 
 import org.json.JSONObject;
 
@@ -68,9 +70,9 @@ public class PaymentPresenter {
                         if (response.isSuccessful()) {
                             Payment payment = response.body();
                             if (payment != null) {
-                                mViewInterface.onSuccess(payment, 100);
+                                mViewInterface.onSuccess(payment);
                             } else {
-                                mViewInterface.onError("Error fetching data", 100);
+                                mViewInterface.onError("Error fetching data", RechargeStatus.PAYMENT_ERROR.getCode());
                             }
                         } else getErrorMessage(response.code(), response.errorBody());
 
@@ -87,17 +89,17 @@ public class PaymentPresenter {
 
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error", 100);
+                            mViewInterface.onError("Server connection error", RechargeStatus.PAYMENT_ERROR.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException", 100);
+                            mViewInterface.onError("IOException", RechargeStatus.PAYMENT_ERROR.getCode());
                         } else {
-                            mViewInterface.onError("Unknown exception", 100);
+                            mViewInterface.onError("Unknown exception", RechargeStatus.PAYMENT_ERROR.getCode());
                         }
                     }
                 });
     }
 
-    public void capturePayment(String token, String paymentId) {
+    public void capturePayment(String token, final String paymentId) {
         Map<String, String> map = new HashMap<>();
         DebugLog.e(token);
         map.put("Authorization", token);
@@ -115,12 +117,17 @@ public class PaymentPresenter {
                         }
 
                         if (response.isSuccessful()) {
-                            mViewInterface.onSuccess(1);
+                            PaymentID payment = response.body();
+                            if (payment != null) {
+                                mViewInterface.onSuccess(payment.getPaymentId());
+                            } else {
+                                mViewInterface.onError("Error fetching data", RechargeStatus.CAPTURE_ERROR.getCode());
+                            }
                         } else {
                             if (response.code() == 500)
-                                mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()), 300);
+                                mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()), RechargeStatus.CAPTURE_ERROR.getCode());
                             else
-                                mViewInterface.onError(APIErrors.getErrorMessage(response.errorBody()), 300);
+                                mViewInterface.onError(APIErrors.getErrorMessage(response.errorBody()), RechargeStatus.CAPTURE_ERROR.getCode());
                         }
 
 
@@ -138,17 +145,74 @@ public class PaymentPresenter {
                             } else {
                                 ResponseBody responseBody = ((HttpException) e).response().errorBody();
                                 if (code == 500)
-                                    mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), 300);
+                                    mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.CAPTURE_ERROR.getCode());
                                 else
-                                    mViewInterface.onError(APIErrors.getErrorMessage(responseBody), 300);
+                                    mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.CAPTURE_ERROR.getCode());
                             }
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error", 300);
+                            mViewInterface.onError("Server connection error", RechargeStatus.CAPTURE_ERROR.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException", 300);
+                            mViewInterface.onError("IOException", RechargeStatus.CAPTURE_ERROR.getCode());
                         } else {
-                            mViewInterface.onError("Unknown exception", 300);
+                            mViewInterface.onError("Unknown exception", RechargeStatus.CAPTURE_ERROR.getCode());
+                        }
+                    }
+                });
+    }
+
+    public void cancelPayment(String token, final String paymentId) {
+        Map<String, String> map = new HashMap<>();
+        DebugLog.e(token);
+        map.put("Authorization", token);
+        map.put("Content-Type", "application/json");
+
+        mApiClient.getAPI()
+                .cancelPayment(map, paymentId)
+                .enqueue(new Callback<PaymentID>() {
+                    @Override
+                    public void onResponse(Call<PaymentID> call, Response<PaymentID> response) {
+
+                        if (response.code() == 401) {
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
+                        if (response.isSuccessful()) {
+                            mViewInterface.onSuccess(1);
+                        } else {
+                            if (response.code() == 500)
+                                mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()), RechargeStatus.CANCEL_ERROR.getCode());
+                            else
+                                mViewInterface.onError(APIErrors.getErrorMessage(response.errorBody()), RechargeStatus.CANCEL_ERROR.getCode());
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaymentID> call, Throwable e) {
+                        DebugLog.e(call.request().toString());
+                        if (e instanceof HttpException) {
+
+                            int code = ((HttpException) e).response().code();
+                            if (code == 401) {
+                                mViewInterface.onLogout(code);
+                                return;
+                            } else {
+                                ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                                if (code == 500)
+                                    mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.CANCEL_ERROR.getCode());
+                                else
+                                    mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.CANCEL_ERROR.getCode());
+                            }
+                        } else if (e instanceof SocketTimeoutException) {
+
+                            mViewInterface.onError("Server connection error", RechargeStatus.CANCEL_ERROR.getCode());
+                        } else if (e instanceof IOException) {
+                            mViewInterface.onError("IOException", RechargeStatus.CANCEL_ERROR.getCode());
+                        } else {
+                            mViewInterface.onError("Unknown exception", RechargeStatus.CANCEL_ERROR.getCode());
                         }
                     }
                 });
@@ -162,9 +226,9 @@ public class PaymentPresenter {
 
         mApiClient.getAPI()
                 .receiptPayment(map, paymentId)
-                .enqueue(new Callback<Payment>() {
+                .enqueue(new Callback<Receipt>() {
                     @Override
-                    public void onResponse(Call<Payment> call, Response<Payment> response) {
+                    public void onResponse(Call<Receipt> call, Response<Receipt> response) {
 
                         if (response.code() == 401) {
                             mViewInterface.onLogout(response.code());
@@ -172,11 +236,11 @@ public class PaymentPresenter {
                         }
 
                         if (response.isSuccessful()) {
-                            Payment payment = response.body();
-                            if (payment != null) {
-                                mViewInterface.onSuccess(payment, 200);
+                            Receipt receipt = response.body();
+                            if (receipt != null) {
+                                mViewInterface.onSuccess(receipt);
                             } else {
-                                mViewInterface.onError("Error fetching data", 100);
+                                mViewInterface.onError("Error fetching data", RechargeStatus.RECEIPT_ERROR.getCode());
                             }
                         } else getErrorMessage(response.code(), response.errorBody());
 
@@ -184,7 +248,7 @@ public class PaymentPresenter {
                     }
 
                     @Override
-                    public void onFailure(Call<Payment> call, Throwable e) {
+                    public void onFailure(Call<Receipt> call, Throwable e) {
                         DebugLog.e(call.request().toString());
                         if (e instanceof HttpException) {
 
@@ -195,17 +259,16 @@ public class PaymentPresenter {
                             } else {
                                 ResponseBody responseBody = ((HttpException) e).response().errorBody();
                                 if (code == 500)
-                                    mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), 300);
+                                    mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.RECEIPT_ERROR.getCode());
                                 else
-                                    mViewInterface.onError(APIErrors.getErrorMessage(responseBody), 300);
+                                    mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.RECEIPT_ERROR.getCode());
                             }
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error", 300);
+                            mViewInterface.onError("Server connection error", RechargeStatus.RECEIPT_ERROR.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException", 300);
                         } else {
-                            mViewInterface.onError("Unknown exception", 300);
+                            mViewInterface.onError("Unknown exception", RechargeStatus.RECEIPT_ERROR.getCode());
                         }
                     }
                 });
@@ -234,18 +297,9 @@ public class PaymentPresenter {
                             if (invoices != null) {
                                 mViewInterface.onSuccess(invoices);
                             } else {
-                                // mViewInterface.onError("Error fetching data");
-                                mViewInterface.onError(null, 200);
+                                mViewInterface.onError(null, RechargeStatus.INVOICE_ERROR.getCode());
                             }
-                        } else {
-                            mViewInterface.onError(null, 200);
-//                            try {
-//                                JSONObject jObjError = new JSONObject(response.errorBody().string());
-//                                mViewInterface.onError(jObjError.getString("message"));
-//                            } catch (Exception e) {
-//                                mViewInterface.onError("Error occurred! Please try again");
-//                            }
-                        }
+                        } else mViewInterface.onError(null, RechargeStatus.INVOICE_ERROR.getCode());
                     }
 
                     @Override
@@ -256,7 +310,7 @@ public class PaymentPresenter {
                             if (code == 401) {
                                 mViewInterface.onLogout(code);
                                 return;
-                              } else mViewInterface.onError(null, 200);
+                              } else mViewInterface.onError(null, RechargeStatus.INVOICE_ERROR.getCode());
 
                         }
 
@@ -389,7 +443,7 @@ public class PaymentPresenter {
                         }
                         if (response.isSuccessful()){
                             mViewInterface.onSuccess("readCard");
-                        }else mViewInterface.onError(null, 201);
+                        }else mViewInterface.onError(null, RechargeStatus.READ_CARD_ERROR.getCode());
                     }
 
                     @Override
@@ -400,7 +454,7 @@ public class PaymentPresenter {
                             if (code == 401) {
                                 mViewInterface.onLogout(code);
                                 return;
-                            } else mViewInterface.onError(null, 201);
+                            } else mViewInterface.onError(null, RechargeStatus.READ_CARD_ERROR.getCode());
 
                         }
                     }
@@ -410,10 +464,10 @@ public class PaymentPresenter {
     private void getErrorMessage(int code, ResponseBody responseBody) {
         switch (code) {
             case 500:
-                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), 100);
+                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
                 break;
             case 400:
-                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), 100);
+                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
                 break;
             case 401:
                 mViewInterface.onLogout(code);
@@ -421,13 +475,13 @@ public class PaymentPresenter {
             case 406:
                 try {
                     JSONObject jObjError = new JSONObject(responseBody.string());
-                    mViewInterface.onError(jObjError.getString("message"),406);
+                    mViewInterface.onError(jObjError.getString("message"),RechargeStatus.ERROR_CODE_406.getCode());
                 } catch (Exception e) {
-                    mViewInterface.onError(e.getMessage(),406);
+                    mViewInterface.onError(e.getMessage(),RechargeStatus.ERROR_CODE_406.getCode());
                 }
                 break;
             default:
-                mViewInterface.onError(APIErrors.getErrorMessage(responseBody), 100);
+                mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
         }
     }
 
