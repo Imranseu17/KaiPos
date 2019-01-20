@@ -203,8 +203,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         if (tag == null) return;
         readCard.ReadTag(tag);
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+        vibrator.vibrate(1000);
         if (response) {
-            vibrator.vibrate(1000);
             if (readCard.readCardArgument.CardGroup.equals("77")
                     && (readCard.readCardArgument.CardStatus.equals("06")
                     || readCard.readCardArgument.CardStatus.equals("30"))) {

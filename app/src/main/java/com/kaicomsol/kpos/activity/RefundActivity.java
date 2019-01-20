@@ -153,8 +153,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         readCard.ReadTag(tag);
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+        vibrator.vibrate(1000);
         if (response){
-            vibrator.vibrate(1000);
             if(readCard.readCardArgument.CardGroup.equals("77") && readCard.readCardArgument.CardStatus.equals("05")){
                 if (!isCardRefund){
                     customerCardDismiss();

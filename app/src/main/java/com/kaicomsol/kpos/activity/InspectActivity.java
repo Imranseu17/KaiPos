@@ -160,8 +160,8 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
 
         readCard.ReadTag(tag);
         boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+        vibrator.vibrate(1000);
         if (response){
-            vibrator.vibrate(1000);
             customerCardDismiss();
             viewPager.setVisibility(View.VISIBLE);
             tabLayout.setVisibility(View.VISIBLE);
