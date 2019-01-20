@@ -204,6 +204,7 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
 
         SharedDataSaveLoad.save(this,getString(R.string.preference_account_no), customer.getAccountNo());
         SharedDataSaveLoad.save(this,getString(R.string.preference_customer_code), customer.getCustomerCode());
+        SharedDataSaveLoad.save(this,getString(R.string.preference_prepaid_code), customer.getAccountNo());
         SharedDataSaveLoad.save(this,getString(R.string.preference_meter_serial), customer.getMeterSerial());
         SharedDataSaveLoad.save(this,getString(R.string.preference_card_idm), customer.getCardNo());
         SharedDataSaveLoad.save(this,getString(R.string.preference_card_status), customer.getStatus());

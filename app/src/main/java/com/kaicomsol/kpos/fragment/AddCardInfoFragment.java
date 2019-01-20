@@ -52,7 +52,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     private RechargeCardDialog mRechargeCardDialog = null;
     private CardPresenter mPresenter;
     private int emergencyValue = 0;
-    private String customerCode = "";
+    private String prepaidCode = "";
     //NFC card info initial
     ReadCard readCard = new ReadCard();
     private IntentFilter[] intentFiltersArray;
@@ -156,7 +156,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                     readCard.ReadTag(tag);
                     final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
                     if (response) {
-                        readCard.GamInitCard(tag, customerCode,(byte) 119, emergencyValue);
+                        readCard.GamInitCard(tag, prepaidCode,(byte) 119, emergencyValue);
                         rechargeCardDismiss();
                         String cardIdm = readCard.readCardArgument.CardIdm;
                         addCard(cardIdm);
@@ -172,7 +172,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
 
     private void viewConfig() {
-        customerCode = SharedDataSaveLoad.load(activity,getString(R.string.preference_customer_code));
+        prepaidCode = SharedDataSaveLoad.load(activity, getString(R.string.preference_prepaid_code));
         mPresenter = new CardPresenter(this);
         mRechargeCardDialog = new RechargeCardDialog();
         Bundle args = new Bundle();
@@ -183,7 +183,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         btn_delete.setOnClickListener(this);
         btn_lost.setOnClickListener(this);
 
-        DebugLog.e("Customer Code "+customerCode);
+        DebugLog.e("Prepaid Code "+ prepaidCode);
     }
 
     @Override
