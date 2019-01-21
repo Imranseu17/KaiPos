@@ -61,6 +61,9 @@ public class LoginPresenter {
 
                     @Override
                     public void onFailure(Call<Login> call, Throwable e) {
+
+                        e.getStackTrace();
+
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
