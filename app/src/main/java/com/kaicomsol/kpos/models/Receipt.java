@@ -22,7 +22,7 @@ public class Receipt {
     private String meterSerialNo;
     @SerializedName("gasUnit")
     @Expose
-    private Integer gasUnit;
+    private double gasUnit;
     @SerializedName("items")
     @Expose
     private Items items;
@@ -62,7 +62,7 @@ public class Receipt {
         return meterSerialNo;
     }
 
-    public Integer getGasUnit() {
+    public double getGasUnit() {
         return gasUnit;
     }
 
