@@ -14,6 +14,7 @@ import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
+import android.os.SystemClock;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
@@ -470,8 +471,12 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     @Override
-    public void onSuccess(int paymentId) {
-        SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(paymentId));
+    public void onSuccess(int paymentId, int code) {
+        if (code == RechargeStatus.CAPTURE_Success.getCode()){
+            SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(paymentId));
+        }else {
+            SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
+        }
     }
 
     @Override
@@ -638,6 +643,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             if (mPrinter.isConnected()) {
                                 outputStream = mPrinter.getSocket().getOutputStream();
                                 byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
+
                                 outputStream.write(printformat);
                                 printCustom("Money Receipt", 3, 1);
 
@@ -670,14 +676,15 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                                 printNewLine();
 
 
+
                             } else DebugLog.e("NOT CONNECTED");
-                            try {
-                                Thread.sleep(1000);
-                                mPrinter.finish();
-                                outputStream.flush();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+//                            try {
+//                                //Thread.sleep(50);
+//                                mPrinter.finish();
+//                                outputStream.flush();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
 
 
                         } catch (Exception e) {

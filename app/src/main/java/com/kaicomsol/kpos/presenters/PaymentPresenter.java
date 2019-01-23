@@ -119,7 +119,7 @@ public class PaymentPresenter {
                         if (response.isSuccessful()) {
                             PaymentID payment = response.body();
                             if (payment != null) {
-                                mViewInterface.onSuccess(payment.getPaymentId());
+                                mViewInterface.onSuccess(payment.getPaymentId(),RechargeStatus.CAPTURE_Success.getCode());
                             } else {
                                 mViewInterface.onError("Error fetching data", RechargeStatus.CAPTURE_ERROR.getCode());
                             }
@@ -179,7 +179,12 @@ public class PaymentPresenter {
                         }
 
                         if (response.isSuccessful()) {
-                            mViewInterface.onSuccess(1);
+                            PaymentID payment = response.body();
+                            if (payment != null) {
+                                mViewInterface.onSuccess(payment.getPaymentId(), RechargeStatus.CAPTURE_Success.getCode());
+                            } else {
+                                mViewInterface.onError("Error fetching data", RechargeStatus.CAPTURE_ERROR.getCode());
+                            }
                         } else {
                             if (response.code() == 500)
                                 mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()), RechargeStatus.CANCEL_ERROR.getCode());
