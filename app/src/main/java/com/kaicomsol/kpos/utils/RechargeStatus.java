@@ -4,7 +4,7 @@ public enum RechargeStatus {
 
     PAYMENT_SUCCESS(1,701),
     CANCEL_SUCCESS(2,702),
-    CAPTURE_Success(3,703),
+    CAPTURE_SUCCESS(3,703),
     PAYMENT_ERROR(4,801),
     CANCEL_ERROR(5,802),
     CAPTURE_ERROR(6,803),

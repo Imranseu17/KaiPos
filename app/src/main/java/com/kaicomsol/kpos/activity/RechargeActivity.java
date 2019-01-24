@@ -3,7 +3,6 @@ package com.kaicomsol.kpos.activity;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
-import android.os.SystemClock;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
@@ -26,7 +24,6 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -56,8 +53,6 @@ import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.fragment.InvoiceFragment;
 import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.models.Item;
-import com.kaicomsol.kpos.models.Items;
-import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.Payment;
 import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.models.Receipt;
@@ -72,8 +67,7 @@ import com.kaicomsol.kpos.utils.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
+import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -429,6 +423,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         if (checkConnection()) {
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
             String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
+            SharedDataSaveLoad.save(this, getString(R.string.preference_payment_success), true);
             mPresenter.cancelPayment(token, paymentID);
         }
     }
@@ -472,10 +467,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onSuccess(int paymentId, int code) {
-        if (code == RechargeStatus.CAPTURE_Success.getCode()){
+        if (code == RechargeStatus.CAPTURE_SUCCESS.getCode()){
             SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(paymentId));
         }else {
             SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
+            SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_success));
         }
     }
 
@@ -634,65 +630,69 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
 
 
+
+
+
                 mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
 
                     @Override
                     public void onConnected() {
-
+                        OutputStream opstream = null;
                         try {
-                            if (mPrinter.isConnected()) {
-                                outputStream = mPrinter.getSocket().getOutputStream();
-                                byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
-
-                                outputStream.write(printformat);
-                                printCustom("Money Receipt", 3, 1);
-
-                                Date date = new Date(receipt.getPaymentDate());
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
-                                printCustom(getFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
-                                printCustom(getFormatStringByLength("Prepaid Code", readCard.readCardArgument.CustomerId), 0, 1);
-                                printCustom(getFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
-                                printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
-                                printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
-                                printCustom(getFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                for (Item item : receipt.getItems().getItems()) {
-                                    printCustom(getFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(item.getQuantity()), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
-                                }
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
-                                printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
-                                printCustom("Customer Support (" + readCard.readCardArgument.CustomerId + ")", 0, 1);
-                                printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
-                                printNewLine();
-                                printNewLine();
-                                printNewLine();
-
-
-
-                            } else DebugLog.e("NOT CONNECTED");
-//                            try {
-//                                //Thread.sleep(50);
-//                                mPrinter.finish();
-//                                outputStream.flush();
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-
-
-                        } catch (Exception e) {
-
+                            opstream = mPrinter.getSocket().getOutputStream();
+                        } catch (IOException e) {
                             e.printStackTrace();
-
                         }
+                        outputStream = opstream;
 
+                        //print command
+                        try {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            outputStream = mPrinter.getSocket().getOutputStream();
+                            byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
+                            outputStream.write(printformat);
+                            printCustom("Money Receipt", 3, 1);
+
+                            Date date = new Date(receipt.getPaymentDate());
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+                            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+                            printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
+                            printCustom(getFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
+                            printCustom(getFormatStringByLength("Prepaid Code", readCard.readCardArgument.CustomerId), 0, 1);
+                            printCustom(getFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
+                            printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
+                            printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
+                            printCustom(getFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
+                            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+                            printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
+                            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+                            printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
+                            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+
+                            for (int i = 0; i < receipt.getItems().getItems().size(); i++){
+                                Item item = receipt.getItems().getItems().get(i);
+                                printCustom(getFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(item.getQuantity()), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                            }
+
+                            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+                            printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
+                            printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
+                            printCustom("Customer Support (" + readCard.readCardArgument.CustomerId + ")", 0, 1);
+                            printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
+                            printNewLine();
+                            printNewLine();
+                            printNewLine();
+
+                            outputStream.flush();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                     }
 
@@ -999,11 +999,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         StringBuilder builder = new StringBuilder();
         int count = (qty + amount).length();
         builder.append(item);
-        builder.append(getSpace(17 - item.length()));
+        builder.append(getSpace(21 - item.length()));
         builder.append(price);
-        builder.append(getSpace(10 - price.length()));
+        builder.append(getSpace(9 - price.length()));
         builder.append(qty);
-        builder.append(getSpace(14 - count));
+        builder.append(getSpace(12 - count));
         builder.append(amount);
         return builder.toString();
     }
@@ -1031,4 +1031,5 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         dateTime[1] = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
         return dateTime;
     }
+
 }
