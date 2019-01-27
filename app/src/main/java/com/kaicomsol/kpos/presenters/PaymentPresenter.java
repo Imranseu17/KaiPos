@@ -181,9 +181,9 @@ public class PaymentPresenter {
                         if (response.isSuccessful()) {
                             PaymentID payment = response.body();
                             if (payment != null) {
-                                mViewInterface.onSuccess(payment.getPaymentId(), RechargeStatus.CAPTURE_SUCCESS.getCode());
+                                mViewInterface.onSuccess(payment.getPaymentId(), RechargeStatus.CANCEL_SUCCESS.getCode());
                             } else {
-                                mViewInterface.onError("Error fetching data", RechargeStatus.CAPTURE_ERROR.getCode());
+                                mViewInterface.onError("Error fetching data", RechargeStatus.CANCEL_SUCCESS.getCode());
                             }
                         } else {
                             if (response.code() == 500)

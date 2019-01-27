@@ -18,7 +18,7 @@
     <string name="preference_card_status" translatable="false">preference_card_status</string>
     <string name="preference_prepaid_code" translatable="false">preference_prepaid_code</string>
     <string name="preference_payment_id" translatable="false">preference_payment_id</string>
-    <string name="preference_payment_success" translatable="false">preference_payment_success</string>
+    <string name="preference_cancel_failed" translatable="false">preference_cancel_failed</string>
     <string name="app_name" translatable="false">KPOS</string>
 
     <string name="welcome">Welcome to KGDCL PGM Point of sale</string>
