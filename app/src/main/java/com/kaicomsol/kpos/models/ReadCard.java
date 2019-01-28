@@ -1855,6 +1855,7 @@ public class ReadCard {
             CheckDataLength(data);
             BlockDataList dataList = new BlockDataList();
             dataList.AddReadBlockData(data[0], 3, false);
+
             SetCardStatus(data[0], 21);
             data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
             CheckDataLength(data);
@@ -1863,6 +1864,7 @@ public class ReadCard {
             writeWithoutEncryption(nfc, dataList);
             data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
             CheckDataLength(data);
+
             StringBuilder stringBuilder;
             if (GetCardStatus(data[0]) != Ascii.NAK) {
                 stringBuilder = new StringBuilder();
