@@ -51,6 +51,8 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.fragment.InvoiceFragment;
+import com.kaicomsol.kpos.golobal.Constants;
+import com.kaicomsol.kpos.golobal.GlobalBus;
 import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.models.Item;
 import com.kaicomsol.kpos.models.Payment;
@@ -59,11 +61,13 @@ import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.presenters.PaymentPresenter;
 import com.kaicomsol.kpos.printer.BluetoothPrinter;
+import com.kaicomsol.kpos.services.NetworkChangeReceiver;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.PrinterCommands;
 import com.kaicomsol.kpos.utils.RechargeStatus;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 import com.kaicomsol.kpos.utils.Utils;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -76,6 +80,8 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static com.kaicomsol.kpos.golobal.Constants.CONNECTIVITY_ACTION;
 
 public class RechargeActivity extends AppCompatActivity implements PaymentView, CloseClickListener {
 
@@ -94,6 +100,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private double totalAmount = 0.0;
     private static OutputStream outputStream;
     private Vibrator vibrator;
+    private IntentFilter intentFilter;
+    private NetworkChangeReceiver receiver;
 
     //Bind component
     @BindView(R.id.layout_main)
@@ -174,6 +182,34 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         super.onResume();
         //show card dialog
         mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+        //Register connectivity check
+        registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mAdapter.disableForegroundDispatch(this);
+        //Un-Register connectivity check
+        unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GlobalBus.getBus().register(this);
+    }
+
+    //Subscribe to listen the event
+    @Subscribe
+    public void getMessage(String status) {
+        DebugLog.e(status);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GlobalBus.getBus().unregister(this);
     }
 
     private void getInvoices(String cardNo) {
@@ -216,15 +252,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         vibrator.cancel();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mAdapter.disableForegroundDispatch(this);
-    }
-
     private void viewConfig() {
 
-
+        //internet connectivity receiver
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(CONNECTIVITY_ACTION);
+        receiver = new NetworkChangeReceiver();
+        //Vibrator init
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         //card check dialog
         mCardCheckDialog = CardCheckDialog.newInstance(this, "User");
@@ -423,21 +457,22 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         if (checkConnection()) {
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
             String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-            SharedDataSaveLoad.save(this, getString(R.string.preference_payment_success), true);
             mPresenter.cancelPayment(token, paymentID);
-        }
+            CustomAlertDialog.showError(this, "Transaction failed");
+        }else SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed),true);
     }
 
     @Override
     public void onSuccess(Payment payment) {
         capturePayment(String.valueOf(payment.getPaymentId()));
         rechargeCardDismiss();
-        String amount = txt_total_amount.getText().toString().trim();
+        //String amount = txt_total_amount.getText().toString().trim();
         double value = payment.getReceipt().getGasUnit();
-        readCard.GasChargeCard(tag, value,
-                0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
-        int newHistoryNo = payment.getNewHistoryNo();
-        print(payment.getReceipt(), newHistoryNo);
+        boolean response = readCard.GasChargeCard(tag, value, 0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
+        if (response){
+            int newHistoryNo = payment.getNewHistoryNo();
+            print(payment.getReceipt(), newHistoryNo);
+        }else cancelPayment();
     }
 
     @Override
@@ -471,7 +506,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(paymentId));
         }else {
             SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
-            SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_success));
+            SharedDataSaveLoad.remove(this, getString(R.string.preference_cancel_failed));
         }
     }
 
@@ -499,6 +534,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 break;
             case CANCEL_ERROR:
                 hideAnimation();
+                SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed),true);
                 break;
             case CAPTURE_ERROR:
                 break;
@@ -795,6 +831,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         startActivityForResult(intent, REQUEST_ENABLE_BT);
     }
 
+    @Override
+    protected void onDestroy() {
+        boolean isCancelFailed = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_cancel_failed));
+        if (!isCancelFailed){
+            SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
+        }
+        super.onDestroy();
+    }
 
     @Override
     public void onCloseClick(int id) {
@@ -1031,5 +1075,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         dateTime[1] = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
         return dateTime;
     }
+
+
+
+
 
 }
