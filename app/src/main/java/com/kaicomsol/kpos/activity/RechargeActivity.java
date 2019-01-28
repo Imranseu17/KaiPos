@@ -467,12 +467,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         //String amount = txt_total_amount.getText().toString().trim();
         rechargeCardDismiss();
         double value = payment.getReceipt().getGasUnit();
-        boolean response = readCard.GasChargeCard(tag, value, 0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
+        boolean response = readCard.GasChargeCardByAnwar(tag, value, 0, 0, payment.getNewHistoryNo(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
         boolean response1 = readCard.WriteStatus(tag, payment.getNewHistoryNo());
-        if (response && response1){
-            capturePayment(String.valueOf(payment.getPaymentId()));
-            print(payment.getReceipt());
-        }else cancelPayment();
+        DebugLog.e(response+" IM ");
+//        boolean response1 = readCard.WriteStatus(tag, payment.getNewHistoryNo());
+//        if (response && response1){
+//            capturePayment(String.valueOf(payment.getPaymentId()));
+//            print(payment.getReceipt());
+//        }else cancelPayment();
     }
 
     @Override
