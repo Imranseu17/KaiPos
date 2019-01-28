@@ -838,17 +838,6 @@ public class ReadCard {
                 byte _cardStatus = GetCardStatus(data[0]);
                 datalist.AddReadBlockData(data[0], 3, false);
 
-
-                SetCardStatus(data[0], 21);
-                data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
-                CheckDataLength(data);
-                datalist.AddReadBlockData(data[0], 5, false);
-                SetCardHistoryNo(data[0], CardHistoryNo);
-                writeWithoutEncryption(nfc, datalist);
-                data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
-                CheckDataLength(data);
-
-
                 if (this.isChargeCheckFailed || isGasChargeCard(_cardStatus, _cardGroup)) {
                     byte[] req = readWithoutEncryption(TargetIDm, size, targetServiceCode, 5);
                     byte[] res = nfc.transceive(req);
@@ -924,6 +913,7 @@ public class ReadCard {
                         }
                     }
                     ReturnLocale();
+                    DebugLog.e("ONE");
                     return false;
                 }
                 StringBuilder stringBuilder = new StringBuilder();
@@ -950,6 +940,7 @@ public class ReadCard {
                     }
                 }
                 ReturnLocale();
+                DebugLog.e("TWO");
                 return false;
             }
             StringBuilder stringBuilder2 = new StringBuilder();
@@ -967,6 +958,7 @@ public class ReadCard {
                 }
             }
             ReturnLocale();
+            DebugLog.e("THREE");
             return false;
         } catch (Exception e3) {
             Exception e4 = e3;
@@ -986,6 +978,7 @@ public class ReadCard {
                 }
             }
             ReturnLocale();
+            DebugLog.e("FOUR");
             return false;
         } catch (Throwable th) {
             Throwable th2 = th;
@@ -997,6 +990,7 @@ public class ReadCard {
                 }
             }
             ReturnLocale();
+            DebugLog.e("FIVE");
             return false;
         }
     }

@@ -183,7 +183,7 @@ public class PaymentPresenter {
                             if (payment != null) {
                                 mViewInterface.onSuccess(payment.getPaymentId(), RechargeStatus.CANCEL_SUCCESS.getCode());
                             } else {
-                                mViewInterface.onError("Error fetching data", RechargeStatus.CANCEL_SUCCESS.getCode());
+                                mViewInterface.onError("Error fetching data", RechargeStatus.CANCEL_ERROR.getCode());
                             }
                         } else {
                             if (response.code() == 500)

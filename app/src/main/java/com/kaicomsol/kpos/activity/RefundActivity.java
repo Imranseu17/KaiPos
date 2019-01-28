@@ -97,7 +97,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
         mCardCheckDialog = CardCheckDialog.newInstance(this,"User");
         mRechargeCardDialog = new RechargeCardDialog();
         Bundle args = new Bundle();
-        args.putString("msg", "Refund successfully");
+        args.putString("msg", "Until refund success");
         mRechargeCardDialog.setArguments(args);
 
         mCardCheckDialog.setCancelable(false);
