@@ -176,7 +176,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         mPresenter = new CardPresenter(this);
         mRechargeCardDialog = new RechargeCardDialog();
         Bundle args = new Bundle();
-        args.putString("msg", "Card added successfully");
+        args.putString("msg", "Until card added success");
         mRechargeCardDialog.setArguments(args);
         btn_add.setOnClickListener(this);
         btn_active.setOnClickListener(this);
