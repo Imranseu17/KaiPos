@@ -83,11 +83,10 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         switch (getItemViewType(position)){
             case ITEM:
                 ViewHolder vh = (ViewHolder) holder;
-                vh.txt_customer_code.setText(customer.getCustomerCode() != null ? customer.getCustomerCode() : "N/A");
+                vh.txt_customer_code.setText(customer.getCustomerCode() != null ? customer.getErpCode() : "N/A");
                 vh.txt_account_no.setText(customer.getAccountNo() != null ? customer.getAccountNo() : "N/A");
 
                 vh.txt_card_no.setText(customer.getCardNo() != null ? customer.getCardNo() : "N/A");
-                vh.txt_erp_code.setText(customer.getErpCode() != null ? customer.getErpCode() : "N/A");
 
                 vh.txt_metro.setText(customer.getMetro() != null ? customer.getMetro() : "N/A");
                 vh.txt_zone.setText(customer.getZone() != null ? customer.getZone() : "N/A");
@@ -154,8 +153,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView txt_account_no;
         @BindView(R.id.txt_card_no)
         TextView txt_card_no;
-        @BindView(R.id.txt_erp_code)
-        TextView txt_erp_code;
+
         @BindView(R.id.txt_metro)
         TextView txt_metro;
         @BindView(R.id.txt_zone)

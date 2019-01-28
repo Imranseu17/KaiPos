@@ -22,6 +22,8 @@ public class Constants {
     //public static String BASE_URL = "http://192.168.1.42:8080";
 
 
+
+
     public static final String CONNECT_TO_WIFI = "WIFI";
     public static final String CONNECT_TO_MOBILE = "MOBILE";
     public static final String NOT_CONNECT = "NOT_CONNECT";

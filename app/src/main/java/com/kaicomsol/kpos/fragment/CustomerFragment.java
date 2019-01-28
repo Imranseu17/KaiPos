@@ -143,7 +143,7 @@ public class CustomerFragment extends Fragment implements CustomerInfoView {
     private void dataCustomer(CustomerAccountInfo customerInfo){
 
         if(customerInfo == null) return;
-        txt_customer_code.setText(customerInfo.getCustomerCode() != null ? customerInfo.getCustomerCode() : "N/A");
+        txt_customer_code.setText(customerInfo.getCustomerCode() != null ? customerInfo.getErpCode() : "N/A");
         txt_account_no.setText(customerInfo.getAccountNo() != null ? customerInfo.getAccountNo() : "N/A");
         txt_address.setText(customerInfo.getAddress() != null ? customerInfo.getAddress() : "N/A");
         txt_apartment.setText(customerInfo.getApartment() != null ? customerInfo.getApartment() : "N/A");

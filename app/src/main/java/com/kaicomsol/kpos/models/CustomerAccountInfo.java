@@ -11,6 +11,9 @@ public class CustomerAccountInfo {
     @SerializedName("accountNo")
     @Expose
     private String accountNo;
+    @SerializedName("erpCode")
+    @Expose
+    private String erpCode;
     @SerializedName("address")
     @Expose
     private String address;
@@ -312,5 +315,13 @@ public class CustomerAccountInfo {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getErpCode() {
+        return erpCode;
+    }
+
+    public void setErpCode(String erpCode) {
+        this.erpCode = erpCode;
     }
 }

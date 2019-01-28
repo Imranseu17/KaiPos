@@ -821,6 +821,186 @@ public class ReadCard {
         }
     }
 
+    public boolean GasChargeCardByAnwar(Tag tag, double Credit, double Unit, int BasicFee, int CardHistoryNo, double emergencyValue, String meter) {
+        String str = meter;
+        NfcF nfc = NfcF.get(tag);
+        try {
+            nfc.connect();
+            String _cardIdm = GetCardIdm(TargetIDm);
+            if (this.strCardId.equals(_cardIdm)) {
+                byte[][] data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, this.targetServiceCode, 2)));
+                CheckDataLength(data);
+                byte _cardGroup = GetCardGroup(data[0]);
+                BlockDataList datalist = new BlockDataList();
+                datalist.AddReadBlockData(data[0], 2, false);
+                data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 3)));
+                CheckDataLength(data);
+                byte _cardStatus = GetCardStatus(data[0]);
+                datalist.AddReadBlockData(data[0], 3, false);
+
+
+                SetCardStatus(data[0], 21);
+                data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
+                CheckDataLength(data);
+                datalist.AddReadBlockData(data[0], 5, false);
+                SetCardHistoryNo(data[0], CardHistoryNo);
+                writeWithoutEncryption(nfc, datalist);
+                data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
+                CheckDataLength(data);
+
+
+                if (this.isChargeCheckFailed || isGasChargeCard(_cardStatus, _cardGroup)) {
+                    byte[] req = readWithoutEncryption(TargetIDm, size, targetServiceCode, 5);
+                    byte[] res = nfc.transceive(req);
+                    CheckDataLength(parse(res));
+                    SetCredit(datalist.GetReadBlockData(3), Credit);
+                    SetUnit(datalist.GetReadBlockData(3), Unit);
+                    SetBasicFee(datalist.GetReadBlockData(3), BasicFee);
+                    CngModel tempCngModel = new CngModel();
+                    tempCngModel.ContinueFlg1 = 1;
+                    tempCngModel.ContinueFlg2 = 1;
+                    req = readWithoutEncryption(TargetIDm, size, targetServiceCode, 5);
+                    res = nfc.transceive(req);
+                    data = parse(res);
+                    CheckDataLength(data);
+                    datalist.AddReadBlockData(data[0], 5, false);
+                    SetCng(datalist.GetReadBlockData(5), tempCngModel);
+                    ContinueModel tempContinueModel = new ContinueModel();
+                    tempContinueModel.ContinueTime = 10;
+                    tempContinueModel.ContinueValue = 10;
+                    tempContinueModel.ContinueCon = 1;
+                    tempContinueModel.ContinueFlg = 1;
+                    req = readWithoutEncryption(TargetIDm, size, targetServiceCode, 6);
+                    res = nfc.transceive(req);
+                    byte[][] data2 = parse(res);
+                    CheckDataLength(data2);
+                    datalist.AddReadBlockData(data2[0], 6, false);
+                    SetContinue1(datalist.GetReadBlockData(6), tempContinueModel);
+                    ContinueModel tempContinueModel2 = new ContinueModel();
+                    tempContinueModel2.ContinueTime = 24;
+                    tempContinueModel2.ContinueValue = 5;
+                    tempContinueModel2.ContinueCon = 2;
+                    tempContinueModel2.ContinueFlg = 1;
+                    SetContinue2(datalist.GetReadBlockData(6), tempContinueModel2);
+                    Cng2Model tempCng2Model = new Cng2Model();
+                    tempCng2Model.QuakeConFlg = 1;
+                    tempCng2Model.EmergencyConFlg = 1;
+                    tempCng2Model.EmergencyValueFlg = 1;
+                    ContinueModel tempContinueModel22 = tempContinueModel2;
+                    CngModel tempCngModel2 = tempCngModel;
+                    byte[] req2 = readWithoutEncryption(TargetIDm, size, targetServiceCode, 8);
+                    byte[] res2 = nfc.transceive(req2);
+                    data2 = parse(res2);
+                    CheckDataLength(data2);
+                    datalist.AddReadBlockData(data2[0], 8, false);
+                    SetCng2(datalist.GetReadBlockData(8), tempCng2Model);
+                    ParModel tempParModel = new ParModel();
+                    tempParModel.QuakeCon = 2;
+                    tempParModel.EmergencyCon = 1;
+                    SetPar(datalist.GetReadBlockData(8), tempParModel);
+                    byte _cardGroup2 = _cardGroup;
+                    SetEmergencyValue(datalist.GetReadBlockData(8), emergencyValue);
+                    writeWithoutEncryption(nfc, datalist);
+                    //LogUtil.i("Success to write a card.");
+                    if (CheckWroteData(datalist, nfc, tempCngModel2, tempContinueModel, tempContinueModel22, tempCng2Model, tempParModel, emergencyValue)) {
+                        //LogUtil.i("Success to check a written card.");
+                        this.isChargeCheckFailed = false;
+                        if (nfc != null) {
+                            try {
+                                nfc.close();
+                            } catch (IOException e) {
+                                //LogUtil.i(e.toString());
+                            }
+                        }
+                        ReturnLocale();
+                        return true;
+                    }
+                    this.isChargeCheckFailed = true;
+                    if (nfc != null) {
+                        try {
+                            nfc.close();
+                        } catch (IOException e2) {
+                            //LogUtil.i(e2.toString());
+                        }
+                    }
+                    ReturnLocale();
+                    return false;
+                }
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("At isGasChargeCard.\nisChargeCheckFailed : ");
+                stringBuilder.append(this.isChargeCheckFailed);
+                stringBuilder.append("\nCardId : ");
+                stringBuilder.append(this.strCardId);
+                stringBuilder.append("\nMeter : ");
+                stringBuilder.append(str);
+                stringBuilder.append("\nCardStatus : ");
+                stringBuilder.append(_cardStatus);
+                stringBuilder.append("\nStatus : ");
+                stringBuilder.append(data[0]);
+                stringBuilder.append("\nHistoryNo : ");
+                stringBuilder.append(CardHistoryNo);
+                stringBuilder.append("\nCardGroup : ");
+                stringBuilder.append(_cardGroup);
+                //LogUtil.i(stringBuilder.toString());
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException e22) {
+                        //LogUtil.i(e22.toString());
+                    }
+                }
+                ReturnLocale();
+                return false;
+            }
+            StringBuilder stringBuilder2 = new StringBuilder();
+            stringBuilder2.append("At CardId checking.\n");
+            stringBuilder2.append(this.strCardId);
+            stringBuilder2.append("\n");
+            stringBuilder2.append(str);
+            stringBuilder2.append("\n");
+            //LogUtil.i(stringBuilder2.toString());
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e222) {
+                    //LogUtil.i(e222.toString());
+                }
+            }
+            ReturnLocale();
+            return false;
+        } catch (Exception e3) {
+            Exception e4 = e3;
+            StringBuilder stringBuilder3 = new StringBuilder();
+            stringBuilder3.append("Exeption at GasChargeCard.\n");
+            stringBuilder3.append(this.strCardId);
+            stringBuilder3.append("\n");
+            stringBuilder3.append(str);
+            stringBuilder3.append("\n");
+//            stringBuilder3.append(//LogUtil.Output(e4.getStackTrace()));
+            //LogUtil.i(stringBuilder3.toString());
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e2222) {
+                    //LogUtil.i(e2222.toString());
+                }
+            }
+            ReturnLocale();
+            return false;
+        } catch (Throwable th) {
+            Throwable th2 = th;
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e22222) {
+                    //LogUtil.i(e22222.toString());
+                }
+            }
+            ReturnLocale();
+            return false;
+        }
+    }
+
     private void CheckDataLength(byte[][] data) {
         if (this.size != data.length) {
             RuntimeException runtimeException = new RuntimeException("CheckDataLength");

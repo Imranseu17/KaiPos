@@ -71,7 +71,7 @@ public interface APIServices {
                                     @Query("pageNumber") int pageNumber,
                                     @Query("pageSize") int pageSize);
 
-    @POST("/api/v1/pos/card/lostCard")
+    @POST("/api/v1/payment/cancelAuthorizedPayment")
     Call<PaymentID> cancelPayment(@HeaderMap Map<String, String> headers, @Query("paymentId") String paymentId);
 
     @GET("/api/v1/customerAccounts/{accountNo}")
@@ -113,5 +113,5 @@ public interface APIServices {
     @POST("/api/v1/pos/card/lostCard")
     Call<ResponseBody> lostCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 
-    ///api/v1/pos/activatePosDevice/?token=' + self.state.posToken + '&deviceId=' + socResponce
+
 }
