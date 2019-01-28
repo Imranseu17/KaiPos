@@ -458,6 +458,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
             String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
             mPresenter.cancelPayment(token, paymentID);
+            CustomAlertDialog.showError(this, "Transaction failed");
         }else SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed),true);
     }
 
@@ -465,12 +466,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     public void onSuccess(Payment payment) {
         capturePayment(String.valueOf(payment.getPaymentId()));
         rechargeCardDismiss();
-        String amount = txt_total_amount.getText().toString().trim();
+        //String amount = txt_total_amount.getText().toString().trim();
         double value = payment.getReceipt().getGasUnit();
-        readCard.GasChargeCard(tag, value,
-                0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
-        int newHistoryNo = payment.getNewHistoryNo();
-        print(payment.getReceipt(), newHistoryNo);
+        boolean response = readCard.GasChargeCard(tag, value, 0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
+        if (response){
+            int newHistoryNo = payment.getNewHistoryNo();
+            print(payment.getReceipt(), newHistoryNo);
+        }else cancelPayment();
     }
 
     @Override
