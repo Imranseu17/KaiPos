@@ -464,14 +464,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onSuccess(Payment payment) {
-        capturePayment(String.valueOf(payment.getPaymentId()));
-        rechargeCardDismiss();
         //String amount = txt_total_amount.getText().toString().trim();
+        rechargeCardDismiss();
         double value = payment.getReceipt().getGasUnit();
         boolean response = readCard.GasChargeCard(tag, value, 0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
-        if (response){
-            int newHistoryNo = payment.getNewHistoryNo();
-            print(payment.getReceipt(), newHistoryNo);
+        boolean response1 = readCard.WriteStatus(tag, payment.getNewHistoryNo());
+        if (response && response1){
+            capturePayment(String.valueOf(payment.getPaymentId()));
+            print(payment.getReceipt());
         }else cancelPayment();
     }
 
@@ -642,14 +642,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
 
-    private void print(Receipt receipt, int newHistoryNo) {
+    private void print(Receipt receipt) {
 
-        boolean response = readCard.WriteStatus(tag, newHistoryNo);
-        if (response) {
-            bluetoothPrint(receipt);
-            getSupportActionBar().setTitle("Print receipts");
-            showPrintLayout(receipt);
-        } else cancelPayment();
+        bluetoothPrint(receipt);
+        getSupportActionBar().setTitle("Print receipts");
+        showPrintLayout(receipt);
     }
 
     private void bluetoothPrint(final Receipt receipt) {
