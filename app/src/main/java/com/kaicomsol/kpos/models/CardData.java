@@ -9,13 +9,25 @@ public class CardData {
 
     @SerializedName("meterCardList")
     @Expose
-    private List<MeterCard> meterCards = null;
+    private List<MeterCard> meterCardList = null;
+    @SerializedName("unitPrice")
+    @Expose
+    private double unitPrice;
+    @SerializedName("basePrice")
+    @Expose
+    private int basePrice;
 
     public List<MeterCard> getMeterCards() {
-        return meterCards;
+        return meterCardList;
     }
 
-    public void setMeterCards(List<MeterCard> meterCards) {
-        this.meterCards = meterCards;
+    public double getUnitPrice() {
+        return unitPrice;
     }
+
+    public int getBasePrice() {
+        return basePrice;
+    }
+
+
 }

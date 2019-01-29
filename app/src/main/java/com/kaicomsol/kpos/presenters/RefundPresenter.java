@@ -5,6 +5,7 @@ import com.kaicomsol.kpos.callbacks.RefundView;
 import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.models.Refund;
 import com.kaicomsol.kpos.models.Success;
+import com.kaicomsol.kpos.models.UpdateResponse;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.WorkStatus;
@@ -107,7 +108,7 @@ public class RefundPresenter {
                 });
     }
 
-    public void updateRefund(String token,String id) {
+    public void updateRefund(String token, String id) {
         Map<String, String> map = new HashMap<>();
         DebugLog.e(token);
         map.put("Authorization", token);
@@ -119,22 +120,22 @@ public class RefundPresenter {
 
         mApiClient.getAPI()
                 .updateRefund(map, jsonObject)
-                .enqueue(new Callback<Success>() {
+                .enqueue(new Callback<UpdateResponse>() {
                     @Override
-                    public void onResponse(Call<Success> call, Response<Success> response) {
+                    public void onResponse(Call<UpdateResponse> call, Response<UpdateResponse> response) {
                         if (response.code() == 401) {
                             mViewInterface.onLogout(response.code());
                             return;
                         }
                         if (response.isSuccessful()){
-                            Success success = response.body();
-                            mViewInterface.onSuccess(success);
+                            UpdateResponse updateResponse = response.body();
+                            mViewInterface.onSuccess(updateResponse);
                         }else errorHandle(response.code(), response.errorBody());
 
                     }
 
                     @Override
-                    public void onFailure(Call<Success> call, Throwable e) {
+                    public void onFailure(Call<UpdateResponse> call, Throwable e) {
                         DebugLog.e(call.request().toString());
                         if (e instanceof HttpException) {
 

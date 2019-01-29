@@ -52,9 +52,13 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     private RechargeCardDialog mRechargeCardDialog = null;
     private CardPresenter mPresenter;
     private int emergencyValue = 0;
+    private double unitPrice = 0.0;
+    private int basePrice = 0;
     private String prepaidCode = "";
+    private boolean cardDeleteHidden = false;
     //NFC card info initial
     ReadCard readCard = new ReadCard();
+    public Tag myTag = null;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
     private NfcAdapter mAdapter;
@@ -140,6 +144,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         mAdapter.enableReaderMode(getActivity(), new NfcAdapter.ReaderCallback() {
             @Override
             public void onTagDiscovered(Tag tag) {
+                myTag = tag;
                 statusChecked(tag);
 
             }
@@ -156,12 +161,9 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                     readCard.ReadTag(tag);
                     final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
                     if (response) {
-                        readCard.GamInitCard(tag, prepaidCode,(byte) 119, emergencyValue);
-                        rechargeCardDismiss();
                         String cardIdm = readCard.readCardArgument.CardIdm;
                         addCard(cardIdm);
                     } else CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
-
 
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
@@ -184,6 +186,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         btn_lost.setOnClickListener(this);
 
         DebugLog.e("Prepaid Code "+ prepaidCode);
+
     }
 
     @Override
@@ -248,11 +251,9 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
     }
 
-    private void deleteCard() {
+    private void deleteCard(String cardIdm) {
 
         String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
-        String cardIdm = txt_card_no.getText().toString().trim();
-
         DebugLog.e(cardIdm);
         if (checkConnection()) {
             mPresenter.deleteCard(token, cardIdm);
@@ -300,6 +301,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         if (cardData != null) {
             if (cardData.getMeterCards() != null && cardData.getMeterCards().size() > 0) {
                 hideAnimation();
+                unitPrice = cardData.getUnitPrice();
+                basePrice = cardData.getBasePrice();
                 MeterCard meterCard = cardData.getMeterCards().get(0);
                 addValue(meterCard);
             } else {
@@ -320,13 +323,29 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onAddCard(boolean isAdded) {
-        hideAnimation();
-        CustomAlertDialog.showSuccess(activity, "Card add successfully");
-        disableButton(btn_add);
-        activeButton(btn_active);
-        disableButton(btn_delete);
-        disableButton(btn_lost);
-        getMeterInfo();
+        boolean response = false;
+        try {
+            response = readCard.GamInitCard(myTag, prepaidCode,(byte) 119, unitPrice, basePrice, emergencyValue);
+        } catch (Throwable throwable) {
+            response = false;
+            throwable.printStackTrace();
+        }
+        if (response){
+            hideAnimation();
+            CustomAlertDialog.showSuccess(activity, "Card add successfully");
+            disableButton(btn_add);
+            activeButton(btn_active);
+            disableButton(btn_delete);
+            disableButton(btn_lost);
+            getMeterInfo();
+        }else {
+            CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
+            String cardIdm = readCard.readCardArgument.CardIdm;
+            cardDeleteHidden = true;
+            deleteCard(cardIdm);
+        }
+
+        rechargeCardDismiss();
     }
 
     @Override
@@ -343,7 +362,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onDeleteCard(boolean isDelete) {
         hideAnimation();
-        CustomAlertDialog.showSuccess(activity, "Card delete successfully");
+        if (!cardDeleteHidden) CustomAlertDialog.showSuccess(activity, "Card delete successfully");
         activeButton(btn_add);
         disableButton(btn_active);
         disableButton(btn_delete);
@@ -418,17 +437,18 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                 .setAnimationEnable(true)
                 .setTitleText(R.string.delete)
                 .setContentText(R.string.warning_delete_card)
-                .setNegativeListener(getString(R.string.cancel), new ChooseAlertDialog.OnNegativeListener() {
+                .setNegativeListener(getString(R.string.yes), new ChooseAlertDialog.OnNegativeListener() {
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
+                        String cardIdm = txt_card_no.getText().toString().trim();
+                        deleteCard(cardIdm);
                     }
                 })
-                .setPositiveListener(getString(R.string.yes), new ChooseAlertDialog.OnPositiveListener() {
+                .setPositiveListener(getString(R.string.cancel), new ChooseAlertDialog.OnPositiveListener() {
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
-                        deleteCard();
                     }
                 }).show();
     }
