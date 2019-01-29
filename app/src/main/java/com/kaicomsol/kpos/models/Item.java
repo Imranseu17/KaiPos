@@ -13,7 +13,7 @@ public class Item {
     private Double price;
     @SerializedName("quantity")
     @Expose
-    private Integer quantity;
+    private double quantity;
     @SerializedName("total")
     @Expose
     private Double total;
@@ -34,11 +34,11 @@ public class Item {
         this.price = price;
     }
 
-    public Integer getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
 
