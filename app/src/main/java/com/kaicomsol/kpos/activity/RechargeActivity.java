@@ -577,7 +577,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
            try {
                double credit = Double.parseDouble(readCard.readCardArgument.Credit) - payment.getReceipt().getGasUnit();
                double emergencyValue = Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue) - payment.getEmergencyValue();
-               readCard.GasChargeCard(tag, credit, 0, 0, emergencyValue, payment.getReceipt().getMeterSerialNo());
+               readCard.GasChargeCard(tag, credit, payment.getUnitPrice(), payment.getBaseFee(), emergencyValue, payment.getReceipt().getMeterSerialNo());
            }catch (Exception e){
                return false;
            }
@@ -1091,9 +1091,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         dateTime[1] = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
         return dateTime;
     }
-
-
-
 
 
 }

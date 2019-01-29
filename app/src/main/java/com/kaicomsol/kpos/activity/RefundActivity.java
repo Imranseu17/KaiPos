@@ -31,6 +31,7 @@ import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.models.Refund;
 import com.kaicomsol.kpos.models.Success;
+import com.kaicomsol.kpos.models.UpdateResponse;
 import com.kaicomsol.kpos.presenters.RefundPresenter;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
@@ -39,7 +40,7 @@ import java.text.DecimalFormat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RefundActivity extends AppCompatActivity implements RefundView,CloseClickListener {
+public class RefundActivity extends AppCompatActivity implements RefundView, CloseClickListener {
 
     private CardCheckDialog mCardCheckDialog = null;
     private RechargeCardDialog mRechargeCardDialog = null;
@@ -57,13 +58,20 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     private Vibrator vibrator;
 
     //Bind component
-    @BindView(R.id.layout_main) LinearLayout layout_main;
-    @BindView(R.id.layout_refund) LinearLayout layout_refund;
-    @BindView(R.id.txt_account_no) TextView txt_account_no;
-    @BindView(R.id.txt_credit) TextView txt_credit;
-    @BindView(R.id.txt_refund1) TextView txt_refund1;
-    @BindView(R.id.txt_refund2) TextView txt_refund2;
-    @BindView(R.id.btn_submit) ImageView btn_submit;
+    @BindView(R.id.layout_main)
+    LinearLayout layout_main;
+    @BindView(R.id.layout_refund)
+    LinearLayout layout_refund;
+    @BindView(R.id.txt_account_no)
+    TextView txt_account_no;
+    @BindView(R.id.txt_credit)
+    TextView txt_credit;
+    @BindView(R.id.txt_refund1)
+    TextView txt_refund1;
+    @BindView(R.id.txt_refund2)
+    TextView txt_refund2;
+    @BindView(R.id.btn_submit)
+    ImageView btn_submit;
 
 
     @Override
@@ -94,7 +102,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     private void viewConfig() {
 
         readCard = new ReadCard();
-        mCardCheckDialog = CardCheckDialog.newInstance(this,"User");
+        mCardCheckDialog = CardCheckDialog.newInstance(this, "User");
         mRechargeCardDialog = new RechargeCardDialog();
         Bundle args = new Bundle();
         args.putString("msg", "Until refund success");
@@ -138,7 +146,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     // manages key presses not handled in other Views from this Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
         }
 
@@ -154,9 +162,9 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
         readCard.ReadTag(tag);
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         vibrator.vibrate(1000);
-        if (response){
-            if(readCard.readCardArgument.CardGroup.equals("77") && readCard.readCardArgument.CardStatus.equals("05")){
-                if (!isCardRefund){
+        if (response) {
+            if (readCard.readCardArgument.CardGroup.equals("77") && readCard.readCardArgument.CardStatus.equals("05")) {
+                if (!isCardRefund) {
                     customerCardDismiss();
                     layout_refund.setVisibility(View.VISIBLE);
                     txt_account_no.setText(readCard.readCardArgument.CustomerId);
@@ -164,18 +172,19 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
                     txt_refund1.setText(readCard.readCardArgument.Refund1);
                     txt_refund2.setText(readCard.readCardArgument.Refund2);
 
-                    if (checkConnection()){
+                    if (checkConnection()) {
                         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
-                        mPresenter.getIssueRefund(token,readCard.readCardArgument.CardIdm,readCard.readCardArgument.Credit,readCard.readCardArgument.Refund1);
-                    }else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
-                }else {
+                        mPresenter.getIssueRefund(token, readCard.readCardArgument.CardIdm, readCard.readCardArgument.Credit, readCard.readCardArgument.Refund1);
+                    } else
+                        CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
+                } else {
                     rechargeCardDismiss();
                     updateRefund();
 
                 }
 
-            }else CustomAlertDialog.showError(this, getString(R.string.not_available_refund));
-        }else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
+            } else CustomAlertDialog.showError(this, getString(R.string.not_available_refund));
+        } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
 
         vibrator.cancel();
 
@@ -185,7 +194,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -207,10 +216,22 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     }
 
     @Override
-    public void onSuccess(Success message) {
-        rechargeCardDismiss();
-        updatedData();
-        Toast.makeText(this,message.getMsg(),Toast.LENGTH_SHORT).show();
+    public void onSuccess(UpdateResponse updateResponse) {
+
+        double refund1 = Double.parseDouble(readCard.readCardArgument.Refund1);
+        double refund2 = Double.parseDouble(readCard.readCardArgument.Refund2);
+        double credit =Double.parseDouble( readCard.readCardArgument.Credit);
+
+        double value = refund1+refund2+credit;
+        boolean response = readCard.GasChargeRefundCard(tag, Double.parseDouble(decimalFormat.format(value)),
+                updateResponse.getUnitPrice(),updateResponse.getBaseFee(),updateResponse.getEmergencyValue());
+
+        if (response){
+            rechargeCardDismiss();
+            updatedData();
+            Toast.makeText(this, "Refund update successfully!", Toast.LENGTH_SHORT).show();
+        }else CustomAlertDialog.showError(this, "Update failed please try again");
+
         //finish();
     }
 
@@ -230,22 +251,13 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
         finish();
     }
 
-    private void updateRefund(){
+    private void updateRefund() {
 
-        double refund1 = Double.parseDouble(readCard.readCardArgument.Refund1);
-        double refund2 = Double.parseDouble(readCard.readCardArgument.Refund2);
-        double credit =Double.parseDouble( readCard.readCardArgument.Credit);
+        if (checkConnection()) {
+            String token = SharedDataSaveLoad.load(RefundActivity.this, getString(R.string.preference_access_token));
+            mPresenter.updateRefund(token, String.valueOf(id));
+        } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
 
-        double value = refund1+refund2+credit;
-        boolean response = readCard.GasChargeRefundCard(tag, Double.parseDouble(decimalFormat.format(value)),
-                0,0,9, "10003419");
-        if (response){
-            if (checkConnection()){
-                //readCard.WriteStatus(tag,readCard.historyNO+1);
-                String token = SharedDataSaveLoad.load(RefundActivity.this, getString(R.string.preference_access_token));
-                mPresenter.updateRefund(token,String.valueOf(id));
-            }else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
-        }else CustomAlertDialog.showError(this, getString(R.string.err_card_read_failed));
     }
 
     private boolean checkConnection() {
@@ -254,49 +266,49 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
         return cm.getActiveNetworkInfo() != null;
     }
 
-    private void customerCardDialog(){
-        if (mCardCheckDialog != null){
-            if(!mCardCheckDialog.isAdded()) {
+    private void customerCardDialog() {
+        if (mCardCheckDialog != null) {
+            if (!mCardCheckDialog.isAdded()) {
                 mCardCheckDialog.show(getSupportFragmentManager(), mCardCheckDialog.getTag());
             }
         }
     }
 
-    private void customerCardDismiss(){
-        if (mCardCheckDialog != null){
+    private void customerCardDismiss() {
+        if (mCardCheckDialog != null) {
             mCardCheckDialog.dismiss();
         }
     }
 
-    private void rechargeCardDialog(){
-        if (mRechargeCardDialog != null){
-            if(!mRechargeCardDialog.isAdded()) {
+    private void rechargeCardDialog() {
+        if (mRechargeCardDialog != null) {
+            if (!mRechargeCardDialog.isAdded()) {
                 isCardRefund = true;
                 mRechargeCardDialog.show(getSupportFragmentManager(), mRechargeCardDialog.getTag());
             }
         }
     }
 
-    private void rechargeCardDismiss(){
-        if (mRechargeCardDialog != null){
+    private void rechargeCardDismiss() {
+        if (mRechargeCardDialog != null) {
             mRechargeCardDialog.dismiss();
         }
     }
 
-    public void updatedData(){
+    public void updatedData() {
         layout_refund.setVisibility(View.VISIBLE);
         txt_account_no.setText(readCard.readCardArgument.CustomerId);
-        txt_credit.setText(addCredit(readCard.readCardArgument.Credit,readCard.readCardArgument.Refund1));
+        txt_credit.setText(addCredit(readCard.readCardArgument.Credit, readCard.readCardArgument.Refund1));
         txt_refund1.setText("0.0");
         txt_refund2.setText("0.0");
 
     }
 
-    private String addCredit(String credit, String refund1){
+    private String addCredit(String credit, String refund1) {
         double cr = Double.parseDouble(credit);
         double ref1 = Double.parseDouble(refund1);
 
-        return String.valueOf(cr+ref1);
+        return String.valueOf(cr + ref1);
     }
 
     public void showConfirmDialog() {
@@ -327,6 +339,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView,Clos
     public void onCloseClick(int id) {
         finish();
     }
+
     @Override
     public void onCloseClick(double amount) {
 

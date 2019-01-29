@@ -16,6 +16,7 @@ import com.kaicomsol.kpos.models.SalesHistory;
 import com.kaicomsol.kpos.models.SubData;
 import com.kaicomsol.kpos.models.Success;
 import com.kaicomsol.kpos.models.Transaction;
+import com.kaicomsol.kpos.models.UpdateResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -92,8 +93,8 @@ public interface APIServices {
     @POST("/api/v1/workOrder/issueGasRefund")
     Call<Refund> getIssueRefund(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 
-    @POST("/api/v1/workOrder/updateStatus")
-    Call<Success> updateRefund(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
+    @POST("/api/v1/workOrder/resolveRefund")
+    Call<UpdateResponse> updateRefund(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 
     @GET("/api/v1/customerMeters/{meterSerial}")
     Call<CardData> getMeter(@HeaderMap Map<String, String> headers, @Path("meterSerial") String meterSerial);
