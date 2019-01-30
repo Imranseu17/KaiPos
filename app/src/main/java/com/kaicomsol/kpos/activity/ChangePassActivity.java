@@ -173,9 +173,11 @@ public class ChangePassActivity extends AppCompatActivity implements ChangePassV
     }
 
     @Override
-    public void onSuccess(boolean success) {
+    public void onSuccess(String success) {
         hideAnimation();
-        CustomAlertDialog.showSuccess(this, "Password Change  successfully");
+        CustomAlertDialog.showSuccess(this, success);
+        oldPasswordText.setText("");
+        newPasswordText.setText("");
     }
 
     @Override

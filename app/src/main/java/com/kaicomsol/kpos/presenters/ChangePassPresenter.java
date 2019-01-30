@@ -7,6 +7,7 @@ import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -55,7 +56,14 @@ public class ChangePassPresenter {
                         }
 
                         if (response.isSuccessful()) {
-                            mViewInterface.onSuccess(true);
+                            try {
+                                JSONObject jObjError = new JSONObject(response.body().string());
+                                mViewInterface.onSuccess(jObjError.getString("message"));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }else errorHandle(response.code(), response.errorBody());
                     }
 
