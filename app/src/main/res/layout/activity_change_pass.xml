@@ -5,7 +5,7 @@
     android:id="@+id/main_wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.ResetPasswordActivity">
+    tools:context=".activity.ChangePassActivity">
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animation_view"
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:textAppearance="@style/TextAppearance.FontPath"
-                android:hint="OldPassword" />
+                android:hint="Enter Old Password" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.FontPath"
                 android:inputType="textPassword"
-                android:hint="NewPassword" />
+                android:hint="Enter New Password" />
 
         </android.support.design.widget.TextInputLayout>
 

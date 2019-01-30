@@ -2,7 +2,7 @@ package com.kaicomsol.kpos.presenters;
 
 import com.google.gson.JsonObject;
 
-import com.kaicomsol.kpos.callbacks.ResetPasswordCallbacks;
+import com.kaicomsol.kpos.callbacks.ChangePassView;
 import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
@@ -20,11 +20,11 @@ import retrofit2.Callback;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
-public class ResetPasswordPresenter {
-    private ResetPasswordCallbacks mViewInterface;
+public class ChangePassPresenter {
+    private ChangePassView mViewInterface;
     private APIClient mApiClient;
 
-    public ResetPasswordPresenter(ResetPasswordCallbacks view) {
+    public ChangePassPresenter(ChangePassView view) {
         this.mViewInterface = view;
 
         if (this.mApiClient == null) {
@@ -44,7 +44,7 @@ public class ResetPasswordPresenter {
         jsonObject.addProperty("userId", userId);
 
         mApiClient.getAPI()
-                .addCard(map, jsonObject)
+                .resetPassword(map, jsonObject)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

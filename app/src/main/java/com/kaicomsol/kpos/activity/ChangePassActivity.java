@@ -2,10 +2,10 @@ package com.kaicomsol.kpos.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -14,54 +14,51 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.callbacks.ResetPasswordCallbacks;
+import com.kaicomsol.kpos.callbacks.ChangePassView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.presenters.ChangePassPresenter;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class ResetPasswordActivity extends AppCompatActivity implements ResetPasswordCallbacks {
+public class ChangePassActivity extends AppCompatActivity implements ChangePassView {
 
     @BindView(R.id.old_password)
     TextInputEditText oldPasswordText;
-
     @BindView(R.id.new_password)
     TextInputEditText newPasswordText;
-
     @BindView(R.id.txt_version)
     TextView txt_version;
-
     @BindView(R.id.btn_resetPassword)
-    Button resetPassword;
-
+    ImageView resetPassword;
     @BindView(R.id.input_layout_oldPassword)
     TextInputLayout oldPasswordLayout;
-
     @BindView(R.id.input_layout_newPassword)
     TextInputLayout newPasswordLayout;
-
-
     @BindView(R.id.animation_view)
     LottieAnimationView animationView;
     @BindView(R.id.main_layout)
     LinearLayout mainLayout;
 
+    ChangePassPresenter changePassPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reset_password);
+        setContentView(R.layout.activity_change_pass);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Reset Password");
+        getSupportActionBar().setTitle("Change password");
+
+        changePassPresenter = new ChangePassPresenter(this);
 
         ButterKnife.bind(this);
 
@@ -70,7 +67,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements ResetPas
         resetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitLogin();
+                submitReset();
             }
         });
     }
@@ -93,18 +90,19 @@ public class ResetPasswordActivity extends AppCompatActivity implements ResetPas
 
     }
 
-    private void submitLogin() {
+    private void submitReset() {
 
+        if (!oldValidatePassword()) {
+            return;
+        }
 
-
-        if (!validatePassword()) {
+        if(!newValidatePassword()){
             return;
         }
 
 
-
         hideKeyboard(this);
-        getresetPassword();
+        getResetPassword();
 
     }
 
@@ -119,28 +117,43 @@ public class ResetPasswordActivity extends AppCompatActivity implements ResetPas
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private boolean validatePassword() {
+    private boolean oldValidatePassword() {
         String oldPassword = oldPasswordText.getText().toString().trim();
-        String newPassword = newPasswordText.getText().toString().trim();
-        if (oldPassword.isEmpty() && newPassword.isEmpty()) {
+       if (oldPassword.isEmpty()) {
             oldPasswordLayout.setError(getString(R.string.err_msg_password));
-            newPasswordLayout.setError(getString(R.string.err_msg_password));
             requestFocus(oldPasswordText);
-            requestFocus(newPasswordText);
             return false;
-        } else if (oldPassword.length() < 6 && newPassword.length()<6) {
+        } else if (oldPassword.length()<6) {
             oldPasswordLayout.setError(getString(R.string.err_msg_password_length));
-            newPasswordLayout.setError(getString(R.string.err_msg_password_length));
             requestFocus(oldPasswordText);
-            requestFocus(newPasswordText);
             return false;
         } else {
             oldPasswordLayout.setErrorEnabled(false);
+
+        }
+
+        return true;
+    }
+
+    private boolean newValidatePassword() {
+
+        String newPassword = newPasswordText.getText().toString().trim();
+        if (newPassword.isEmpty()) {
+            newPasswordLayout.setError(getString(R.string.err_msg_password));
+            requestFocus(newPasswordText);
+            return false;
+        } else if (newPassword.length() < 6 ) {
+            newPasswordLayout.setError(getString(R.string.err_msg_password_length));
+            requestFocus(newPasswordText);
+            return false;
+        } else {
             newPasswordLayout.setErrorEnabled(false);
         }
 
         return true;
     }
+
+
 
     private void requestFocus(View view) {
         if (view.requestFocus()) {
@@ -161,27 +174,34 @@ public class ResetPasswordActivity extends AppCompatActivity implements ResetPas
 
     @Override
     public void onSuccess(boolean success) {
-
+        hideAnimation();
+        CustomAlertDialog.showSuccess(this, "Password Change  successfully");
     }
 
     @Override
     public void onError(String error) {
-
+        hideAnimation();
+        CustomAlertDialog.showError(this, error + "");
     }
 
     @Override
     public void onLogout(int code) {
-
+        SharedDataSaveLoad.remove(this, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(this, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        this.finish();
     }
 
-    private void getresetPassword() {
+    private void getResetPassword() {
         if (checkConnection()) {
             showAnimation();
-
-            SharedDataSaveLoad.save(this,getString(R.string.preference_meter_serial), deviceId);
-            String email = edt_email.getText().toString().trim();
-            String password = edt_password.getText().toString().trim();
-            mPresenter.attemptLogin(deviceId,email,password);
+            String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
+            String userID = SharedDataSaveLoad.load(this,getString(R.string.preference_user_id));
+            String oldPassword = oldPasswordText.getText().toString().trim();
+            String newPassword = newPasswordText.getText().toString().trim();
+            changePassPresenter.resetPassword(token,oldPassword,newPassword,userID);
 
         } else CustomAlertDialog.showError(this,getString(R.string.no_internet_connection));
     }
@@ -198,6 +218,11 @@ public class ResetPasswordActivity extends AppCompatActivity implements ResetPas
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;
+    }
+    public void hideAnimation() {
+        if (animationView.isAnimating()) animationView.cancelAnimation();
+        mainLayout.setVisibility(View.VISIBLE);
+        animationView.setVisibility(View.GONE);
     }
 
 }

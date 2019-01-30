@@ -114,8 +114,8 @@ public interface APIServices {
     @POST("/api/v1/pos/card/lostCard")
     Call<ResponseBody> lostCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 
-    @POST("/api/v1/user/ResetPasswordPresenter")
-    Call<ResponseBody> changePassword(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
+    @POST("/api/v1/user/changePassword")
+    Call<ResponseBody> resetPassword(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 
 
 

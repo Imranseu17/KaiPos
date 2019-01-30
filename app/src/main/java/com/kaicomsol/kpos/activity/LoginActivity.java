@@ -23,6 +23,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.auth0.android.jwt.Claim;
+import com.auth0.android.jwt.JWT;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.LoginView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
@@ -139,6 +141,10 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     public void onSuccess(Login login) {
 
         hideAnimation();
+        JWT jwt = new JWT(login.getToken());
+        Claim claim = jwt.getClaim("userId");
+        String userId = claim.asString();
+        SharedDataSaveLoad.save(this,getString(R.string.preference_user_id), userId);
 
         switch (login.getPosCode()){
             case 1:

@@ -3,7 +3,6 @@ package com.kaicomsol.kpos.activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,7 +11,6 @@ import android.content.res.Resources;
 import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -111,7 +109,7 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
         layout_reset_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SettingsActivity.this,ResetPasswordActivity.class));
+                startActivity(new Intent(SettingsActivity.this, ChangePassActivity.class));
 
             }
         });

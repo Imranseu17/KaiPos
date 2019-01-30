@@ -115,7 +115,7 @@
             android:paddingBottom="@dimen/_5sdp">
 
             <ImageView
-                android:id="@+id/img_password"
+                android:id="@+id/img_Password"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentLeft="true"
@@ -129,9 +129,9 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/_10sdp"
-                android:layout_toRightOf="@+id/img_password"
+                android:layout_toRightOf="@+id/img_Password"
                 android:background="#00000000"
-                android:hint="Reset Password"
+                android:hint="Change Password"
                 android:textAppearance="@style/TextAppearance.FontPath"
                 android:textColor="@color/txt_color"
                 android:textColorHint="@color/txt_color"
