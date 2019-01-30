@@ -8,6 +8,7 @@
     <string name="preference_printer_address" translatable="false">preference_printer_address</string>
     <string name="preference_dc_dr" translatable="false">preference_dc_dr</string>
     <string name="preference_user_name" translatable="false">preference_user_name</string>
+    <string name="preference_user_id" translatable="false">preference_user_id</string>
     <string name="preference_operator_name" translatable="false">preference_operator_name</string>
     <string name="preference_customer_support" translatable="false">preference_customer_support</string>
     <string name="preference_account_no" translatable="false">preference_account_no</string>
