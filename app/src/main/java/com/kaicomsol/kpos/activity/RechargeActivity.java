@@ -157,6 +157,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     TextView txt_operator_name;
     @BindView(R.id.txt_deposit_amount)
     TextView txt_deposit_amount;
+    @BindView(R.id.txt_total)
+    TextView txt_total;
     @BindView(R.id.btn_print)
     Button btn_print;
 
@@ -467,9 +469,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     public void onSuccess(Payment payment) {
 
-        rechargeCardDismiss();
         SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
         if (partialCardWriteCheck(payment)){
+            rechargeCardDismiss();
             capturePayment(String.valueOf(payment.getPaymentId()));
             print(payment.getReceipt());
         }else cancelPayment();
@@ -654,6 +656,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         txt_pos_id.setText(String.valueOf(receipt.getPosId()));
         txt_operator_name.setText(receipt.getOperatorName());
         txt_deposit_amount.setText(String.valueOf(receipt.getAmountPaid()));
+        txt_total.setText(String.valueOf(decimalFormat.format(receipt.getItems().getTotal())));
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -681,9 +684,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
                 final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
                 final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
-
-
-
 
 
                 mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {

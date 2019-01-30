@@ -50,6 +50,8 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
     LinearLayout layout_device_info;
     @BindView(R.id.layout_device)
     RelativeLayout layout_device;
+    @BindView(R.id.layout_reset_password)
+    RelativeLayout layout_reset_password;
     @BindView(R.id.layout_language)
     RelativeLayout layout_language;
     @BindView(R.id.layout_signout)
@@ -103,6 +105,13 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
             @Override
             public void onClick(View v) {
                 mLanguageDialog.showDialog(SettingsActivity.this, SettingsActivity.this);
+            }
+        });
+
+        layout_reset_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 
