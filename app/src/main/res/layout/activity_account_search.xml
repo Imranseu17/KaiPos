@@ -71,7 +71,7 @@
                         android:drawableBottom="@color/colorAccent"
                         android:hint="@string/label_customer_code"
                         android:imeOptions="actionNext"
-                        android:inputType="numberDecimal"
+                        android:inputType="text"
                         android:maxLines="1"
                         android:textAppearance="@style/TextAppearance.FontPath" />
 
