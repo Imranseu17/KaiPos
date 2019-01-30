@@ -33,6 +33,7 @@ import com.kaicomsol.kpos.models.Refund;
 import com.kaicomsol.kpos.models.Success;
 import com.kaicomsol.kpos.models.UpdateResponse;
 import com.kaicomsol.kpos.presenters.RefundPresenter;
+import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import java.text.DecimalFormat;
@@ -118,7 +119,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showConfirmDialog();
+                if (id > 0) showConfirmDialog();
+                else CustomAlertDialog.showError(RefundActivity.this, "Issue refund failed Please try again!");
             }
         });
 

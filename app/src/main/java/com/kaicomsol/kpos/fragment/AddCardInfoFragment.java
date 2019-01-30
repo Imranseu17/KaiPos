@@ -164,7 +164,6 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                         String cardIdm = readCard.readCardArgument.CardIdm;
                         addCard(cardIdm);
                     } else CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
-
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -323,6 +322,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onAddCard(boolean isAdded) {
+
         boolean response = false;
         try {
             response = readCard.GamInitCard(myTag, prepaidCode,(byte) 119, unitPrice, basePrice, emergencyValue);

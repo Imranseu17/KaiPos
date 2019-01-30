@@ -469,7 +469,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
         rechargeCardDismiss();
         SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
-
         if (partialCardWriteCheck(payment)){
             capturePayment(String.valueOf(payment.getPaymentId()));
             print(payment.getReceipt());
@@ -505,6 +504,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     public void onSuccess(int paymentId, int code) {
         if (code == RechargeStatus.CAPTURE_SUCCESS.getCode()){
             SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(paymentId));
+            DebugLog.i("CAPTURE_SUCCESS ");
         }else {
             CustomAlertDialog.showError(this, "Transaction failed");
             SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
@@ -570,7 +570,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     boolean partialCardWriteCheck(final Payment payment){
-        boolean response = readCard.GasChargeCard(tag, payment.getReceipt().getGasUnit(), 0, 0, payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
+        boolean response = readCard.GasChargeCard(tag, payment.getReceipt().getGasUnit(), payment.getUnitPrice(), payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
         if (!response) return false;
         boolean response1 = readCard.WriteStatus(tag, payment.getNewHistoryNo());
         if (!response1){
@@ -578,6 +578,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                double credit = Double.parseDouble(readCard.readCardArgument.Credit) - payment.getReceipt().getGasUnit();
                double emergencyValue = Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue) - payment.getEmergencyValue();
                readCard.GasChargeCard(tag, credit, payment.getUnitPrice(), payment.getBaseFee(), emergencyValue, payment.getReceipt().getMeterSerialNo());
+               return false;
            }catch (Exception e){
                return false;
            }
@@ -728,7 +729,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
                             for (int i = 0; i < receipt.getItems().getItems().size(); i++){
                                 Item item = receipt.getItems().getItems().get(i);
-                                printCustom(getFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(item.getQuantity()), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                                printCustom(getFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
                             }
 
                             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
