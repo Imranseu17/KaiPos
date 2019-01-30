@@ -23,6 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activity.ResetPasswordActivity"></activity>
         <activity
             android:name=".activity.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -103,8 +104,8 @@
             android:name=".activity.SalesHistoryActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".activity.MeterDetailsActivity"
+        <activity
+            android:name=".activity.MeterDetailsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/NoTheme" />

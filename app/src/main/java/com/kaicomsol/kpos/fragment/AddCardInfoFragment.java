@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,16 +140,38 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
     private void enableNFCReaderMode() {
 
+
+
         Bundle options = new Bundle();
         options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 1);
         mAdapter.enableReaderMode(getActivity(), new NfcAdapter.ReaderCallback() {
             @Override
             public void onTagDiscovered(Tag tag) {
                 myTag = tag;
-                statusChecked(tag);
+                String cardIdm = ByteArrayToHexString(tag.getId());
+                if (!TextUtils.isEmpty(cardIdm)) addCard(cardIdm);
+                else CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
 
+                //statusChecked(tag);
             }
         }, Integer.MAX_VALUE, options);
+    }
+
+
+    private String ByteArrayToHexString(byte [] inarray) {
+        int i, j, in;
+        String [] hex = {"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"};
+        String out= "";
+
+        for(j = 0 ; j < inarray.length ; ++j)
+        {
+            in = (int) inarray[j] & 0xff;
+            i = (in >> 4) & 0x0f;
+            out += hex[i];
+            i = in & 0x0f;
+            out += hex[i];
+        }
+        return out;
     }
 
 
@@ -159,9 +182,11 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
                 try {
                     readCard.ReadTag(tag);
+                    String cardIdm = readCard.readCardArgument.CardIdm;
+
                     final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
                     if (response) {
-                        String cardIdm = readCard.readCardArgument.CardIdm;
+
                         addCard(cardIdm);
                     } else CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
                 } catch (Throwable throwable) {
@@ -231,8 +256,6 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
         String meterSerial = SharedDataSaveLoad.load(activity, getString(R.string.preference_meter_serial));
         String status = SharedDataSaveLoad.load(activity, getString(R.string.preference_card_status));
-
-        DebugLog.i(status);
 
         if (checkConnection()) {
             mPresenter.addCard(token, cardIdm, meterSerial, status);
@@ -325,10 +348,14 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
         boolean response = false;
         try {
-            response = readCard.GamInitCard(myTag, prepaidCode,(byte) 119, unitPrice, basePrice, emergencyValue);
-        } catch (Throwable throwable) {
+            if (myTag != null){
+                readCard.ReadTag(myTag);
+                response = readCard.GamInitCard(myTag, prepaidCode,(byte) 119, unitPrice, basePrice, emergencyValue);
+            }else response = false;
+
+        } catch (Throwable t) {
             response = false;
-            throwable.printStackTrace();
+            t.printStackTrace();
         }
         if (response){
             hideAnimation();
@@ -340,9 +367,10 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             getMeterInfo();
         }else {
             CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
-            String cardIdm = readCard.readCardArgument.CardIdm;
+            String cardIdm = ByteArrayToHexString(myTag.getId());
             cardDeleteHidden = true;
-            deleteCard(cardIdm);
+            if (!TextUtils.isEmpty(cardIdm)) deleteCard(cardIdm);
+            else CustomAlertDialog.showError(activity, "Card id not found!");
         }
 
         rechargeCardDismiss();
@@ -442,7 +470,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
                         String cardIdm = txt_card_no.getText().toString().trim();
-                        deleteCard(cardIdm);
+                        if (!TextUtils.isEmpty(cardIdm)) deleteCard(cardIdm);
+                        else CustomAlertDialog.showError(activity, "Card id not found!");
                     }
                 })
                 .setPositiveListener(getString(R.string.cancel), new ChooseAlertDialog.OnPositiveListener() {
