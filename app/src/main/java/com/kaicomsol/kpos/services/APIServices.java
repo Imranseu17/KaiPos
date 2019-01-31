@@ -64,6 +64,7 @@ public interface APIServices {
     Call<CustomerData> findCustomer(@HeaderMap Map<String, String> headers,
                                     @Query("accountNo") String accountNo,
                                     @Query("customerCode") String customerCode,
+                                    @Query("cardNo") String cardNo,
                                     @Query("meterSerial") String meterSerial,
                                     @Query("zone") String zone,
                                     @Query("area") String area,
