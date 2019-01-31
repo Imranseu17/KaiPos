@@ -62,6 +62,7 @@ import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.presenters.PaymentPresenter;
 import com.kaicomsol.kpos.printer.BluetoothPrinter;
 import com.kaicomsol.kpos.services.NetworkChangeReceiver;
+import com.kaicomsol.kpos.utils.CardPropertise;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.PrinterCommands;
 import com.kaicomsol.kpos.utils.RechargeStatus;
@@ -246,9 +247,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         vibrator.vibrate(1000);
         if (response) {
-            if (readCard.readCardArgument.CardGroup.equals("77")
-                    && (readCard.readCardArgument.CardStatus.equals("06")
-                    || readCard.readCardArgument.CardStatus.equals("30"))) {
+            if (readCard.readCardArgument.CardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
+                    && (readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_CHARGED_METER.getCode())
+                    || readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_INITIAL.getCode()))) {
 
                 txt_account_no.setText(readCard.readCardArgument.CustomerId);
                 DebugLog.e(readCard.readCardArgument.CustomerId);
@@ -479,7 +480,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onSuccess(Receipt receipt) {
-        bluetoothPrint(receipt);
+       // bluetoothPrint(receipt);
+        thramalbluetoothPrint(receipt);
         getSupportActionBar().setTitle("Print receipts");
         showPrintLayout(receipt);
     }
@@ -667,7 +669,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     private void print(Receipt receipt) {
 
-        bluetoothPrint(receipt);
+        //bluetoothPrint(receipt);
+        thramalbluetoothPrint(receipt);
         getSupportActionBar().setTitle("Print receipts");
         showPrintLayout(receipt);
     }
@@ -735,6 +738,96 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
                             printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
                             printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
+                            printCustom("Customer Support (" + readCard.readCardArgument.CustomerId + ")", 0, 1);
+                            printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
+                            printNewLine();
+                            printNewLine();
+                            printNewLine();
+
+                            outputStream.flush();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailed() {
+                        //this callback may be running thread so
+                        DebugLog.e("Print Error!");
+                    }
+
+                });
+
+            } else showEnableBluetoothDialog();
+        }
+
+    }
+
+    private void thramalbluetoothPrint(final Receipt receipt) {
+
+
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+            CustomAlertDialog.showError(this, getString(R.string.bluetooth_printer_not_support));
+        } else {
+            if (mBluetoothAdapter.isEnabled()) {
+
+                final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
+                final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
+
+
+                mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
+
+                    @Override
+                    public void onConnected() {
+                        OutputStream opstream = null;
+                        try {
+                            opstream = mPrinter.getSocket().getOutputStream();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        outputStream = opstream;
+
+                        //print command
+                        try {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            outputStream = mPrinter.getSocket().getOutputStream();
+                            byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
+                            outputStream.write(printformat);
+                            printCustom("Money Receipt", 3, 1);
+
+                            Date date = new Date(receipt.getPaymentDate());
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
+                            printCustom(thrmalgetFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
+                            printCustom(thrmalgetFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
+                            printCustom(thrmalgetFormatStringByLength("Prepaid Code", readCard.readCardArgument.CustomerId), 0, 1);
+                            printCustom(thrmalgetFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
+                            printCustom(thrmalgetFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
+                            printCustom(thrmalgetFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
+                            printCustom(thrmalgetFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
+                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
+                            printCustom(thrmalgetFormatStringByLength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
+                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
+                            printCustom(thrmalgetFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
+                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
+
+                            for (int i = 0; i < receipt.getItems().getItems().size(); i++){
+                                Item item = receipt.getItems().getItems().get(i);
+                                printCustom(thrmalgetFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                            }
+
+                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
+                            printCustom(thrmalgetFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
+                            printCustom(new String(new char[32]).replace("\0", "."), 0, 1);
                             printCustom("Customer Support (" + readCard.readCardArgument.CustomerId + ")", 0, 1);
                             printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
                             printNewLine();
@@ -1056,6 +1149,17 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return builder.toString();
     }
 
+    private String thrmalgetFormatStringByLength(String title, String value) {
+        String concatenation = title + value;
+        int count = concatenation.length();
+        StringBuilder builder = new StringBuilder();
+        String space = new String(new char[32 - count]).replace("\0", " ");
+        builder.append(title);
+        builder.append(space);
+        builder.append(value);
+        return builder.toString();
+    }
+
     private String getFormatStringByItem(String item, String price, String qty, String amount) {
         StringBuilder builder = new StringBuilder();
         int count = (qty + amount).length();
@@ -1069,12 +1173,35 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return builder.toString();
     }
 
+    private String thrmalgetFormatStringByItem(String item, String price, String qty, String amount) {
+        StringBuilder builder = new StringBuilder();
+        int count = (qty + amount).length();
+        builder.append(item);
+        builder.append(getSpace(14- item.length()));
+        builder.append(price);
+        builder.append(getSpace(6 - price.length()));
+        builder.append(qty);
+        builder.append(getSpace(12 - count));
+        builder.append(amount);
+        return builder.toString();
+    }
+
     private String getFormatStringByTotal(String total, String amount) {
         StringBuilder builder = new StringBuilder();
         int count = (total + amount).length();
         builder.append(getSpace(23));
         builder.append(total);
         builder.append(getSpace(19 - count));
+        builder.append(amount);
+        return builder.toString();
+    }
+
+    private String thrmalgetFormatStringByTotal(String total, String amount) {
+        StringBuilder builder = new StringBuilder();
+        int count = (total + amount).length();
+        builder.append(getSpace(18));
+        builder.append(total);
+        builder.append(getSpace(14 - count));
         builder.append(amount);
         return builder.toString();
     }
