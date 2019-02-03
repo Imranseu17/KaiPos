@@ -14,7 +14,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
 import android.os.Vibrator;
-import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -70,11 +69,8 @@ import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 import com.kaicomsol.kpos.utils.Utils;
 import com.squareup.otto.Subscribe;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -480,8 +476,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onSuccess(Receipt receipt) {
-       // bluetoothPrint(receipt);
-        thramalbluetoothPrint(receipt);
+        bluetoothPrint(receipt);
+        //thermalBluetoothPrint(receipt);
         getSupportActionBar().setTitle("Print receipts");
         showPrintLayout(receipt);
     }
@@ -669,8 +665,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     private void print(Receipt receipt) {
 
-        //bluetoothPrint(receipt);
-        thramalbluetoothPrint(receipt);
+        bluetoothPrint(receipt);
+        //thermalBluetoothPrint(receipt);
         getSupportActionBar().setTitle("Print receipts");
         showPrintLayout(receipt);
     }
@@ -765,7 +761,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     }
 
-    private void thramalbluetoothPrint(final Receipt receipt) {
+    private void thermalBluetoothPrint(final Receipt receipt) {
 
 
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -790,8 +786,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             e.printStackTrace();
                         }
                         outputStream = opstream;
-
-                        //print command
                         try {
                             try {
                                 Thread.sleep(100);
@@ -807,29 +801,29 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
                             printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
-                            printCustom(thrmalgetFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
-                            printCustom(thrmalgetFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
-                            printCustom(thrmalgetFormatStringByLength("Prepaid Code", readCard.readCardArgument.CustomerId), 0, 1);
-                            printCustom(thrmalgetFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
-                            printCustom(thrmalgetFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
-                            printCustom(thrmalgetFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
-                            printCustom(thrmalgetFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
+                            printCustom(thermalgetformatstringbylength("Date and Time.", dateFormat.format(date)), 0, 1);
+                            printCustom(thermalgetformatstringbylength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
+                            printCustom(thermalgetformatstringbylength("Prepaid Code", readCard.readCardArgument.CustomerId), 0, 1);
+                            printCustom(thermalgetformatstringbylength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
+                            printCustom(thermalgetformatstringbylength("Card No.", receipt.getCardNo()), 0, 1);
+                            printCustom(thermalgetformatstringbylength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
+                            printCustom(thermalgetformatstringbylength("Operator Name", receipt.getOperatorName()), 0, 1);
                             printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
-                            printCustom(thrmalgetFormatStringByLength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
+                            printCustom(thermalgetformatstringbylength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
                             printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
-                            printCustom(thrmalgetFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
+                            printCustom(thrmalgetformatstringbyitem("Item", "Price", "Qty", "Amount"), 0, 1);
                             printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
 
                             for (int i = 0; i < receipt.getItems().getItems().size(); i++){
                                 Item item = receipt.getItems().getItems().get(i);
-                                printCustom(thrmalgetFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                                printCustom(thrmalgetformatstringbyitem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
                             }
 
                             printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
-                            printCustom(thrmalgetFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
+                            printCustom(thrmalgetformatstringbytotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
                             printCustom(new String(new char[32]).replace("\0", "."), 0, 1);
-                            printCustom("Customer Support (" + readCard.readCardArgument.CustomerId + ")", 0, 1);
-                            printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
+                            printCustom("Customer Support (" + readCard.readCardArgument.CustomerId + ")", 1, 1);
+                            printCustom("Karnaphuli Gas Distribution Company Ltd.", 1, 1);
                             printNewLine();
                             printNewLine();
                             printNewLine();
@@ -1149,7 +1143,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return builder.toString();
     }
 
-    private String thrmalgetFormatStringByLength(String title, String value) {
+    private String thermalgetformatstringbylength(String title, String value) {
         String concatenation = title + value;
         int count = concatenation.length();
         StringBuilder builder = new StringBuilder();
@@ -1173,7 +1167,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return builder.toString();
     }
 
-    private String thrmalgetFormatStringByItem(String item, String price, String qty, String amount) {
+    private String thrmalgetformatstringbyitem(String item, String price, String qty, String amount) {
         StringBuilder builder = new StringBuilder();
         int count = (qty + amount).length();
         builder.append(item);
@@ -1196,7 +1190,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return builder.toString();
     }
 
-    private String thrmalgetFormatStringByTotal(String total, String amount) {
+    private String thrmalgetformatstringbytotal(String total, String amount) {
         StringBuilder builder = new StringBuilder();
         int count = (total + amount).length();
         builder.append(getSpace(18));
