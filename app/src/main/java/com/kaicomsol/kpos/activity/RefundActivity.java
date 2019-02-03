@@ -33,6 +33,7 @@ import com.kaicomsol.kpos.models.Refund;
 import com.kaicomsol.kpos.models.Success;
 import com.kaicomsol.kpos.models.UpdateResponse;
 import com.kaicomsol.kpos.presenters.RefundPresenter;
+import com.kaicomsol.kpos.utils.CardPropertise;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
@@ -165,7 +166,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         vibrator.vibrate(1000);
         if (response) {
-            if (readCard.readCardArgument.CardGroup.equals("77") && readCard.readCardArgument.CardStatus.equals("05")) {
+            if (readCard.readCardArgument.CardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
+                    && readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_REFUNDED.getCode())) {
                 if (!isCardRefund) {
                     customerCardDismiss();
                     layout_refund.setVisibility(View.VISIBLE);

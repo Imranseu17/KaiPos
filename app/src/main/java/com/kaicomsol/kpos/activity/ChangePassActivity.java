@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.os.PatternMatcher;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -25,11 +26,15 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.presenters.ChangePassPresenter;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
+import java.util.regex.Pattern;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class ChangePassActivity extends AppCompatActivity implements ChangePassView {
+
+
 
     @BindView(R.id.old_password)
     TextInputEditText oldPasswordText;
@@ -47,6 +52,10 @@ public class ChangePassActivity extends AppCompatActivity implements ChangePassV
     LottieAnimationView animationView;
     @BindView(R.id.main_layout)
     LinearLayout mainLayout;
+    @BindView(R.id.input_layout_confirmPassword)
+    TextInputLayout  layout_confirmPassword;
+    @BindView(R.id.confirm_password)
+    TextInputEditText confirm_password;
 
     ChangePassPresenter changePassPresenter;
 
@@ -99,6 +108,15 @@ public class ChangePassActivity extends AppCompatActivity implements ChangePassV
         if(!newValidatePassword()){
             return;
         }
+
+        if(!confirmValidatePassword())
+            return;
+
+        if(!matchValidatePassword())
+            return;
+
+        if(!matchRegularExpressionPassword())
+            return;
 
 
         hideKeyboard(this);
@@ -153,6 +171,60 @@ public class ChangePassActivity extends AppCompatActivity implements ChangePassV
         return true;
     }
 
+    private boolean matchValidatePassword() {
+
+        String newPassword = newPasswordText.getText().toString().trim();
+        String confirmPassword = confirm_password.getText().toString().trim();
+        if (!newPassword.equals(confirmPassword)) {
+           CustomAlertDialog.showError(this,"Password is Not Matched" +
+                   "\n"+"with Confirm Password Field");
+            return false;
+        } else {
+            newPasswordLayout.setErrorEnabled(false);
+            layout_confirmPassword.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+
+
+    private boolean matchRegularExpressionPassword() {
+
+        String pattern = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$";
+        String newPassword = newPasswordText.getText().toString().trim();
+
+        if (!Pattern.matches(pattern,newPassword)) {
+            CustomAlertDialog.showError(this,"Minimum eight characters"+"\n" +
+                    " at least one letter" + "\n"+ "one number and one special character");
+            return false;
+        } else {
+            newPasswordLayout.setErrorEnabled(false);
+
+        }
+
+        return true;
+    }
+
+
+
+    private boolean confirmValidatePassword() {
+
+        String confirmPasswordText  = confirm_password.getText().toString().trim();
+        if (confirmPasswordText.isEmpty()) {
+            layout_confirmPassword.setError(getString(R.string.err_msg_password));
+            requestFocus(confirm_password);
+            return false;
+        } else if (confirmPasswordText.length() < 6 ) {
+           layout_confirmPassword.setError(getString(R.string.err_msg_password_length));
+            requestFocus(confirm_password);
+            return false;
+        } else {
+            layout_confirmPassword.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+
 
 
     private void requestFocus(View view) {
@@ -178,6 +250,7 @@ public class ChangePassActivity extends AppCompatActivity implements ChangePassV
         CustomAlertDialog.showSuccess(this, success);
         oldPasswordText.setText("");
         newPasswordText.setText("");
+        confirm_password.setText("");
     }
 
     @Override

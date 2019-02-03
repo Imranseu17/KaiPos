@@ -19,8 +19,12 @@ import com.kaicomsol.kpos.adapter.CardAdapter;
 import com.kaicomsol.kpos.models.Card;
 import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
+import com.kaicomsol.kpos.utils.CardPropertise;
+import com.kaicomsol.kpos.utils.RechargeStatus;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -143,16 +147,20 @@ public class PropertiesFragment extends Fragment {
 
     private String getStatus(String status){
 
+
+
+        CardPropertise cardPropertise = CardPropertise.getByCode(status);
+
         if (status == null) return "N/A";
 
-        switch (status){
-            case "15":
+        switch (cardPropertise){
+            case CARD_RECHARGED:
                 return getString(R.string.card_recharged);
-            case "30":
+            case CARD_INITIAL:
                 return getString(R.string.card_initialized);
-            case "06":
+            case CARD_CHARGED_METER:
                 return getString(R.string.meter_initialized);
-            case "05":
+            case CARD_REFUNDED:
                 return getString(R.string.card_refund);
             default:
                 return  "N/A";
@@ -162,13 +170,15 @@ public class PropertiesFragment extends Fragment {
 
     private String getGroup(String group){
 
+        CardPropertise cardPropertise = CardPropertise.getByCode(group);
+
         if (group == null) return "N/A";
 
-        switch (group){
+        switch (cardPropertise){
 
-            case "77":
+            case CUSTOMER_CARD:
                 return getString(R.string.customer_Card);
-            case "88":
+            case SERVICE_CARD:
                 return getString(R.string.service_Card);
             default:
                 return  "N/A";

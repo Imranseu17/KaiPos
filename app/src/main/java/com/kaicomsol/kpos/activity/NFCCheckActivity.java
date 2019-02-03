@@ -24,6 +24,7 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
+import com.kaicomsol.kpos.utils.CardPropertise;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
@@ -119,7 +120,7 @@ public class NFCCheckActivity extends AppCompatActivity {
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         vibrator.vibrate(1000);
         if (response) {
-            if (readCard.readCardArgument.CardGroup.equals("88") && path.equals("service")) {
+            if (readCard.readCardArgument.CardGroup.equals(CardPropertise.SERVICE_CARD.getCode()) && path.equals("service")) {
                 SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
                 activityHome();
             } else if (!readCard.readCardArgument.CardGroup.equals("88") && path.equals("service")) {
