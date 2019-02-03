@@ -222,12 +222,16 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
 
         double refund1 = Double.parseDouble(readCard.readCardArgument.Refund1);
         double refund2 = Double.parseDouble(readCard.readCardArgument.Refund2);
-        double credit =Double.parseDouble( readCard.readCardArgument.Credit);
+        double credit =Double.parseDouble(readCard.readCardArgument.Credit);
 
         double value = refund1+refund2+credit;
         boolean response = readCard.GasChargeRefundCard(tag, Double.parseDouble(decimalFormat.format(value)),
                 updateResponse.getUnitPrice(),updateResponse.getBaseFee(),updateResponse.getEmergencyValue());
 
+        if (credit == 0.0){
+            String historyNo = readCard.readCardArgument.CardHistoryNo;
+           readCard.WriteStatus(tag, Integer.parseInt(historyNo)+1);
+        }
         if (response){
             rechargeCardDismiss();
             updatedData();

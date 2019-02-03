@@ -143,12 +143,14 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         edt_start_date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fromDatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                 fromDatePickerDialog.show();
             }
         });
         edt_end_date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                toDatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                 toDatePickerDialog.show();
             }
         });
