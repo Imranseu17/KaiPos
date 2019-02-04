@@ -31,7 +31,7 @@ public class Receipt {
     private Integer emergencyValue;
     @SerializedName("amountPaid")
     @Expose
-    private Integer amountPaid;
+    private double amountPaid;
     @SerializedName("paymentMethodName")
     @Expose
     private String paymentMethodName;
@@ -74,7 +74,7 @@ public class Receipt {
         return emergencyValue;
     }
 
-    public Integer getAmountPaid() {
+    public double getAmountPaid() {
         return amountPaid;
     }
 

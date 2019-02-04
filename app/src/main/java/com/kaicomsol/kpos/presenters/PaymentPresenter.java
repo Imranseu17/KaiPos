@@ -42,7 +42,7 @@ public class PaymentPresenter {
         }
     }
 
-    public void addPayment(String token, String amount, String cardNo, String historyNo, String paymentMethodId) {
+    public void addPayment(String token, String  amount, String cardNo, String historyNo, String paymentMethodId) {
         Map<String, String> map = new HashMap<>();
         DebugLog.e(token);
         map.put("Authorization", token);

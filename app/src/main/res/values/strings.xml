@@ -37,7 +37,7 @@
 
     <string name="select_charge">料金を選択してください</string>
     <string name="service_charge">Service charge</string>
-    <string name="nfc_check">Please tag the Service card</string>
+    <string name="nfc_check">Please tap the Service card</string>
     <string name="menu">Menu</string>
     <string name="readcard">Card Read</string>
     <string name="accountserch">Account Search</string>
@@ -158,7 +158,7 @@
     <string name="label_inspect_card">Inspect Card</string>
     <string name="label_card_refund">Refund Gas</string>
     <string name="label_sales_history">Sales History</string>
-    <string name="label_please_tag_the">Please tag the</string>
+    <string name="label_please_tag_the">Please tap the</string>
     <string name="label_user">User</string>
     <string name="label_card">card</string>
     <string name="label_select_amount">Select Amount</string>

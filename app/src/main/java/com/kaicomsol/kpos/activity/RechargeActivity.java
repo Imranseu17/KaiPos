@@ -308,8 +308,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             @Override
             public void onClick(View v) {
                 String amount = txt_total_amount.getText().toString().trim();
-                if (totalAmount < Double.parseDouble(amount)) showConfirmDialog();
-                else showErrorDialog("Amount is less then unpaid amount plus payment charge");
+                double maxAmount = Double.parseDouble(amount);
+
+                if(maxAmount < 5000) showConfirmDialog();
+                else CustomAlertDialog.showWarning(RechargeActivity.this,
+                            "Maximum payment limit is 5000 BDT");
             }
         });
         btn_print.setOnClickListener(new View.OnClickListener() {
