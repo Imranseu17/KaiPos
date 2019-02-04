@@ -210,7 +210,7 @@
     <string name="yes">Yes</string>
     <string name="err_service_card">It is not Service Card</string>
     <string name="err_card_read_failed">Card read failed! Please try again</string>
-    <string name="err_card_not_valid">Card is not valid this operation</string>
+    <string name="err_card_not_valid">This card is invalid for this operation</string>
     <string name="info_want_to_logout">Are you sure you want to log out ?</string>
     <string name="cancel">Cancel</string>
     <string name="warning_delete_card">Are you sure you want to Delete card?</string>

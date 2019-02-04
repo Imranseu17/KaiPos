@@ -358,6 +358,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             t.printStackTrace();
         }
         if (response){
+            rechargeCardDismiss();
             hideAnimation();
             CustomAlertDialog.showSuccess(activity, "Card add successfully");
             disableButton(btn_add);
@@ -366,14 +367,13 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             disableButton(btn_lost);
             getMeterInfo();
         }else {
+            rechargeCardDismiss();
             CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
             String cardIdm = ByteArrayToHexString(myTag.getId());
             cardDeleteHidden = true;
             if (!TextUtils.isEmpty(cardIdm)) deleteCard(cardIdm);
             else CustomAlertDialog.showError(activity, "Card id not found!");
         }
-
-        rechargeCardDismiss();
     }
 
     @Override

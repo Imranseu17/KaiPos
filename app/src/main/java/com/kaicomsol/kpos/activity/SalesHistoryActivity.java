@@ -225,12 +225,15 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     @Override
     public void onError(String error) {
-        hideAnimation();
-        isLoading = false;
-        mAdapter.removeLoadingFooter();
-        //showEmptyAnimation();
-        //CustomAlertDialog.showError(this,"No history found from ERROR");
 
+        DebugLog.e(error+" ||||||| ");
+        hideAnimation();
+        if (currentPage == 1){
+            CustomAlertDialog.showError(this,"Transaction not found");
+        }else {
+            isLoading = false;
+            mAdapter.removeLoadingFooter();
+        }
     }
 
     @Override

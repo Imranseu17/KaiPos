@@ -78,14 +78,11 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-//        switch (item.getItemId()){
-//            case android.R.id.home:
-//                finish();
-//                return true;
-//        }
-
-        startActivity(new Intent(AccountListActivity.this,AccountSearchActivity.class));
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -160,9 +157,12 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
     @Override
     public void onError(String error) {
         hideAnimation();
-        isLoading = false;
-        mAdapter.removeLoadingFooter();
-        //showEmptyAnimation();
+        if (currentPage == 1){
+            CustomAlertDialog.showError(this,"No data found");
+        }else {
+            isLoading = false;
+            mAdapter.removeLoadingFooter();
+        }
 
     }
 

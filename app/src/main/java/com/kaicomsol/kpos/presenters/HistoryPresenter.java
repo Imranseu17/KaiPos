@@ -42,7 +42,7 @@ public class HistoryPresenter {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("start", start);
         jsonObject.addProperty("end", end);
-        jsonObject.addProperty("pageSize", "10");
+        jsonObject.addProperty("pageSize", "5");
         jsonObject.addProperty("pageNumber", currentPage);
 
         mApiClient.getAPI()
@@ -68,7 +68,6 @@ public class HistoryPresenter {
                     @Override
                     public void onFailure(Call<SalesHistory> call, Throwable e) {
                         e.printStackTrace();
-                        mViewInterface.onError("ERROR");
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
