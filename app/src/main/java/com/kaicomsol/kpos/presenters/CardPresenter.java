@@ -171,9 +171,11 @@ public class CardPresenter {
                             int code = ((HttpException) e).response().code();
                             if (code == 401){
                                 mViewInterface.onLogout(code);
+                            }else {
+
+                                ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                                errorHandle(code, responseBody);
                             }
-                            ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                            errorHandle(code, responseBody);
 
                         } else if (e instanceof SocketTimeoutException) {
 
@@ -342,15 +344,19 @@ public class CardPresenter {
     }
 
     private void errorHandle(int code, ResponseBody responseBody){
-        if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
-        else if(code == 406){
+
+
+        if (code == 500){
+            mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
+        }else if(code == 406){
                 try {
                     JSONObject jObjError = new JSONObject(responseBody.string());
                     mViewInterface.onError(jObjError.getString("message"));
                 } catch (Exception e) {
                     mViewInterface.onError(e.getMessage());
                 }
+        }else {
+            mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
         }
-        else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }
 }

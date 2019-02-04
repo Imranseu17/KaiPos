@@ -411,8 +411,12 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onError(String error) {
-        showEmptyAnimation();
-        CustomAlertDialog.showError(activity, error + "");
+        if (mRechargeCardDialog != null && mRechargeCardDialog.isResumed()){
+            rechargeCardDismiss();
+        }else {
+            showEmptyAnimation();
+            CustomAlertDialog.showError(activity, error + "");
+        }
     }
 
     @Override

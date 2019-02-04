@@ -42,7 +42,7 @@ public class HistoryPresenter {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("start", start);
         jsonObject.addProperty("end", end);
-        jsonObject.addProperty("pageSize", "5");
+        jsonObject.addProperty("pageSize", "10");
         jsonObject.addProperty("pageNumber", currentPage);
 
         mApiClient.getAPI()

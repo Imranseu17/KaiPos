@@ -41,6 +41,7 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
     private boolean isLastPage = false;
     // limiting to 5 for this tutorial, since total pages in actual API is very large. Feel free to modify.
     private int TOTAL_PAGES = 5;
+    private int MY_TOTAL_PAGES = 0;
     private int currentPage = PAGE_START;
 
     //component bind
@@ -98,9 +99,11 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
         mRecyclerView.addOnScrollListener(new PaginationScrollListener(mLayoutManager) {
             @Override
             protected void loadMoreItems() {
-                isLoading = true;
-                currentPage += 1;
-                findLikeSearchNext(currentPage);
+                if (MY_TOTAL_PAGES > currentPage){
+                    isLoading = true;
+                    currentPage += 1;
+                    findLikeSearchNext(currentPage);
+                }
             }
 
             @Override
@@ -140,22 +143,24 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
     @Override
     public void onSuccess(CustomerData customerData, int currentPage) {
         hideAnimation();
+        if (customerData != null) MY_TOTAL_PAGES = customerData.getPaging().getTotalNumberOfPages();
         if (currentPage > 1){
             isLoading = false;
             mAdapter.removeLoadingFooter();
         }
         if (customerData.getCustomerList() != null) {
             if (customerData.getCustomerList().size() > 0) {
-
                 mAdapter.setCustomers(customerData.getCustomerList(), currentPage);
-            } else showEmptyAnimation();
+            } else CustomAlertDialog.showError(this,"No data found");
         }
     }
 
     @Override
     public void onError(String error) {
         hideAnimation();
-        showEmptyAnimation();
+        isLoading = false;
+        mAdapter.removeLoadingFooter();
+        //showEmptyAnimation();
 
     }
 

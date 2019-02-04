@@ -11,11 +11,16 @@ public class CustomerData {
     @Expose
     private List<Customer> customerList = null;
 
+    @SerializedName("paging")
+    @Expose
+    private Paging paging;
+
     public List<Customer> getCustomerList() {
         return customerList;
     }
 
-    public void setCustomerList(List<Customer> customerList) {
-        this.customerList = customerList;
+    public Paging getPaging() {
+        return paging;
     }
+
 }

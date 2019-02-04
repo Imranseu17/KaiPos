@@ -14,6 +14,7 @@ public class APIErrors {
             JSONObject jsonError = jsonArray.getJSONObject(0);
             return  jsonError.getString("message");
         } catch (Exception e) {
+            e.printStackTrace();
             return "Error occurred Please try again";
         }
     }
