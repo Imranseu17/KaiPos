@@ -18,9 +18,9 @@
     <application
         android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/smalltile"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/smalltile"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activity.ChangePassActivity"></activity>
