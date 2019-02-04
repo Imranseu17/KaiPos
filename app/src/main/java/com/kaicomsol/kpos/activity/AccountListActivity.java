@@ -41,6 +41,7 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
     private boolean isLastPage = false;
     // limiting to 5 for this tutorial, since total pages in actual API is very large. Feel free to modify.
     private int TOTAL_PAGES = 5;
+    private int MY_TOTAL_PAGES = 0;
     private int currentPage = PAGE_START;
 
     //component bind
@@ -77,14 +78,11 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-//        switch (item.getItemId()){
-//            case android.R.id.home:
-//                finish();
-//                return true;
-//        }
-
-        startActivity(new Intent(AccountListActivity.this,AccountSearchActivity.class));
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -100,9 +98,11 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
         mRecyclerView.addOnScrollListener(new PaginationScrollListener(mLayoutManager) {
             @Override
             protected void loadMoreItems() {
-                isLoading = true;
-                currentPage += 1;
-                findLikeSearchNext(currentPage);
+                if (MY_TOTAL_PAGES > currentPage){
+                    isLoading = true;
+                    currentPage += 1;
+                    findLikeSearchNext(currentPage);
+                }
             }
 
             @Override
@@ -142,22 +142,27 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
     @Override
     public void onSuccess(CustomerData customerData, int currentPage) {
         hideAnimation();
+        if (customerData != null) MY_TOTAL_PAGES = customerData.getPaging().getTotalNumberOfPages();
         if (currentPage > 1){
             isLoading = false;
             mAdapter.removeLoadingFooter();
         }
         if (customerData.getCustomerList() != null) {
             if (customerData.getCustomerList().size() > 0) {
-
                 mAdapter.setCustomers(customerData.getCustomerList(), currentPage);
-            } else showEmptyAnimation();
+            } else CustomAlertDialog.showError(this,"No data found");
         }
     }
 
     @Override
     public void onError(String error) {
         hideAnimation();
-        showEmptyAnimation();
+        if (currentPage == 1){
+            CustomAlertDialog.showError(this,"No data found");
+        }else {
+            isLoading = false;
+            mAdapter.removeLoadingFooter();
+        }
 
     }
 

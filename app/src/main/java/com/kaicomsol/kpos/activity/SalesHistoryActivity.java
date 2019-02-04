@@ -25,6 +25,7 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.models.Content;
 import com.kaicomsol.kpos.models.SalesHistory;
 import com.kaicomsol.kpos.presenters.HistoryPresenter;
+import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.PaginationScrollListener;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
@@ -57,6 +58,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     private boolean isLastPage = false;
     // limiting to 5 for this tutorial, since total pages in actual API is very large. Feel free to modify.
     private int TOTAL_PAGES = 5;
+    private int MY_TOTAL_PAGE = 0;
     private int currentPage = PAGE_START;
 
     //component bind
@@ -158,10 +160,11 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         mRecyclerView.addOnScrollListener(new PaginationScrollListener(mLayoutManager) {
             @Override
             protected void loadMoreItems() {
-                isLoading = true;
-                currentPage += 1;
-
-                getSalesHistoryNext(currentPage);
+                if (MY_TOTAL_PAGE > currentPage){
+                    isLoading = true;
+                    currentPage += 1;
+                    getSalesHistoryNext(currentPage);
+                }
             }
 
             @Override
@@ -171,7 +174,8 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
             @Override
             public boolean isLastPage() {
-                return isLastPage;
+               return isLastPage;
+
             }
 
             @Override
@@ -204,24 +208,32 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     public void onSuccess(SalesHistory salesHistory, int currentPage) {
 
         hideAnimation();
+        if (salesHistory != null) MY_TOTAL_PAGE = salesHistory.getTotalPages();
         if (currentPage > 1){
             isLoading = false;
             mAdapter.removeLoadingFooter();
         }
         if (salesHistory.getContentList() != null) {
-            //TOTAL_PAGES = salesHistory.getTotalPages();
             if (salesHistory.getContentList().size() > 0) {
                 mAdapter.setHistory(salesHistory.getContentList(), currentPage);
-            }else showEmptyAnimation();
+            }else CustomAlertDialog.showError(this,"Transaction not found");
+
+                //showEmptyAnimation();
         }
 
     }
 
     @Override
     public void onError(String error) {
-        hideAnimation();
-        showEmptyAnimation();
 
+        DebugLog.e(error+" ||||||| ");
+        hideAnimation();
+        if (currentPage == 1){
+            CustomAlertDialog.showError(this,"Transaction not found");
+        }else {
+            isLoading = false;
+            mAdapter.removeLoadingFooter();
+        }
     }
 
     @Override
@@ -270,7 +282,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     @Override
     public void retryPageLoad() {
-
+          DebugLog.e("retryPageLoad()");
     }
 
     private void setDatePickerField() {

@@ -125,7 +125,6 @@ public class AccountSearchActivity extends AppCompatActivity {
         Intent intent = new Intent(AccountSearchActivity.this, AccountListActivity.class);
         intent.putExtra("like", like);
         startActivity(intent);
-        finish();
     }
 
     @Override

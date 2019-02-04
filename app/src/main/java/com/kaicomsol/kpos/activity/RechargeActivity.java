@@ -310,15 +310,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 String amount = txt_total_amount.getText().toString().trim();
                 double maxAmount = Double.parseDouble(amount);
 
-                    if(maxAmount<= 5000){
-                        showConfirmDialog();
-                    }
-                    else {
-                        CustomAlertDialog.showWarning(RechargeActivity.this,
-                                "Maximum payment limit is 5000 BDT");
-                    }
-
-
+                if(maxAmount < 5000) showConfirmDialog();
+                else CustomAlertDialog.showWarning(RechargeActivity.this,
+                            "Maximum payment limit is 5000 BDT");
             }
         });
         btn_print.setOnClickListener(new View.OnClickListener() {
@@ -513,7 +507,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     public void onSuccess(int paymentId, int code) {
         if (code == RechargeStatus.CAPTURE_SUCCESS.getCode()){
             SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(paymentId));
-            DebugLog.i("CAPTURE_SUCCESS ");
         }else {
             CustomAlertDialog.showError(this, "Transaction failed");
             SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
@@ -653,7 +646,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         layout_print.setVisibility(View.VISIBLE);
 
         Date date = new Date(receipt.getPaymentDate());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
 
         txt_date_time.setText(dateFormat.format(date));
         txt_transaction_no.setText(String.valueOf(receipt.getPaymentId()));
@@ -719,7 +712,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             printCustom("Money Receipt", 3, 1);
 
                             Date date = new Date(receipt.getPaymentDate());
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
 
                             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
                             printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
