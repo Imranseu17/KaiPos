@@ -20,7 +20,7 @@
     <string name="preference_prepaid_code" translatable="false">preference_prepaid_code</string>
     <string name="preference_payment_id" translatable="false">preference_payment_id</string>
     <string name="preference_cancel_failed" translatable="false">preference_cancel_failed</string>
-    <string name="app_name" translatable="false">KPOS</string>
+    <string name="app_name" translatable="false">HitPos-V.2</string>
 
     <string name="welcome">Welcome to KGDCL PGM Point of sale</string>
     <string name="language_change">Language Change Page</string>
