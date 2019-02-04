@@ -78,11 +78,13 @@ public class AccountListActivity extends AppCompatActivity implements CustomerVi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
-            case android.R.id.home:
-                finish();
-                return true;
-        }
+//        switch (item.getItemId()){
+//            case android.R.id.home:
+//                finish();
+//                return true;
+//        }
+
+        startActivity(new Intent(AccountListActivity.this,AccountSearchActivity.class));
         return super.onOptionsItemSelected(item);
     }
 
