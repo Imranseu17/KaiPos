@@ -237,7 +237,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         if (response){
             rechargeCardDismiss();
             updatedData();
-            Toast.makeText(this, "Refund update successfully!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Refund update successfully!", Toast.LENGTH_LONG).show();
         }else CustomAlertDialog.showError(this, "Update failed please try again");
 
         //finish();
@@ -309,6 +309,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         txt_credit.setText(addCredit(readCard.readCardArgument.Credit, readCard.readCardArgument.Refund1));
         txt_refund1.setText("0.0");
         txt_refund2.setText("0.0");
+        btn_submit.setVisibility(View.GONE);
 
     }
 
