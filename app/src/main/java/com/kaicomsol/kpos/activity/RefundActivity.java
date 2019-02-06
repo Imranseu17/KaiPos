@@ -9,6 +9,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
 import android.os.Vibrator;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -116,6 +117,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
 
         customerCardDialog();
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        btn_submit.setEnabled(true);
+        btn_submit.setBackground(ContextCompat.getDrawable(this,R.drawable.circle_bg_green));
 
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -309,7 +312,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         txt_credit.setText(addCredit(readCard.readCardArgument.Credit, readCard.readCardArgument.Refund1));
         txt_refund1.setText("0.0");
         txt_refund2.setText("0.0");
-        btn_submit.setVisibility(View.GONE);
+        btn_submit.setEnabled(false);
+        btn_submit.setBackground(ContextCompat.getDrawable(this,R.drawable.circle_bg_gray));
 
     }
 
