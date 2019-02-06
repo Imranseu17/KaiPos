@@ -58,14 +58,7 @@ public class MeterPresenter {
                             } else {
                                 mViewInterface.onError("Error fetching data");
                             }
-                        }else {
-                            try {
-                                JSONObject jObjError = new JSONObject(response.errorBody().string());
-                                mViewInterface.onError(jObjError.getString("message"));
-                            } catch (Exception e) {
-                                mViewInterface.onError("Error occurred! Please try again");
-                            }
-                        }
+                        }else errorHandle(response.code(), response.errorBody());
                     }
 
                     @Override
@@ -96,25 +89,10 @@ public class MeterPresenter {
                 });
     }
 
-    private String getErrorMessage(ResponseBody responseBody) {
-        try {
-            JSONObject jsonObject = new JSONObject(responseBody.string());
-            return jsonObject.getString("message");
-        } catch (Exception e) {
-            return e.getMessage();
-        }
-    }
-
     private void errorHandle(int code, ResponseBody responseBody){
         if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
         else if(code == 406){
-            try {
-                JSONObject jObjError = new JSONObject(responseBody.string());
-                mViewInterface.onError(jObjError.getString("message"));
-            } catch (Exception e) {
-                mViewInterface.onError(e.getMessage());
-            }
-        }
-        else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
+            mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody));
+        }else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }
 }

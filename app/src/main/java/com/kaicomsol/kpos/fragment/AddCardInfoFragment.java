@@ -209,8 +209,6 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         btn_delete.setOnClickListener(this);
         btn_lost.setOnClickListener(this);
 
-        DebugLog.e("Prepaid Code "+ prepaidCode);
-
     }
 
     @Override
@@ -415,8 +413,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             rechargeCardDismiss();
         }else {
             showEmptyAnimation();
-            CustomAlertDialog.showError(activity, error + "");
         }
+        if (!TextUtils.isEmpty(error)) CustomAlertDialog.showError(activity, error);
     }
 
     @Override

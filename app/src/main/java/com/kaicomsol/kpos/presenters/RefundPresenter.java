@@ -37,7 +37,7 @@ public class RefundPresenter {
         }
     }
 
-    public void getIssueRefund(String token,String cardNo, String credit, String refund) {
+    public void getIssueRefund(String token, String cardNo, String credit, final String refund) {
         Map<String, String> map = new HashMap<>();
         DebugLog.e(token);
         map.put("Authorization", token);
@@ -54,7 +54,6 @@ public class RefundPresenter {
                 .enqueue(new Callback<Refund>() {
                     @Override
                     public void onResponse(Call<Refund> call, Response<Refund> response) {
-                        DebugLog.i(call.request()+" || "+response.code());
 
                         if (response.code() == 401) {
                             mViewInterface.onLogout(response.code());
@@ -68,16 +67,7 @@ public class RefundPresenter {
                             } else {
                                 mViewInterface.onError("Error fetching data");
                             }
-                        }else {
-                            try {
-                                JSONObject jsonObject = new JSONObject(response.errorBody().string());
-                                JSONArray jsonArray = jsonObject.getJSONArray("fieldErrors");
-                                JSONObject jsonError = jsonArray.getJSONObject(0);
-                                mViewInterface.onError(jsonError.getString("message"));
-                            } catch (Exception e) {
-                                mViewInterface.onError("Error occurred Please try again");
-                            }
-                        }
+                        }else errorHandle(response.code(), response.errorBody());
                     }
 
                     @Override
@@ -162,13 +152,7 @@ public class RefundPresenter {
     private void errorHandle(int code, ResponseBody responseBody){
         if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
         else if(code == 406){
-            try {
-                JSONObject jObjError = new JSONObject(responseBody.string());
-                mViewInterface.onError(jObjError.getString("message"));
-            } catch (Exception e) {
-                mViewInterface.onError(e.getMessage());
-            }
-        }
-        else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
+            mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody));
+        }else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }
 }

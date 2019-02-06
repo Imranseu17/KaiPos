@@ -153,7 +153,6 @@ public class CardPresenter {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                        DebugLog.e(response.code()+" || CODE");
                         if (response.code() == 401){
                             mViewInterface.onLogout(response.code());
                             return;
@@ -162,8 +161,7 @@ public class CardPresenter {
                         if (response.isSuccessful()) {
                             mViewInterface.onAddCard(true);
                         }else {
-                            DebugLog.e("sdfadsfadsfadsfdas");
-                            //errorHandle(response.code(), response.errorBody());
+                            errorHandle(response.code(), response.errorBody());
                         }
                     }
 
@@ -353,12 +351,7 @@ public class CardPresenter {
         if (code == 500){
             mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
         }else if(code == 406){
-                try {
-                    JSONObject jObjError = new JSONObject(responseBody.string());
-                    mViewInterface.onError(jObjError.getString("message"));
-                } catch (Exception e) {
-                    mViewInterface.onError(e.getMessage());
-                }
+            mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody));
         }else {
             mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
         }

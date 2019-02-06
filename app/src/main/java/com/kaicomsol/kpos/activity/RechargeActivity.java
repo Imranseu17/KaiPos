@@ -577,9 +577,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         boolean response1 = readCard.WriteStatus(tag, payment.getNewHistoryNo());
         if (!response1){
            try {
-               double credit = Double.parseDouble(readCard.readCardArgument.Credit) - payment.getReceipt().getGasUnit();
-               double emergencyValue = Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue) - payment.getEmergencyValue();
-               readCard.GasChargeCard(tag, credit, payment.getUnitPrice(), payment.getBaseFee(), emergencyValue, payment.getReceipt().getMeterSerialNo());
+               readCard.GasChargeCard(tag, Double.parseDouble(readCard.readCardArgument.Credit), Double.parseDouble(readCard.readCardArgument.Unit), Integer.parseInt(readCard.readCardArgument.BasicFee), Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue), payment.getReceipt().getMeterSerialNo());
                return false;
            }catch (Exception e){
                return false;
