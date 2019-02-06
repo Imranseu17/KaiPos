@@ -317,7 +317,9 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         double cr = Double.parseDouble(credit);
         double ref1 = Double.parseDouble(refund1);
 
-        return String.valueOf(cr + ref1);
+        double creditUpdate = cr + ref1;
+
+        return String.valueOf(Double.parseDouble(decimalFormat.format(creditUpdate)));
     }
 
     public void showConfirmDialog() {
