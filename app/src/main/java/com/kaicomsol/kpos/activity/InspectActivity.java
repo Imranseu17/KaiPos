@@ -169,7 +169,7 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
             HttpResponsAsync.ReadCardArgument argument = readCard.readCardArgument;
             NFCData.getInstance().setArgument(argument);
         }else {
-            customerCardDismiss();
+
             CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
         }
 

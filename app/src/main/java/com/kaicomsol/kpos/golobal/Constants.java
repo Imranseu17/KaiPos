@@ -21,7 +21,6 @@ public class Constants {
     //Local host Development BASE URL Adnan Vai
     //public static String BASE_URL = "https://192.168.1.42:8443";
 
-
     public static final String CONNECT_TO_WIFI = "WIFI";
     public static final String CONNECT_TO_MOBILE = "MOBILE";
     public static final String NOT_CONNECT = "NOT_CONNECT";

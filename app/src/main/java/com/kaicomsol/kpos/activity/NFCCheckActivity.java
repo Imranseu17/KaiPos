@@ -116,6 +116,7 @@ public class NFCCheckActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
         readCard.ReadTag(tag);
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         vibrator.vibrate(1000);
@@ -177,6 +178,5 @@ public class NFCCheckActivity extends AppCompatActivity {
         finish();
 
     }
-
 
 }
