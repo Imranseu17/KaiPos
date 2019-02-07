@@ -162,8 +162,7 @@ public class CardPresenter {
                         if (response.isSuccessful()) {
                             mViewInterface.onAddCard(true);
                         }else {
-                            DebugLog.e("sdfadsfadsfadsfdas");
-                            //errorHandle(response.code(), response.errorBody());
+                            errorHandle(response.code(), response.errorBody());
                         }
                     }
 
@@ -354,10 +353,13 @@ public class CardPresenter {
             mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
         }else if(code == 406){
                 try {
-                    JSONObject jObjError = new JSONObject(responseBody.string());
+                    DebugLog.e(responseBody.string());
+                    String jsonStr = responseBody.string();
+                    JSONObject jObjError = new JSONObject(jsonStr);
                     mViewInterface.onError(jObjError.getString("message"));
                 } catch (Exception e) {
                     mViewInterface.onError(e.getMessage());
+                    e.printStackTrace();
                 }
         }else {
             mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
