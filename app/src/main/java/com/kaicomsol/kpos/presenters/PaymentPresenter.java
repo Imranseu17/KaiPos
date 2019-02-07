@@ -478,12 +478,7 @@ public class PaymentPresenter {
                 mViewInterface.onLogout(code);
                 break;
             case 406:
-                try {
-                    JSONObject jObjError = new JSONObject(responseBody.string());
-                    mViewInterface.onError(jObjError.getString("message"),RechargeStatus.ERROR_CODE_406.getCode());
-                } catch (Exception e) {
-                    mViewInterface.onError(e.getMessage(),RechargeStatus.ERROR_CODE_406.getCode());
-                }
+                mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody),RechargeStatus.ERROR_CODE_406.getCode());
                 break;
             default:
                 mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
