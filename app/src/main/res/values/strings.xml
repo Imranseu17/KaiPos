@@ -198,7 +198,7 @@
     <string name="label_find_device">Server setup</string>
     <string name="label_anguage">Language</string>
     <string name="label_sign_out">Sign out</string>
-    <string name="label_copyright" translatable="false">Copyright &#169; 2018 All Rights Reserved by KCL</string>
+    <string name="label_copyright" translatable="false">TOYOKEIKI Co., LTD &#169; 2018 All Rights Reserved Copyright</string>
     <string name="title_select_amount">Select amount</string>
 
     <string name="success">Success</string>
