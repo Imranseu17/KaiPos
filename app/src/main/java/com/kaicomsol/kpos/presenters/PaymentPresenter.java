@@ -123,12 +123,7 @@ public class PaymentPresenter {
                             } else {
                                 mViewInterface.onError("Error fetching data", RechargeStatus.CAPTURE_ERROR.getCode());
                             }
-                        } else {
-                            if (response.code() == 500)
-                                mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()), RechargeStatus.CAPTURE_ERROR.getCode());
-                            else
-                                mViewInterface.onError(APIErrors.getErrorMessage(response.errorBody()), RechargeStatus.CAPTURE_ERROR.getCode());
-                        }
+                        } else getErrorMessage(response.code(), response.errorBody());
 
 
                     }
@@ -185,12 +180,7 @@ public class PaymentPresenter {
                             } else {
                                 mViewInterface.onError("Error fetching data", RechargeStatus.CANCEL_ERROR.getCode());
                             }
-                        } else {
-                            if (response.code() == 500)
-                                mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()), RechargeStatus.CANCEL_ERROR.getCode());
-                            else
-                                mViewInterface.onError(APIErrors.getErrorMessage(response.errorBody()), RechargeStatus.CANCEL_ERROR.getCode());
-                        }
+                        } else getErrorMessage(response.code(), response.errorBody());
 
 
                     }

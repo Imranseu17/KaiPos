@@ -1,5 +1,7 @@
 package com.kaicomsol.kpos.models;
 
+import com.kaicomsol.kpos.utils.DebugLog;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -9,7 +11,8 @@ public class APIErrors {
 
     public static String getErrorMessage(ResponseBody response) {
         try {
-            JSONObject jsonObject = new JSONObject(response.string());
+            String jsonStr = response.string();
+            JSONObject jsonObject = new JSONObject(jsonStr);
             JSONArray jsonArray = jsonObject.getJSONArray("fieldErrors");
             JSONObject jsonError = jsonArray.getJSONObject(0);
             return jsonError.getString("message");
@@ -32,7 +35,8 @@ public class APIErrors {
 
     public static String get500ErrorMessage(ResponseBody response) {
         try {
-            JSONObject jsonObject = new JSONObject(response.string());
+            String jsonStr = response.string();
+            JSONObject jsonObject = new JSONObject(jsonStr);
             return jsonObject.getString("message");
         } catch (Exception e) {
             e.printStackTrace();
