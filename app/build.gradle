@@ -60,7 +60,6 @@ dependencies {
     implementation 'joda-time:joda-time:2.10.1'
     implementation 'javax.mail:mail:1.4.7'
 
-
     testImplementation 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
