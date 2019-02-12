@@ -264,6 +264,7 @@
     <string name="error_msg_timeout">The server took too long to respond</string>
     <string name="error_msg_unknown">An unexpected error occurred</string>
     <string name="tap_to_reload">Tap to reload</string>
+    <string name="label_service">Service</string>
 
 
 </resources>

@@ -41,8 +41,6 @@ public class NFCCheckActivity extends AppCompatActivity {
     private NfcAdapter mAdapter;
     private PendingIntent pendingIntent;
     private Vibrator vibrator;
-    private Animation mAnimation;
-    private String path = "";
 
     //bind component
     @BindView(R.id.img_close)
@@ -67,14 +65,9 @@ public class NFCCheckActivity extends AppCompatActivity {
 
     private void viewConfig() {
 
-        Intent intent = getIntent();
-        path = intent.getStringExtra("path");
-        if (!TextUtils.isEmpty(path) && path.equals("service")) txtService.setText("Service");
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         readCard = new ReadCard();
-        mAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
-        //imgNfc.startAnimation(mAnimation);
 
         pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -120,16 +113,21 @@ public class NFCCheckActivity extends AppCompatActivity {
         readCard.ReadTag(tag);
         final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
         vibrator.vibrate(1000);
+
+
         if (response) {
-            if (readCard.readCardArgument.CardGroup.equals(CardPropertise.SERVICE_CARD.getCode()) && path.equals("service")) {
-                SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
-                activityHome();
-            } else if (!readCard.readCardArgument.CardGroup.equals("88") && path.equals("service")) {
-                CustomAlertDialog.showError(this, getString(R.string.err_service_card));
+            if (readCard.readCardArgument.CardGroup.equals(CardPropertise.SERVICE_CARD.getCode())) {
+                String userId = SharedDataSaveLoad.load(this, getString(R.string.preference_user_id));
+                if (!TextUtils.isEmpty(userId) && userId.equals(readCard.readCardArgument.CustomerId)) {
+                    SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
+                    activityHome();
+                } else {
+                    CustomAlertDialog.showError(this, "Service card & user mismatch");
+                }
             } else {
-                goNext(path);
+                CustomAlertDialog.showError(this, getString(R.string.err_service_card));
             }
-        }else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
+        } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
         vibrator.cancel();
 
     }
@@ -141,42 +139,10 @@ public class NFCCheckActivity extends AppCompatActivity {
         mAdapter.disableForegroundDispatch(this);
     }
 
-    private void goNext(String path) {
-        DebugLog.e(path);
-        switch (path) {
-            case "service":
-                activityHome();
-                break;
-            case "gas":
-                activityGas(readCard.readCardArgument.CardGroup);
-            case "inspect":
-                activityInspect();
-                break;
-        }
-    }
-
     //authentication for dashboard activity
     private void activityHome() {
         startActivity(new Intent(NFCCheckActivity.this, HomeActivity.class));
         finish();
-    }
-
-    //authentication for dashboard activity
-    private void activityGas(String group) {
-        startActivity(new Intent(NFCCheckActivity.this, HomeActivity.class));
-        finish();
-    }
-
-
-    //authentication for inspect activity
-    private void activityInspect() {
-
-        HttpResponsAsync.ReadCardArgument argument = readCard.readCardArgument;
-        NFCData.getInstance().setArgument(argument);
-        Intent intent = new Intent(NFCCheckActivity.this, InspectActivity.class);
-        startActivity(intent);
-        finish();
-
     }
 
 }

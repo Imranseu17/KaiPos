@@ -58,9 +58,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_3sdp"
                 android:layout_marginRight="@dimen/_3sdp"
-                android:text="@string/label_user"
+                android:textAppearance="@style/TextAppearance.FontRegular"
+                android:text="@string/label_service"
+                android:textColor="@color/black"
                 android:textStyle="bold"
-                android:textAppearance="@style/TextAppearance.FontPath"
                 android:textSize="20sp" />
 
             <TextView

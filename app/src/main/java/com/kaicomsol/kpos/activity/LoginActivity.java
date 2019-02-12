@@ -176,7 +176,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     private void goDashboard(String token){
         SharedDataSaveLoad.save(this, getString(R.string.preference_access_token), "Bearer "+token);
         Intent intent = new Intent(this, NFCCheckActivity.class);
-        intent.putExtra("path","service");
         startActivity(intent);
         finish();
     }
