@@ -16,7 +16,7 @@ public class Constants {
 
 
     //Local host Development BASE URL Niab
-    //public static String BASE_URL = "http://192.168.1.3:8080";
+    //public static String BASE_URL = "https://192.168.1.11:8443";
 
     //Local host Development BASE URL Adnan Vai
     //public static String BASE_URL = "https://192.168.1.42:8443";

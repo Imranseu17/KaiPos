@@ -8,10 +8,10 @@ import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.CloseClickListener;
@@ -31,11 +30,9 @@ import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.models.Refund;
-import com.kaicomsol.kpos.models.Success;
 import com.kaicomsol.kpos.models.UpdateResponse;
 import com.kaicomsol.kpos.presenters.RefundPresenter;
 import com.kaicomsol.kpos.utils.CardPropertise;
-import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import java.text.DecimalFormat;

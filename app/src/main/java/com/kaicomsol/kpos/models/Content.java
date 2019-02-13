@@ -1,9 +1,12 @@
 package com.kaicomsol.kpos.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Content {
+public class Content implements Parcelable {
 
     @SerializedName("paymentId")
     @Expose
@@ -35,6 +38,35 @@ public class Content {
     @SerializedName("paymentMethod")
     @Expose
     private String paymentMethod;
+
+    public Content(Parcel in) {
+        paymentId = in.readString();
+        saleDateTimeInLong = in.readLong();
+        customerAccNo = in.readString();
+        meterSerialNo = in.readString();
+        posId = in.readString();
+        posUser = in.readString();
+        amount = in.readInt();
+        paymentCharge = in.readDouble();
+        totalAmount = in.readInt();
+        paymentMethod = in.readString();
+    }
+
+    public static final Creator<Content> CREATOR = new Creator<Content>() {
+        @Override
+        public Content createFromParcel(Parcel in) {
+            return new Content(in);
+        }
+
+        @Override
+        public Content[] newArray(int size) {
+            return new Content[size];
+        }
+    };
+
+    public Content() {
+
+    }
 
     public String getPaymentId() {
         return paymentId;
@@ -114,5 +146,24 @@ public class Content {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(paymentId);
+        dest.writeLong(saleDateTimeInLong);
+        dest.writeString(customerAccNo);
+        dest.writeString(meterSerialNo);
+        dest.writeString(posId);
+        dest.writeString(posUser);
+        dest.writeInt(amount);
+        dest.writeDouble(paymentCharge);
+        dest.writeInt(totalAmount);
+        dest.writeString(paymentMethod);
     }
 }

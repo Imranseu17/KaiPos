@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.os.Parcelable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -232,7 +233,6 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     @Override
     public void onError(String error) {
 
-        DebugLog.e(error+" ||||||| ");
         hideAnimation();
         if (currentPage == 1){
             CustomAlertDialog.showError(this,"Transaction not found");
@@ -283,6 +283,9 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     @Override
     public void onHistoryClick(Content content) {
+        Intent intent = new Intent(SalesHistoryActivity.this,SalesHistoryDetailsActivity.class) ;
+             intent.putExtra("content",content);
+             startActivity(intent);
 
     }
 

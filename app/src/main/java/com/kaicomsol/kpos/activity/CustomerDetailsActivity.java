@@ -1,21 +1,17 @@
 package com.kaicomsol.kpos.activity;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.ViewPagerAdapter;
-import com.kaicomsol.kpos.fragment.AddCardInfoFragment;
 import com.kaicomsol.kpos.fragment.CustomerFragment;
 import com.kaicomsol.kpos.fragment.MeterFragment;
-import com.kaicomsol.kpos.fragment.SubscriptionFragment;
-import com.kaicomsol.kpos.fragment.TransactionFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
