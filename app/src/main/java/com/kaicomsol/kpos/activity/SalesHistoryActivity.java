@@ -229,7 +229,6 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     @Override
     public void onError(String error) {
 
-        DebugLog.e(error+" ||||||| ");
         hideAnimation();
         if (currentPage == 1){
             CustomAlertDialog.showError(this,"Transaction not found");
@@ -280,7 +279,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     @Override
     public void onHistoryClick(Content content) {
-
+             DebugLog.e("HELLOE");
     }
 
     @Override

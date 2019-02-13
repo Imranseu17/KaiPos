@@ -141,20 +141,19 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         //UI View Bind
+        @BindView(R.id.item_layout) LinearLayout item_layout;
         @BindView(R.id.txt_date_time) TextView txt_date_time;
         @BindView(R.id.txt_deposit_amount) TextView txt_deposit_amount;
-//        @BindView(R.id.txt_meter_serial) TextView txt_meter_serial;
-//        @BindView(R.id.txt_pos_id) TextView txt_pos_id;
-//        @BindView(R.id.txt_amount) TextView txt_amount;
-//        @BindView(R.id.txt_email) TextView txt_email;
-//        @BindView(R.id.txt_payment_charge) TextView txt_payment_charge;
-//        @BindView(R.id.txt_total_amount) TextView txt_total_amount;
-//        @BindView(R.id.txt_payment_method) TextView txt_payment_method;
-//        @BindView(R.id.txt_sales_date) TextView txt_sales_date;
 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            item_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onHistoryClick(contentList.get(getAdapterPosition()));
+                }
+            });
 
         }
 
