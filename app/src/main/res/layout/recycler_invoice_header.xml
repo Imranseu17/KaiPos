@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/colorPrimary"
+    android:padding="@dimen/_8sdp"
+    android:weightSum="9">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.FontPath"
+        android:layout_weight="3"
+        android:gravity="left"
+        android:textColor="@color/colorWhite"
+        android:text="Date"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.FontPath"
+        android:layout_weight="4"
+        android:gravity="left"
+        android:textColor="@color/colorWhite"
+        android:text="Item Name"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.FontPath"
+        android:layout_weight="2"
+        android:textColor="@color/colorWhite"
+        android:gravity="left"
+        android:text="Amount"/>
+</LinearLayout>
+
+</LinearLayout>

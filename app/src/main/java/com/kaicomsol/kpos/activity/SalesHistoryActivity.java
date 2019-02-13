@@ -8,6 +8,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
@@ -136,6 +137,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         dateFormatter = new SimpleDateFormat("MM-dd-yyyy");
         mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mAdapter =  new SalesHistoryAdapter(this, this);
@@ -215,6 +217,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         }
         if (salesHistory.getContentList() != null) {
             if (salesHistory.getContentList().size() > 0) {
+                DebugLog.e(salesHistory.getContentList().size()+" hello");
                 mAdapter.setHistory(salesHistory.getContentList(), currentPage);
             }else CustomAlertDialog.showError(this,"Transaction not found");
 

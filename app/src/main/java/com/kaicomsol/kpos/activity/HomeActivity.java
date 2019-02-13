@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
+import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 import com.kaicomsol.kpos.utils.WaterMarkBg;
 
 import java.text.SimpleDateFormat;
@@ -205,6 +206,8 @@ public class HomeActivity extends AppCompatActivity{
                 .setPositiveListener(getString(R.string.yes), new ChooseAlertDialog.OnPositiveListener() {
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
+                        SharedDataSaveLoad.remove(HomeActivity.this, getString(R.string.preference_is_service_check));
+                        SharedDataSaveLoad.remove(HomeActivity.this, getString(R.string.preference_access_token));
                         dialog.dismiss();
                         finish();
 

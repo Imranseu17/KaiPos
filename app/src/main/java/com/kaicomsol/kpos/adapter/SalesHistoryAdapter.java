@@ -86,18 +86,21 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ViewHolder vh = (ViewHolder) holder;
 
                 Date date = new Date(content.getSaleDateTimeInLong());
-                SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
+                SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm a");
                 String formatDate = targetFormat.format(date);
 
-                vh.txt_account_no.setText(content.getCustomerAccNo() != null ?  content.getCustomerAccNo(): "N/A");
-                vh.txt_meter_serial.setText(content.getMeterSerialNo() != null ?  content.getMeterSerialNo(): "N/A");
-                vh.txt_pos_id.setText(content.getPosId() != null ?  content.getPosId(): "N/A");
-                vh.txt_amount.setText(content.getAmount()+" TK");
-                vh.txt_email.setText(content.getPosUser() != null ?  content.getPosUser(): "N/A");
-                vh.txt_payment_charge.setText(content.getPaymentCharge()+" TK");
-                vh.txt_total_amount.setText(content.getTotalAmount()+" TK");
-                vh.txt_payment_method.setText(content.getPaymentMethod() != null ?  ""+content.getPaymentMethod(): "N/A");
-                vh.txt_sales_date.setText(formatDate);
+                vh.txt_date_time.setText(formatDate);
+                vh.txt_deposit_amount.setText(content.getAmount()+" TK");
+
+//                vh.txt_account_no.setText(content.getCustomerAccNo() != null ?  content.getCustomerAccNo(): "N/A");
+//                vh.txt_meter_serial.setText(content.getMeterSerialNo() != null ?  content.getMeterSerialNo(): "N/A");
+//                vh.txt_pos_id.setText(content.getPosId() != null ?  content.getPosId(): "N/A");
+//                vh.txt_amount.setText(content.getAmount()+" TK");
+//                vh.txt_email.setText(content.getPosUser() != null ?  content.getPosUser(): "N/A");
+//                vh.txt_payment_charge.setText(content.getPaymentCharge()+" TK");
+//                vh.txt_total_amount.setText(content.getTotalAmount()+" TK");
+//                vh.txt_payment_method.setText(content.getPaymentMethod() != null ?  ""+content.getPaymentMethod(): "N/A");
+//                vh.txt_sales_date.setText(formatDate);
                 break;
 
             case LOADING:
@@ -138,26 +141,21 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         //UI View Bind
-        @BindView(R.id.card_content) CardView card_content;
-        @BindView(R.id.txt_account_no) TextView txt_account_no;
-        @BindView(R.id.txt_meter_serial) TextView txt_meter_serial;
-        @BindView(R.id.txt_pos_id) TextView txt_pos_id;
-        @BindView(R.id.txt_amount) TextView txt_amount;
-        @BindView(R.id.txt_email) TextView txt_email;
-        @BindView(R.id.txt_payment_charge) TextView txt_payment_charge;
-        @BindView(R.id.txt_total_amount) TextView txt_total_amount;
-        @BindView(R.id.txt_payment_method) TextView txt_payment_method;
-        @BindView(R.id.txt_sales_date) TextView txt_sales_date;
+        @BindView(R.id.txt_date_time) TextView txt_date_time;
+        @BindView(R.id.txt_deposit_amount) TextView txt_deposit_amount;
+//        @BindView(R.id.txt_meter_serial) TextView txt_meter_serial;
+//        @BindView(R.id.txt_pos_id) TextView txt_pos_id;
+//        @BindView(R.id.txt_amount) TextView txt_amount;
+//        @BindView(R.id.txt_email) TextView txt_email;
+//        @BindView(R.id.txt_payment_charge) TextView txt_payment_charge;
+//        @BindView(R.id.txt_total_amount) TextView txt_total_amount;
+//        @BindView(R.id.txt_payment_method) TextView txt_payment_method;
+//        @BindView(R.id.txt_sales_date) TextView txt_sales_date;
 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            card_content.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mCallback.onHistoryClick(contentList.get(getAdapterPosition()));
-                }
-            });
+
         }
 
     }
