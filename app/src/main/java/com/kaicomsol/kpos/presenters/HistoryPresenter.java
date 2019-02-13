@@ -42,8 +42,10 @@ public class HistoryPresenter {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("start", start);
         jsonObject.addProperty("end", end);
-        jsonObject.addProperty("pageSize", "10");
+        jsonObject.addProperty("pageSize", "20");
         jsonObject.addProperty("pageNumber", currentPage);
+
+        DebugLog.e(start);
 
         mApiClient.getAPI()
                 .getSalesHistory(map, jsonObject)

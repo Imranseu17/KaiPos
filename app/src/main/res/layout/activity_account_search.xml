@@ -198,7 +198,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="2.5dp"
+                    android:layout_marginRight="2.5dp"
                     android:layout_weight="1">
 
                     <android.support.design.widget.TextInputEditText
@@ -219,7 +219,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="2.5dp"
+                    android:layout_marginLeft="2.5dp"
                     android:layout_weight="1">
 
                     <android.support.design.widget.TextInputEditText
