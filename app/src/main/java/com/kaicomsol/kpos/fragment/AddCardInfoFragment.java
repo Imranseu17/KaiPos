@@ -16,12 +16,16 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
@@ -86,6 +90,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @BindView(R.id.btn_lost)
     TextView btn_lost;
 
+    AlertDialog.Builder mBuilder;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -101,8 +107,37 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_add_card, container, false);
+        mBuilder = new AlertDialog.Builder(getContext());
+        final View mView = getLayoutInflater().inflate(R.layout.dialog_lost_card, null);
+        final EditText mEmail =  mView.findViewById(R.id.etEmail);
+        final EditText mPassword =  mView.findViewById(R.id.etPassword);
+        final Button mLogin =  mView.findViewById(R.id.btn_submit);
 
         ButterKnife.bind(this, view);
+
+        btn_lost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+                mLogin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!mEmail.getText().toString().isEmpty() && !mPassword.getText().toString().isEmpty()){
+                            Toast.makeText(getContext(),
+                                    "success",
+                                    Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        }else{
+                            Toast.makeText(getContext(),
+                                    "error",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
         //view config
         viewConfig();
         //card configuration
@@ -280,15 +315,34 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
     }
 
-    private void lostCard() {
-
-        String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
-        String cardIdm = txt_card_no.getText().toString().trim();
-
-        if (checkConnection()) {
-            mPresenter.lostCard(token, cardIdm);
-        } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
-    }
+//    private void lostCard() {
+//
+//        mBuilder.setView(mView);
+//        final AlertDialog dialog = mBuilder.create();
+//        dialog.show();
+//        mLogin.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(!mEmail.getText().toString().isEmpty() && !mPassword.getText().toString().isEmpty()){
+//                    Toast.makeText(MainActivity.this,
+//                            R.string.success_login_msg,
+//                            Toast.LENGTH_SHORT).show();
+//                    dialog.dismiss();
+//                }else{
+//                    Toast.makeText(MainActivity.this,
+//                            R.string.error_login_msg,
+//                            Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//
+//        String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
+//        String cardIdm = txt_card_no.getText().toString().trim();
+//
+//        if (checkConnection()) {
+//            mPresenter.lostCard(token, cardIdm);
+//        } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
+   // }
 
     private boolean checkConnection() {
 
@@ -306,7 +360,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         } else if (v == btn_delete) {
             showDeleteDialog();
         } else if (v == btn_lost) {
-            lostCard();
+           // lostCard();
         }
 
     }
