@@ -602,6 +602,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                readCard.GasChargeCard(tag, Double.parseDouble(readCard.readCardArgument.Credit), Double.parseDouble(readCard.readCardArgument.Unit), Integer.parseInt(readCard.readCardArgument.BasicFee), Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue), payment.getReceipt().getMeterSerialNo());
                return false;
            }catch (Exception e){
+               readCard.GasChargeCard(tag, Double.parseDouble(readCard.readCardArgument.Credit), Double.parseDouble(readCard.readCardArgument.Unit), Integer.parseInt(readCard.readCardArgument.BasicFee), Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue), payment.getReceipt().getMeterSerialNo());
                return false;
            }
         }

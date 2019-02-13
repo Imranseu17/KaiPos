@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/txt_color"
             android:layout_gravity="center_horizontal"
-            android:text="Invoice List"
+            android:text="Pending invoice"
             android:textSize="17sp"
             android:textAppearance="@style/TextAppearance.FontPath"/>
         <TextView
@@ -50,7 +50,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/card_content"
-        android:layout_marginTop="@dimen/_8sdp"
         android:layout_above="@+id/btn_add"
         android:scrollbars="none"
         android:visibility="visible" />

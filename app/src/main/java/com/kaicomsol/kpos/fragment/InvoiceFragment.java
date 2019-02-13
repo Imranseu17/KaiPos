@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -111,6 +112,7 @@ public class InvoiceFragment extends DialogFragment{
         if (invoices != null){
             mAdapter =  new InvoiceAdapter(activity, invoices.getInvoices());
             totalAmount(invoices.getInvoices());
+            mRecyclerView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
             mRecyclerView.setAdapter(mAdapter);
         }
     }

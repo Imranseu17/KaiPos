@@ -30,9 +30,17 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.recycler_invoice_item, parent, false);
-        return new ViewHolder(view);
+
+        if (viewType == 0){
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.recycler_invoice_header, parent, false);
+            return new HeaderVH(view);
+        }else {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.recycler_invoice_item, parent, false);
+            return new ViewHolder(view);
+        }
+
 
 
     }
@@ -40,41 +48,47 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        final Invoice invoice = invoiceList.get(position);
-        ViewHolder vh = (ViewHolder) holder;
-        Date date = new Date(invoice.getCreateDateTime());
-        SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
-        String formatDate = targetFormat.format(date);
+        if (position > 0){
+            final Invoice invoice = invoiceList.get(position-1);
+            ViewHolder vh = (ViewHolder) holder;
+            Date date = new Date(invoice.getCreateDateTime());
+            SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
+            String formatDate = targetFormat.format(date);
 
-        vh.txt_invoice_no.setText(String.valueOf(invoice.getInvoiceId()));
-        vh.txt_item.setText(invoice.getItemName() !=null ? invoice.getItemName() : "N/A");
+            vh.txt_item.setText(invoice.getItemName() !=null ? invoice.getItemName() : "N/A");
 
-        vh.txt_quantity.setText(String.valueOf(invoice.getQuantity()));
-        vh.txt_unit_price.setText(String.valueOf(invoice.getPrice()));
-
-        vh.txt_amount.setText(String.valueOf(invoice.getAmount()));
-        vh.txt_date.setText(formatDate);
+            vh.txt_amount.setText(String.valueOf(invoice.getAmount())+" TK");
+            vh.txt_date.setText(formatDate);
+        }
 
     }
 
     @Override
     public int getItemViewType(int position) {
+
         return position;
     }
 
     @Override
     public int getItemCount() {
 
-        return invoiceList != null ? invoiceList.size() : 0;
+        return invoiceList != null ? invoiceList.size()+1 : 0;
+    }
+
+    public class HeaderVH extends RecyclerView.ViewHolder {
+
+        public HeaderVH(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+
+        }
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         //UI View Bind
-        @BindView(R.id.txt_invoice_no) TextView txt_invoice_no;
         @BindView(R.id.txt_item) TextView txt_item;
-        @BindView(R.id.txt_quantity) TextView txt_quantity;
-        @BindView(R.id.txt_unit_price) TextView txt_unit_price;
         @BindView(R.id.txt_amount) TextView txt_amount;
         @BindView(R.id.txt_date) TextView txt_date;
 
