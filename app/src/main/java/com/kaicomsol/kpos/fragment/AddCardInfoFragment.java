@@ -538,7 +538,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             case "D":
                 txt_status.setText("Damage");
                 activeButton(btn_delete);
-                activeButton(btn_lost);
+                disableButton(btn_lost);
                 disableButton(btn_damage);
                 disableButton(btn_add);
                 disableButton(btn_active);
