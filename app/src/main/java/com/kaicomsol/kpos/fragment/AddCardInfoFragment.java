@@ -31,8 +31,11 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.activity.LoginActivity;
 import com.kaicomsol.kpos.callbacks.CardInfoView;
+import com.kaicomsol.kpos.callbacks.LostCardListener;
+import com.kaicomsol.kpos.dialogs.CardCheckDialog;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
+import com.kaicomsol.kpos.dialogs.LostCardDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.models.CardData;
@@ -51,10 +54,11 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AddCardInfoFragment extends Fragment implements View.OnClickListener, CardInfoView {
+public class AddCardInfoFragment extends Fragment implements View.OnClickListener, CardInfoView, LostCardListener {
 
     private Activity activity = null;
     private RechargeCardDialog mRechargeCardDialog = null;
+    private LostCardDialog mLostCardDialog = null;
     private CardPresenter mPresenter;
     private int emergencyValue = 0;
     private double unitPrice = 0.0;
@@ -209,6 +213,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         prepaidCode = SharedDataSaveLoad.load(activity, getString(R.string.preference_prepaid_code));
         mPresenter = new CardPresenter(this);
         mRechargeCardDialog = new RechargeCardDialog();
+        mLostCardDialog = LostCardDialog.newInstance(this);
         Bundle args = new Bundle();
         args.putString("msg", "Until card added success");
         mRechargeCardDialog.setArguments(args);
@@ -295,6 +300,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
         String cardIdm = txt_card_no.getText().toString().trim();
 
+
         if (checkConnection()) {
             mPresenter.lostCard(token, cardIdm);
         } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
@@ -316,7 +322,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         } else if (v == btn_delete) {
             showDeleteDialog();
         } else if (v == btn_lost) {
-            lostCard();
+            showLostCardDialog();
+            //lostCard();
         }
 
     }
@@ -437,6 +444,17 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         activity.finish();
     }
 
+    @Override
+    public void onDialogClose() {
+        lostCardDismiss();
+    }
+
+    @Override
+    public void onLostInfo(String gdNo, String cardNo) {
+        DebugLog.e(gdNo+" || "+cardNo);
+       lostCardDismiss();
+    }
+
     private void activeButton(TextView textView) {
         textView.setEnabled(true);
         textView.setTextColor(ContextCompat.getColor(activity, R.color.green));
@@ -511,6 +529,20 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         }
     }
 
+    private void showLostCardDialog() {
+        if (mLostCardDialog != null) {
+            if (!mLostCardDialog.isAdded()) {
+                mLostCardDialog.show(getFragmentManager(), mLostCardDialog.getTag());
+            }
+        }
+    }
+
+    private void lostCardDismiss() {
+        if (mLostCardDialog != null) {
+            mLostCardDialog.dismiss();
+        }
+    }
+
     public void showAnimation() {
         card_content.setVisibility(View.GONE);
         animationView.setVisibility(View.VISIBLE);
@@ -532,4 +564,5 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         if (animationView.isAnimating()) animationView.cancelAnimation();
         animationView.setVisibility(View.GONE);
     }
+
 }

@@ -86,21 +86,11 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ViewHolder vh = (ViewHolder) holder;
 
                 Date date = new Date(content.getSaleDateTimeInLong());
-                SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy hh:mm a");
+                SimpleDateFormat targetFormat = new SimpleDateFormat("MMM-dd-yyyy hh:mm a");
                 String formatDate = targetFormat.format(date);
 
                 vh.txt_date_time.setText(formatDate);
                 vh.txt_deposit_amount.setText(content.getAmount()+" TK");
-
-//                vh.txt_account_no.setText(content.getCustomerAccNo() != null ?  content.getCustomerAccNo(): "N/A");
-//                vh.txt_meter_serial.setText(content.getMeterSerialNo() != null ?  content.getMeterSerialNo(): "N/A");
-//                vh.txt_pos_id.setText(content.getPosId() != null ?  content.getPosId(): "N/A");
-//                vh.txt_amount.setText(content.getAmount()+" TK");
-//                vh.txt_email.setText(content.getPosUser() != null ?  content.getPosUser(): "N/A");
-//                vh.txt_payment_charge.setText(content.getPaymentCharge()+" TK");
-//                vh.txt_total_amount.setText(content.getTotalAmount()+" TK");
-//                vh.txt_payment_method.setText(content.getPaymentMethod() != null ?  ""+content.getPaymentMethod(): "N/A");
-//                vh.txt_sales_date.setText(formatDate);
                 break;
 
             case LOADING:

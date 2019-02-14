@@ -78,6 +78,8 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     TextInputEditText edt_end_date;
     @BindView(R.id.btn_search)
     ImageView btn_search;
+    @BindView(R.id.line)
+    View line;
     @BindView(R.id.recycler_list)
     RecyclerView mRecyclerView;
     //
@@ -221,7 +223,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         }
         if (salesHistory.getContentList() != null) {
             if (salesHistory.getContentList().size() > 0) {
-                DebugLog.e(salesHistory.getContentList().size()+" hello");
+                line.setVisibility(View.VISIBLE);
                 mAdapter.setHistory(salesHistory.getContentList(), currentPage);
             }else CustomAlertDialog.showError(this,"Transaction not found");
 
@@ -259,6 +261,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     }
 
     public void showAnimation() {
+        line.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.GONE);
         animationView.setVisibility(View.VISIBLE);
         animationView.setAnimation("animation_loading.json");
@@ -267,6 +270,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     }
 
     public void showEmptyAnimation() {
+        line.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.GONE);
         animationView.setVisibility(View.VISIBLE);
         animationView.setAnimation("empty_box.json");
@@ -275,6 +279,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     }
 
     public void hideAnimation() {
+        line.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
         if (animationView.isAnimating()) animationView.cancelAnimation();
         animationView.setVisibility(View.GONE);
@@ -283,9 +288,11 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     @Override
     public void onHistoryClick(Content content) {
+
         Intent intent = new Intent(SalesHistoryActivity.this,SalesHistoryDetailsActivity.class) ;
              intent.putExtra("content",content);
              startActivity(intent);
+
 
     }
 

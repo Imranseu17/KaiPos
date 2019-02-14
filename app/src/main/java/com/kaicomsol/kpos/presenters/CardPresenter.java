@@ -26,6 +26,7 @@ public class CardPresenter {
     private CardInfoView mViewInterface;
     private APIClient mApiClient;
 
+
     public CardPresenter(CardInfoView view) {
         this.mViewInterface = view;
 
@@ -344,6 +345,9 @@ public class CardPresenter {
                     }
                 });
     }
+
+
+
 
     private void errorHandle(int code, ResponseBody responseBody){
 
