@@ -261,8 +261,13 @@ public class CardPresenter {
                         }
 
                         if (response.isSuccessful()) {
+                            DebugLog.e(""+response.code());
                             mViewInterface.onDeleteCard(true);
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else{
+                            DebugLog.e(""+response.code());
+                            errorHandle(response.code(), response.errorBody());
+                        }
+
                     }
 
                     @Override
