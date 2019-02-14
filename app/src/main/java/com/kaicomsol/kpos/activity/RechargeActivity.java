@@ -708,15 +708,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
                 if (mBluetoothAdapter.getBondedDevices().iterator().hasNext())   {
 
-
-
-                final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
-
-
-
+                    final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
                     final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
-
-
                     mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
 
                         @Override
