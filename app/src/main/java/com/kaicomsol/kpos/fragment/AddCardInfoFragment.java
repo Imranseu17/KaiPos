@@ -517,7 +517,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                 disableButton(btn_lost);
                 disableButton(btn_damage);
                 disableButton(btn_add);
-                disableButton(btn_active);
+                activeButton(btn_active);
                 break;
             case "I":
                 txt_status.setText("Initial");
