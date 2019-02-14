@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Akbor Sha"
+        android:visible="true" />
+    <item
+        android:title="Baizid"
+        android:visible="true" />
+    <item
+        android:title="Bakoliya"
+        android:visible="true" />
+    <item
+        android:title="Bandar"
+        android:visible="true" />
+    <item
+        android:title="Bhujpur"
+        android:visible="true" />
+    <item
+        android:title="Chandgaon"
+        android:visible="true" />
+    <item
+        android:title="Chaowkbazar"
+        android:visible="true" />
+    <item
+        android:title="Chittagong Kotwali"
+        android:visible="true" />
+    <item
+        android:title="Double Mooring"
+        android:visible="true" />
+    <item
+        android:title="Halishahar"
+        android:visible="true" />
+    <item
+        android:title="Karnaphuli"
+        android:visible="true" />
+    <item
+        android:title="Khulshi"
+        android:visible="true" />
+    <item
+        android:title="Pahartali"
+        android:visible="true" />
+    <item
+        android:title="Panchlaish"
+        android:visible="true" />
+    <item
+        android:title="Patenga"
+        android:visible="true" />
+    <item
+        android:title="Sadarghat"
+        android:visible="true" />
+</menu>

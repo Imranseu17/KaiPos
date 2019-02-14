@@ -312,7 +312,6 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             showDeleteDialog();
         } else if (v == btn_lost) {
             showLostCardDialog();
-            //lostCard();
         }
 
     }
@@ -439,9 +438,9 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onLostInfo(String gdNo, String cardNo) {
-        DebugLog.e(gdNo+" || "+cardNo);
+    public void onLostInfo(String date, String thana, String gdNo,String remarks) {
        lostCardDismiss();
+       lostCard();
     }
 
     private void activeButton(TextView textView) {
