@@ -289,14 +289,23 @@ public class CardPresenter {
                 });
     }
 
-    public void lostCard(String token, String cardIdm) {
+    public void lostCard(String token,String cardNo,String userId,
+                         String description, String remarks) {
+
         Map<String, String> map = new HashMap<>();
         DebugLog.e(token);
         map.put("Authorization", token);
         map.put("Content-Type", "application/json");
 
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("cardIdm", cardIdm);
+        jsonObject.addProperty("cardNo", cardNo);
+        jsonObject.addProperty("cardStatus", "L");
+        jsonObject.addProperty("createdBy", userId);
+        jsonObject.addProperty("description", description);
+        jsonObject.addProperty("remarks", remarks);
+        jsonObject.addProperty("status", "1");
+        jsonObject.addProperty("workOrderOriginCode", "pos_device");
+        jsonObject.addProperty("workOrderTypeCode", "card_lost");
 
         mApiClient.getAPI()
                 .lostCard(map, jsonObject)

@@ -293,16 +293,14 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
     }
 
-    private void lostCard() {
-
-
+    private void lostCard(String description, String remarks) {
 
         String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
         String cardIdm = txt_card_no.getText().toString().trim();
-
+        String userId = SharedDataSaveLoad.load(activity,getString(R.string.preference_user_id));
 
         if (checkConnection()) {
-            mPresenter.lostCard(token, cardIdm);
+            mPresenter.lostCard(token, cardIdm, userId, description, remarks);
         } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
     }
 
@@ -323,7 +321,6 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             showDeleteDialog();
         } else if (v == btn_lost) {
             showLostCardDialog();
-            //lostCard();
         }
 
     }
@@ -450,9 +447,10 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onLostInfo(String gdNo, String cardNo) {
-        DebugLog.e(gdNo+" || "+cardNo);
+    public void onLostInfo(String date, String thana, String gdNo,String remarks) {
        lostCardDismiss();
+       String description = "Card was lost. GD No: "+gdNo+", Thana Name: "+thana+", GD Date: "+date;
+       lostCard(description,remarks);
     }
 
     private void activeButton(TextView textView) {
@@ -473,18 +471,43 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         txt_card_no.setText(meterCard.getCardNumber() != null ? meterCard.getCardNumber() : "N/A");
         txt_meter_serial.setText(meterCard.getMeterSerialNo() != null ? meterCard.getMeterSerialNo() : "N/A");
         txt_issue_date.setText(formatDate);
-        if (meterCard.getStatus().equalsIgnoreCase("A")) {
-            txt_status.setText("Active");
-            activeButton(btn_delete);
-            activeButton(btn_lost);
-            disableButton(btn_add);
-            disableButton(btn_active);
-        } else {
-            txt_status.setText("Initial");
-            disableButton(btn_add);
-            activeButton(btn_active);
-            disableButton(btn_delete);
-            disableButton(btn_lost);
+        DebugLog.e(meterCard.getStatus());
+        switch (meterCard.getStatus())   {
+            case "A":
+                txt_status.setText("Active");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
+            case "L":
+                txt_status.setText("Lost");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
+            case "I":
+                txt_status.setText("Initial");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
+            case "S":
+                txt_status.setText("Servicing");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
+            case "D":
+                txt_status.setText("Damage");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
         }
 
     }
