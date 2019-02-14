@@ -209,13 +209,13 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
     @Override
     protected void onPause() {
         super.onPause();
-        mAdapter.disableForegroundDispatch(this);
+        if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
     }
 
 
     @Override
     public void onSuccess(Refund refund) {
-        mAdapter.disableForegroundDispatch(this);
+        if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
         id = refund.getId();
     }
 

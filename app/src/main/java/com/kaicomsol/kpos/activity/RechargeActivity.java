@@ -538,7 +538,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onSuccess(String readCard) {
-        mAdapter.disableForegroundDispatch(this);
+        if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
 
     }
 
