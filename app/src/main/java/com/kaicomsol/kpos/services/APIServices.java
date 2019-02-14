@@ -28,6 +28,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -114,6 +115,9 @@ public interface APIServices {
 
     @POST("/api/v1/pos/card/lostCard")
     Call<ResponseBody> lostCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
+
+    @PUT("/api/v1/customerMeters/card/deactivate")
+    Call<ResponseBody> damageCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 
     @POST("/api/v1/user/changePassword")
     Call<ResponseBody> resetPassword(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);

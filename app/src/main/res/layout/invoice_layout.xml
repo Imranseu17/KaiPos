@@ -101,7 +101,7 @@
                     android:layout_weight="1"
                     android:gravity="left"
                     android:textAppearance="@style/TextAppearance.FontPath"
-                    android:text="Prepaid Code"
+                    android:text="Customer Code"
                     android:textSize="16sp" />
 
                 <TextView
@@ -412,7 +412,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Customer Support"
+                android:text="Customer Support (0167*******)"
                 android:textAppearance="@style/TextAppearance.FontPath"
                 android:textSize="18sp" />
 

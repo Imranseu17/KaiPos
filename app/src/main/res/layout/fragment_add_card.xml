@@ -159,7 +159,7 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/_10sdp"
         android:orientation="horizontal"
-        android:weightSum="4">
+        android:weightSum="5">
 
         <TextView
             android:id="@+id/btn_add"
@@ -204,6 +204,18 @@
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="Lost"
+            android:textAppearance="@style/TextAppearance.FontSemiBold"
+            android:textColor="@color/disable"
+            android:textSize="15.4sp" />
+
+        <TextView
+            android:id="@+id/btn_damage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:text="Damage"
             android:textAppearance="@style/TextAppearance.FontSemiBold"
             android:textColor="@color/disable"
             android:textSize="15.4sp" />

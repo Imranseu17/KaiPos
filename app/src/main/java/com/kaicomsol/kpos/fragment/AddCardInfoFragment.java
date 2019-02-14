@@ -89,6 +89,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     TextView btn_delete;
     @BindView(R.id.btn_lost)
     TextView btn_lost;
+    @BindView(R.id.btn_damage)
+    TextView btn_damage;
 
     @Override
     public void onAttach(Context context) {
@@ -213,6 +215,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         btn_active.setOnClickListener(this);
         btn_delete.setOnClickListener(this);
         btn_lost.setOnClickListener(this);
+        btn_damage.setOnClickListener(this);
 
     }
 
@@ -276,6 +279,17 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
     }
 
+    private void damageCard() {
+
+        String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
+        String cardIdm = txt_card_no.getText().toString().trim();
+        String meterSerial = SharedDataSaveLoad.load(activity, getString(R.string.preference_meter_serial));
+
+        if (checkConnection()) {
+            mPresenter.damageCard(token, cardIdm, meterSerial);
+        } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
+    }
+
     private void deleteCard(String cardIdm) {
 
         String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
@@ -312,6 +326,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             showDeleteDialog();
         } else if (v == btn_lost) {
             showLostCardDialog();
+        }else if (v == btn_damage) {
+            damageCard();
         }
 
     }
@@ -336,6 +352,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                 disableButton(btn_active);
                 disableButton(btn_delete);
                 disableButton(btn_lost);
+                disableButton(btn_damage);
             }
         } else {
             showEmptyAnimation();
@@ -343,6 +360,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             disableButton(btn_active);
             disableButton(btn_delete);
             disableButton(btn_lost);
+            disableButton(btn_damage);
         }
     }
 
@@ -413,6 +431,17 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
+    public void onDamageCard(String damage) {
+        hideAnimation();
+        CustomAlertDialog.showSuccess(activity, "Card damage successfully");
+        disableButton(btn_add);
+        disableButton(btn_active);
+        activeButton(btn_delete);
+        activeButton(btn_lost);
+        getMeterInfo();
+    }
+
+    @Override
     public void onError(String error) {
         if (mRechargeCardDialog != null && mRechargeCardDialog.isResumed()){
             rechargeCardDismiss();
@@ -461,6 +490,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         txt_card_no.setText(meterCard.getCardNumber() != null ? meterCard.getCardNumber() : "N/A");
         txt_meter_serial.setText(meterCard.getMeterSerialNo() != null ? meterCard.getMeterSerialNo() : "N/A");
         txt_issue_date.setText(formatDate);
+        DebugLog.e(meterCard.getStatus());
         if (meterCard.getStatus().equalsIgnoreCase("A")) {
             txt_status.setText("Active");
             activeButton(btn_delete);

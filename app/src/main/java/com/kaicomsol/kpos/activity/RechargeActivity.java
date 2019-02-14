@@ -739,7 +739,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
                             printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
                             printCustom(getFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
-                            printCustom(getFormatStringByLength("Prepaid Code", readCard.readCardArgument.CustomerId), 0, 1);
+                            printCustom(getFormatStringByLength("Customer Code", readCard.readCardArgument.CustomerId), 0, 1);
                             printCustom(getFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
                             printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
                             printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
@@ -758,7 +758,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
                             printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
                             printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
-                            printCustom("Customer Support (" + readCard.readCardArgument.CustomerId + ")", 0, 1);
+                            printCustom("Customer Support <0167*******>", 0, 1);
                             printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
                             printNewLine();
                             printNewLine();

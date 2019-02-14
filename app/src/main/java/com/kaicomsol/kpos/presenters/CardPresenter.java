@@ -345,8 +345,63 @@ public class CardPresenter {
                 });
     }
 
-    private void errorHandle(int code, ResponseBody responseBody){
+    public void damageCard(String token, String cardNo, String meterSerialNo) {
+        Map<String, String> map = new HashMap<>();
+        DebugLog.e(token);
+        map.put("Authorization", token);
+        map.put("Content-Type", "application/json");
 
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("cardNo", cardNo);
+        jsonObject.addProperty("meterSerialNo", meterSerialNo);
+        jsonObject.addProperty("status", "D");
+
+        mApiClient.getAPI()
+                .damageCard(map, jsonObject)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                        if (response.code() == 401){
+                            mViewInterface.onLogout(response.code());
+                            return;
+                        }
+
+                        if (response.isSuccessful()) {
+                            mViewInterface.onDamageCard("");
+                        } else errorHandle(response.code(), response.errorBody());
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable e) {
+
+                        DebugLog.e(e.getStackTrace().toString());
+
+                        if (e instanceof HttpException) {
+
+
+                            int code = ((HttpException) e).response().code();
+                            if (code == 401){
+                                mViewInterface.onLogout(code);
+                            }
+
+                            ResponseBody responseBody = ((HttpException) e).response().errorBody();
+                            errorHandle(code, responseBody);
+
+                        } else if (e instanceof SocketTimeoutException) {
+
+                            mViewInterface.onError("Server connection error");
+                        } else if (e instanceof IOException) {
+                            mViewInterface.onError("IOException");
+                        } else {
+                            mViewInterface.onError("Unknown exception");
+                        }
+                    }
+                });
+    }
+
+    private void errorHandle(int code, ResponseBody responseBody){
 
         if (code == 500){
             mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
