@@ -16,12 +16,16 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
@@ -92,6 +96,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @BindView(R.id.btn_damage)
     TextView btn_damage;
 
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -108,7 +113,10 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
         View view = inflater.inflate(R.layout.fragment_add_card, container, false);
 
+
         ButterKnife.bind(this, view);
+
+
         //view config
         viewConfig();
         //card configuration
@@ -299,13 +307,14 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
     }
 
-    private void lostCard() {
+    private void lostCard(String description, String remarks) {
 
         String token = SharedDataSaveLoad.load(activity, getString(R.string.preference_access_token));
         String cardIdm = txt_card_no.getText().toString().trim();
+        String userId = SharedDataSaveLoad.load(activity,getString(R.string.preference_user_id));
 
         if (checkConnection()) {
-            mPresenter.lostCard(token, cardIdm);
+            mPresenter.lostCard(token, cardIdm, userId, description, remarks);
         } else CustomAlertDialog.showError(activity, getString(R.string.no_internet_connection));
     }
 
@@ -469,7 +478,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onLostInfo(String date, String thana, String gdNo,String remarks) {
        lostCardDismiss();
-       lostCard();
+       String description = "Card was lost. GD No: "+gdNo+", Thana Name: "+thana+", GD Date: "+date;
+       lostCard(description,remarks);
     }
 
     private void activeButton(TextView textView) {
@@ -491,18 +501,48 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         txt_meter_serial.setText(meterCard.getMeterSerialNo() != null ? meterCard.getMeterSerialNo() : "N/A");
         txt_issue_date.setText(formatDate);
         DebugLog.e(meterCard.getStatus());
-        if (meterCard.getStatus().equalsIgnoreCase("A")) {
-            txt_status.setText("Active");
-            activeButton(btn_delete);
-            activeButton(btn_lost);
-            disableButton(btn_add);
-            disableButton(btn_active);
-        } else {
-            txt_status.setText("Initial");
-            disableButton(btn_add);
-            activeButton(btn_active);
-            disableButton(btn_delete);
-            disableButton(btn_lost);
+
+        switch (meterCard.getStatus())   {
+            case "A":
+                txt_status.setText("Active");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                activeButton(btn_damage);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
+            case "L":
+                txt_status.setText("Lost");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                disableButton(btn_damage);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
+            case "I":
+                txt_status.setText("Initial");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                disableButton(btn_damage);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
+            case "S":
+                txt_status.setText("Servicing");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                disableButton(btn_damage);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
+            case "D":
+                txt_status.setText("Damage");
+                activeButton(btn_delete);
+                activeButton(btn_lost);
+                disableButton(btn_damage);
+                disableButton(btn_add);
+                disableButton(btn_active);
+                break;
         }
 
     }

@@ -23,7 +23,8 @@
         android:roundIcon="@drawable/smalltile"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.ChangePassActivity"></activity>
+        <activity android:name=".activity.SalesHistoryDetailsActivity"></activity>
+        <activity android:name=".activity.ChangePassActivity" />
         <activity
             android:name=".activity.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

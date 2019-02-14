@@ -113,7 +113,7 @@ public interface APIServices {
     @DELETE("/api/v1/customerMeters/card/{cardIdm}")
     Call<ResponseBody> deleteCard(@HeaderMap Map<String, String> headers, @Path("cardIdm") String cardIdm);
 
-    @POST("/api/v1/pos/card/lostCard")
+    @POST("/api/v1/card/servicing")
     Call<ResponseBody> lostCard(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 
     @PUT("/api/v1/customerMeters/card/deactivate")
@@ -121,6 +121,10 @@ public interface APIServices {
 
     @POST("/api/v1/user/changePassword")
     Call<ResponseBody> resetPassword(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
+
+
+
+    
 
 
 
