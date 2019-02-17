@@ -156,8 +156,6 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
     private void enableNFCReaderMode() {
 
-
-
         Bundle options = new Bundle();
         options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 1);
         mAdapter.enableReaderMode(getActivity(), new NfcAdapter.ReaderCallback() {
@@ -412,7 +410,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onLostCard(String lost) {
         hideAnimation();
-        CustomAlertDialog.showSuccess(activity, "Card lost successfully");
+        CustomAlertDialog.showSuccess(activity, "Lost Card Issued successfully");
         disableButton(btn_add);
         disableButton(btn_active);
         activeButton(btn_delete);
@@ -423,7 +421,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onDamageCard(String damage) {
         hideAnimation();
-        CustomAlertDialog.showSuccess(activity, "Card damage successfully");
+        CustomAlertDialog.showSuccess(activity, "Damage Card Issued successfully");
         disableButton(btn_add);
         disableButton(btn_active);
         activeButton(btn_delete);
