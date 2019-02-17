@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.models.Content;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -65,13 +66,17 @@ public class SalesHistoryDetailsActivity extends AppCompatActivity {
         SimpleDateFormat targetFormat = new SimpleDateFormat("MMM-dd-yyyy hh:mm a");
         String formatDate = targetFormat.format(date);
 
+      DecimalFormat  decimalFormat = new DecimalFormat(".##");
+       double paymentCharge =  Double.parseDouble(decimalFormat.format(content.getPaymentCharge()));
+
+
         txt_account_no.setText(content.getCustomerAccNo());
         txt_meterSerial.setText(content.getMeterSerialNo());
         txt_posID.setText(content.getPosId());
-        txt_amount.setText(""+content.getAmount());
+        txt_amount.setText(content.getAmount()+" TK");
         txt_email.setText(content.getPosUser());
-        txt_paymentCharge.setText(""+content.getPaymentCharge());
-        txt_totalAmount.setText(""+content.getTotalAmount());
+        txt_paymentCharge.setText(paymentCharge+" TK");
+        txt_totalAmount.setText(content.getTotalAmount()+" TK");
         txt_paymentMethod.setText(content.getPaymentMethod());
         txt_salesDate.setText(formatDate);
 

@@ -28,44 +28,32 @@ public class Content implements Parcelable {
     private String posUser;
     @SerializedName("amount")
     @Expose
-    private int amount;
+    private double amount;
     @SerializedName("paymentCharge")
     @Expose
     private double paymentCharge;
     @SerializedName("totalAmount")
     @Expose
-    private int totalAmount;
+    private double totalAmount;
     @SerializedName("paymentMethod")
     @Expose
     private String paymentMethod;
 
-    public Content(Parcel in) {
+
+    public Content() {
+    }
+
+    protected Content(Parcel in) {
         paymentId = in.readString();
         saleDateTimeInLong = in.readLong();
         customerAccNo = in.readString();
         meterSerialNo = in.readString();
         posId = in.readString();
         posUser = in.readString();
-        amount = in.readInt();
+        amount = in.readDouble();
         paymentCharge = in.readDouble();
-        totalAmount = in.readInt();
+        totalAmount = in.readDouble();
         paymentMethod = in.readString();
-    }
-
-    public static final Creator<Content> CREATOR = new Creator<Content>() {
-        @Override
-        public Content createFromParcel(Parcel in) {
-            return new Content(in);
-        }
-
-        @Override
-        public Content[] newArray(int size) {
-            return new Content[size];
-        }
-    };
-
-    public Content() {
-
     }
 
     public String getPaymentId() {
@@ -116,11 +104,11 @@ public class Content implements Parcelable {
         this.posUser = posUser;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -132,11 +120,11 @@ public class Content implements Parcelable {
         this.paymentCharge = paymentCharge;
     }
 
-    public int getTotalAmount() {
+    public double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(int totalAmount) {
+    public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
     }
 
@@ -147,6 +135,22 @@ public class Content implements Parcelable {
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
+
+    public static Creator<Content> getCREATOR() {
+        return CREATOR;
+    }
+
+    public static final Creator<Content> CREATOR = new Creator<Content>() {
+        @Override
+        public Content createFromParcel(Parcel in) {
+            return new Content(in);
+        }
+
+        @Override
+        public Content[] newArray(int size) {
+            return new Content[size];
+        }
+    };
 
     @Override
     public int describeContents() {
@@ -161,9 +165,9 @@ public class Content implements Parcelable {
         dest.writeString(meterSerialNo);
         dest.writeString(posId);
         dest.writeString(posUser);
-        dest.writeInt(amount);
+        dest.writeDouble(amount);
         dest.writeDouble(paymentCharge);
-        dest.writeInt(totalAmount);
+        dest.writeDouble(totalAmount);
         dest.writeString(paymentMethod);
     }
 }

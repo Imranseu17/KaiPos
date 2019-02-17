@@ -42,7 +42,9 @@ import com.kaicomsol.kpos.models.CardData;
 import com.kaicomsol.kpos.models.MeterCard;
 import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.presenters.CardPresenter;
+import com.kaicomsol.kpos.utils.CardEnum;
 import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.RechargeStatus;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import java.text.SimpleDateFormat;
@@ -163,8 +165,6 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                 String cardIdm = ByteArrayToHexString(tag.getId());
                 if (!TextUtils.isEmpty(cardIdm)) addCard(cardIdm);
                 else CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
-
-                //statusChecked(tag);
             }
         }, Integer.MAX_VALUE, options);
     }
@@ -187,26 +187,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     }
 
 
-    private void statusChecked(final Tag tag) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
 
-                try {
-                    readCard.ReadTag(tag);
-                    String cardIdm = readCard.readCardArgument.CardIdm;
-
-                    final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
-                    if (response) {
-
-                        addCard(cardIdm);
-                    } else CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            }
-        });
-    }
 
 
     private void viewConfig() {
@@ -449,13 +430,34 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onError(String error) {
+    public void onError(String error,int code) {
         if (mRechargeCardDialog != null && mRechargeCardDialog.isResumed()){
             rechargeCardDismiss();
         }else {
             showEmptyAnimation();
         }
         if (!TextUtils.isEmpty(error)) CustomAlertDialog.showError(activity, error);
+
+       CardEnum cardEnum  = CardEnum.getByCode(code);
+        switch (cardEnum) {
+            case ADD_CARD_FAILED:
+                card_content.setVisibility(View.GONE);
+                break;
+            case ACTIVE_CARD_FAILED:
+                card_content.setVisibility(View.VISIBLE);
+                break;
+            case DELETE_CARD_FAILED:
+                card_content.setVisibility(View.VISIBLE);
+                break;
+            case DAMAGE_CARD_FAILED:
+                card_content.setVisibility(View.VISIBLE);
+                break;
+            case LOST_CARD_FAILED:
+                card_content.setVisibility(View.VISIBLE);
+                break;
+
+        }
+
     }
 
     @Override
@@ -515,7 +517,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                 disableButton(btn_lost);
                 disableButton(btn_damage);
                 disableButton(btn_add);
-                disableButton(btn_active);
+                activeButton(btn_active);
                 break;
             case "I":
                 txt_status.setText("Initial");
@@ -536,10 +538,10 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             case "D":
                 txt_status.setText("Damage");
                 activeButton(btn_delete);
-                disableButton(btn_lost);
+                activeButton(btn_lost);
+                activeButton(btn_active);
                 disableButton(btn_damage);
                 disableButton(btn_add);
-                activeButton(btn_active);
                 break;
         }
 
@@ -608,7 +610,6 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     }
 
     public void showEmptyAnimation() {
-        card_content.setVisibility(View.GONE);
         animationView.setVisibility(View.VISIBLE);
         animationView.setAnimation("empty_box.json");
         animationView.playAnimation();

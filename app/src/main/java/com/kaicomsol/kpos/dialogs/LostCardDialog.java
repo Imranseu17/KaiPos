@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -15,16 +14,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.callbacks.CloseClickListener;
 import com.kaicomsol.kpos.callbacks.LostCardListener;
-import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
-
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -114,6 +107,9 @@ public class LostCardDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                   submitData();
+                  edtDate.setText("");
+                  edtThana.setText("");
+                  edtGDNo.setText("");
             }
         });
 

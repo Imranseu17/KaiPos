@@ -46,6 +46,8 @@ public class HistoryPresenter {
         jsonObject.addProperty("pageNumber", currentPage);
 
         DebugLog.e(start);
+        DebugLog.e(end);
+        DebugLog.e("Number: "+currentPage);
 
         mApiClient.getAPI()
                 .getSalesHistory(map, jsonObject)

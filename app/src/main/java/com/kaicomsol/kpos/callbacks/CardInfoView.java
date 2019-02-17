@@ -12,6 +12,6 @@ public interface CardInfoView {
     public void onDeleteCard(boolean isDelete);
     public void onLostCard(String lost);
     public void onDamageCard(String damage);
-    public void onError(String error);
+    public void onError(String error,int code);
     public void onLogout(int code);
 }
