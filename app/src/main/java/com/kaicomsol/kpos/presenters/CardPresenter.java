@@ -6,6 +6,7 @@ import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.models.CardData;
 import com.kaicomsol.kpos.models.Emergency;
 import com.kaicomsol.kpos.services.APIClient;
+import com.kaicomsol.kpos.utils.CardEnum;
 import com.kaicomsol.kpos.utils.DebugLog;
 
 import org.json.JSONObject;
@@ -57,7 +58,7 @@ public class CardPresenter {
                             if (emergency != null) {
                                 mViewInterface.onEmergencyValue(emergency.getEmergencyValue());
                             } else {
-                                mViewInterface.onError("Error fetching data");
+                                mViewInterface.onError("Error fetching data", CardEnum.EMERGENCY_VALUE_FAILED.getCode());
                             }
                         } else errorHandle(response.code(), response.errorBody());
                     }
@@ -76,11 +77,11 @@ public class CardPresenter {
 
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error");
+                            mViewInterface.onError("Server connection error",CardEnum.EMERGENCY_VALUE_FAILED.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException");
+                            mViewInterface.onError("IOException",CardEnum.EMERGENCY_VALUE_FAILED.getCode());
                         } else {
-                            mViewInterface.onError("Unknown exception");
+                            mViewInterface.onError("Unknown exception",CardEnum.EMERGENCY_VALUE_FAILED.getCode());
                         }
                     }
                 });
@@ -108,7 +109,7 @@ public class CardPresenter {
                             if (cardData != null) {
                                 mViewInterface.onCard(cardData);
                             } else {
-                                mViewInterface.onError("Error fetching data");
+                                mViewInterface.onError("Error fetching data",CardEnum.GET_METER_INFO_FAILED.getCode());
                             }
                         } else errorHandle(response.code(), response.errorBody());
                     }
@@ -127,11 +128,11 @@ public class CardPresenter {
 
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error");
+                            mViewInterface.onError("Server connection error",CardEnum.GET_METER_INFO_FAILED.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException");
+                            mViewInterface.onError("IOException",CardEnum.GET_METER_INFO_FAILED.getCode());
                         } else {
-                            mViewInterface.onError("Unknown exception");
+                            mViewInterface.onError("Unknown exception",CardEnum.GET_METER_INFO_FAILED.getCode());
                         }
                     }
                 });
@@ -182,11 +183,11 @@ public class CardPresenter {
 
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error");
+                            mViewInterface.onError("Server connection error",CardEnum.ADD_CARD_FAILED.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException");
+                            mViewInterface.onError("IOException",CardEnum.ADD_CARD_FAILED.getCode());
                         } else {
-                            mViewInterface.onError("Unknown exception");
+                            mViewInterface.onError("Unknown exception",CardEnum.ADD_CARD_FAILED.getCode());
                         }
                     }
                 });
@@ -232,11 +233,11 @@ public class CardPresenter {
 
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error");
+                            mViewInterface.onError("Server connection error",CardEnum.ACTIVE_CARD_FAILED.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException");
+                            mViewInterface.onError("IOException",CardEnum.ACTIVE_CARD_FAILED.getCode());
                         } else {
-                            mViewInterface.onError("Unknown exception");
+                            mViewInterface.onError("Unknown exception",CardEnum.ACTIVE_CARD_FAILED.getCode());
                         }
                     }
                 });
@@ -279,11 +280,11 @@ public class CardPresenter {
 
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error");
+                            mViewInterface.onError("Server connection error",CardEnum.DELETE_CARD_FAILED.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException");
+                            mViewInterface.onError("IOException",CardEnum.DELETE_CARD_FAILED.getCode());
                         } else {
-                            mViewInterface.onError("Unknown exception");
+                            mViewInterface.onError("Unknown exception",CardEnum.DELETE_CARD_FAILED.getCode());
                         }
                     }
                 });
@@ -345,11 +346,11 @@ public class CardPresenter {
 
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error");
+                            mViewInterface.onError("Server connection error",CardEnum.LOST_CARD_FAILED.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException");
+                            mViewInterface.onError("IOException",CardEnum.LOST_CARD_FAILED.getCode());
                         } else {
-                            mViewInterface.onError("Unknown exception");
+                            mViewInterface.onError("Unknown exception",CardEnum.LOST_CARD_FAILED.getCode());
                         }
                     }
                 });
@@ -401,11 +402,11 @@ public class CardPresenter {
 
                         } else if (e instanceof SocketTimeoutException) {
 
-                            mViewInterface.onError("Server connection error");
+                            mViewInterface.onError("Server connection error",CardEnum.DAMAGE_CARD_FAILED.getCode());
                         } else if (e instanceof IOException) {
-                            mViewInterface.onError("IOException");
+                            mViewInterface.onError("IOException",CardEnum.DAMAGE_CARD_FAILED.getCode());
                         } else {
-                            mViewInterface.onError("Unknown exception");
+                            mViewInterface.onError("Unknown exception",CardEnum.DAMAGE_CARD_FAILED.getCode());
                         }
                     }
                 });
@@ -413,13 +414,20 @@ public class CardPresenter {
 
     private void errorHandle(int code, ResponseBody responseBody){
 
-        if (code == 500){
-            mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
-        }else if(code == 406){
-            mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody));
+        switch (code){
+            case 500:
+                 mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),500);
+                 break;
 
-        }else {
-            mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
+            case 406:
+                mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody),406);
+                break;
+            case 400:
+                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),400);
+                break;
+            default:
+                mViewInterface.onError(APIErrors.getErrorMessage(responseBody),code);
+                break;
         }
     }
 }
