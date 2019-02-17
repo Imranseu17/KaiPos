@@ -369,7 +369,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         if (response){
             rechargeCardDismiss();
             hideAnimation();
-            CustomAlertDialog.showSuccess(activity, "Card add successfully");
+            CustomAlertDialog.showSuccess(activity, "Card Add successfully");
             disableButton(btn_add);
             activeButton(btn_active);
             disableButton(btn_delete);
@@ -381,14 +381,14 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             String cardIdm = ByteArrayToHexString(myTag.getId());
             cardDeleteHidden = true;
             if (!TextUtils.isEmpty(cardIdm)) deleteCard(cardIdm);
-            else CustomAlertDialog.showError(activity, "Card id not found!");
+            else CustomAlertDialog.showError(activity, "Card ID not found!");
         }
     }
 
     @Override
     public void onActiveCard(String active) {
         hideAnimation();
-        CustomAlertDialog.showSuccess(activity, "Card active successfully");
+        CustomAlertDialog.showSuccess(activity, "Card Active successfully");
         disableButton(btn_add);
         disableButton(btn_active);
         activeButton(btn_delete);
@@ -399,7 +399,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onDeleteCard(boolean isDelete) {
         hideAnimation();
-        if (!cardDeleteHidden) CustomAlertDialog.showSuccess(activity, "Card delete successfully");
+        if (!cardDeleteHidden) CustomAlertDialog.showSuccess(activity, "Card Delete successfully");
         activeButton(btn_add);
         disableButton(btn_active);
         disableButton(btn_delete);
@@ -410,7 +410,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onLostCard(String lost) {
         hideAnimation();
-        CustomAlertDialog.showSuccess(activity, "Card lost successfully");
+        CustomAlertDialog.showSuccess(activity, "Lost Card Issued successfully");
         disableButton(btn_add);
         disableButton(btn_active);
         activeButton(btn_delete);
@@ -421,7 +421,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onDamageCard(String damage) {
         hideAnimation();
-        CustomAlertDialog.showSuccess(activity, "Card damage successfully");
+        CustomAlertDialog.showSuccess(activity, "Damage Card Issued successfully");
         disableButton(btn_add);
         disableButton(btn_active);
         activeButton(btn_delete);

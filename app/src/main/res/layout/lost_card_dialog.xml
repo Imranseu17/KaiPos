@@ -102,7 +102,7 @@
                     android:id="@+id/edt_gdno"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter your gd no"
+                    android:hint="Enter Your GD NO"
                     android:inputType="number"
                     android:textAppearance="@style/TextAppearance.FontPath" />
 
