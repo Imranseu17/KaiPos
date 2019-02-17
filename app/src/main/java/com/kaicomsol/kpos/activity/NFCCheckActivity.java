@@ -112,13 +112,15 @@ public class NFCCheckActivity extends AppCompatActivity {
 
         if (response) {
             if (readCard.readCardArgument.CardGroup.equals(CardPropertise.SERVICE_CARD.getCode())) {
-                String userId = SharedDataSaveLoad.load(this, getString(R.string.preference_user_id));
-                if (!TextUtils.isEmpty(userId) && userId.equals(readCard.readCardArgument.CustomerId)) {
-                    SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
-                    activityHome();
-                } else {
-                    CustomAlertDialog.showError(this, "Service card & user mismatch");
-                }
+                SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
+                activityHome();
+//                String userId = SharedDataSaveLoad.load(this, getString(R.string.preference_user_id));
+//                if (!TextUtils.isEmpty(userId) && userId.equals(readCard.readCardArgument.CustomerId)) {
+//                    SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
+//                    activityHome();
+//                } else {
+//                    CustomAlertDialog.showError(this, "Service card & user mismatch");
+//                }
             } else {
                 CustomAlertDialog.showError(this, getString(R.string.err_service_card));
             }

@@ -60,7 +60,7 @@ public class CardPresenter {
                             } else {
                                 mViewInterface.onError("Error fetching data", CardEnum.EMERGENCY_VALUE_FAILED.getCode());
                             }
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else errorHandle(response.code(), CardEnum.EMERGENCY_VALUE_FAILED.getCode(), response.errorBody());
                     }
 
                     @Override
@@ -73,7 +73,7 @@ public class CardPresenter {
                                 mViewInterface.onLogout(code);
                             }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                            errorHandle(code, responseBody);
+                            errorHandle(code, CardEnum.EMERGENCY_VALUE_FAILED.getCode(), responseBody);
 
                         } else if (e instanceof SocketTimeoutException) {
 
@@ -111,7 +111,7 @@ public class CardPresenter {
                             } else {
                                 mViewInterface.onError("Error fetching data",CardEnum.GET_METER_INFO_FAILED.getCode());
                             }
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else errorHandle(response.code(), CardEnum.GET_METER_INFO_FAILED.getCode(), response.errorBody());
                     }
 
                     @Override
@@ -124,7 +124,7 @@ public class CardPresenter {
                                 mViewInterface.onLogout(code);
                             }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                            errorHandle(code, responseBody);
+                            errorHandle(code, CardEnum.GET_METER_INFO_FAILED.getCode(), responseBody);
 
                         } else if (e instanceof SocketTimeoutException) {
 
@@ -163,7 +163,7 @@ public class CardPresenter {
                         if (response.isSuccessful()) {
                             mViewInterface.onAddCard(true);
                         }else {
-                            errorHandle(response.code(), response.errorBody());
+                            errorHandle(response.code(), CardEnum.ADD_CARD_FAILED.getCode(), response.errorBody());
                         }
                     }
 
@@ -178,7 +178,7 @@ public class CardPresenter {
                             }else {
 
                                 ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                errorHandle(code, responseBody);
+                                errorHandle(code, CardEnum.ADD_CARD_FAILED.getCode(), responseBody);
                             }
 
                         } else if (e instanceof SocketTimeoutException) {
@@ -216,7 +216,7 @@ public class CardPresenter {
                         if (response.isSuccessful()) {
                             //String active = response.body();
                             mViewInterface.onActiveCard("");
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else errorHandle(response.code(), CardEnum.ACTIVE_CARD_FAILED.getCode(), response.errorBody());
                     }
 
                     @Override
@@ -229,7 +229,7 @@ public class CardPresenter {
                                 mViewInterface.onLogout(code);
                             }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                            errorHandle(code, responseBody);
+                            errorHandle(code, CardEnum.ACTIVE_CARD_FAILED.getCode(), responseBody);
 
                         } else if (e instanceof SocketTimeoutException) {
 
@@ -263,7 +263,7 @@ public class CardPresenter {
 
                         if (response.isSuccessful()) {
                             mViewInterface.onDeleteCard(true);
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else errorHandle(response.code(), CardEnum.DELETE_CARD_FAILED.getCode(), response.errorBody());
                     }
 
                     @Override
@@ -276,7 +276,7 @@ public class CardPresenter {
                                 mViewInterface.onLogout(code);
                             }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                            errorHandle(code, responseBody);
+                            errorHandle(code, CardEnum.DELETE_CARD_FAILED.getCode(), responseBody);
 
                         } else if (e instanceof SocketTimeoutException) {
 
@@ -324,7 +324,7 @@ public class CardPresenter {
 
                         if (response.isSuccessful()) {
                             mViewInterface.onLostCard("");
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else errorHandle(response.code(), CardEnum.LOST_CARD_FAILED.getCode(), response.errorBody());
 
                     }
 
@@ -342,7 +342,7 @@ public class CardPresenter {
                             }
 
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                            errorHandle(code, responseBody);
+                            errorHandle(code, CardEnum.LOST_CARD_FAILED.getCode(), responseBody);
 
                         } else if (e instanceof SocketTimeoutException) {
 
@@ -380,7 +380,7 @@ public class CardPresenter {
 
                         if (response.isSuccessful()) {
                             mViewInterface.onDamageCard("");
-                        } else errorHandle(response.code(), response.errorBody());
+                        } else errorHandle(response.code(), CardEnum.DAMAGE_CARD_FAILED.getCode(), response.errorBody());
 
                     }
 
@@ -398,7 +398,7 @@ public class CardPresenter {
                             }
 
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                            errorHandle(code, responseBody);
+                            errorHandle(code, CardEnum.DAMAGE_CARD_FAILED.getCode(), responseBody);
 
                         } else if (e instanceof SocketTimeoutException) {
 
@@ -412,21 +412,20 @@ public class CardPresenter {
                 });
     }
 
-    private void errorHandle(int code, ResponseBody responseBody){
+    private void errorHandle(int code,int errorType, ResponseBody responseBody){
 
         switch (code){
             case 500:
-                 mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),500);
+                 mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),errorType);
                  break;
-
             case 406:
-                mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody),406);
+                mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody),errorType);
                 break;
             case 400:
-                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),400);
+                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),errorType);
                 break;
             default:
-                mViewInterface.onError(APIErrors.getErrorMessage(responseBody),code);
+                mViewInterface.onError(APIErrors.getErrorMessage(responseBody),errorType);
                 break;
         }
     }

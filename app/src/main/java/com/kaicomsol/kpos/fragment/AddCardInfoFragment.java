@@ -438,7 +438,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         }
         if (!TextUtils.isEmpty(error)) CustomAlertDialog.showError(activity, error);
 
-       CardEnum cardEnum  = CardEnum.getByCode(code);
+        CardEnum cardEnum  = CardEnum.getByCode(code);
+
         switch (cardEnum) {
             case ADD_CARD_FAILED:
                 card_content.setVisibility(View.GONE);
