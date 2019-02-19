@@ -3,6 +3,7 @@ package com.kaicomsol.kpos.activity;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -490,6 +491,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onSuccess(Receipt receipt) {
+
         bluetoothPrint(receipt);
         //thermalBluetoothPrint(receipt);
         getSupportActionBar().setTitle("Print receipts");
@@ -704,10 +706,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             // Device does not support Bluetooth
             CustomAlertDialog.showError(this, getString(R.string.bluetooth_printer_not_support));
         } else {
-            if (mBluetoothAdapter.isEnabled()) {
-
-                if (mBluetoothAdapter.getBondedDevices().iterator().hasNext())   {
-
+            boolean enable = mBluetoothAdapter.isEnabled();
+            if (enable) {
                     final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
                     final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
 
@@ -776,14 +776,19 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
                         @Override
                         public void onFailed() {
-                            //this callback may be running thread so
+
                             DebugLog.e("Print Error!");
                         }
 
                     });
-                }
 
-            } else showEnableBluetoothDialog();
+
+            } else
+            {
+               showEnableBluetoothDialog();
+
+            }
+
         }
 
     }

@@ -233,8 +233,10 @@ public class PaymentPresenter {
                         if (response.isSuccessful()) {
                             Receipt receipt = response.body();
                             if (receipt != null) {
+                                DebugLog.e("Code"+response.code());
                                 mViewInterface.onSuccess(receipt);
                             } else {
+                                DebugLog.e("Code"+response.code());
                                 mViewInterface.onError("Error fetching data", RechargeStatus.RECEIPT_ERROR.getCode());
                             }
                         } else getErrorMessage(response.code(), response.errorBody());
