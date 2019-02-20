@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,6 +41,7 @@ public class BluetoothPrinter {
                     btOutputStream = socket.getOutputStream();
                     listener.onConnected();
                 } catch (IOException e) {
+                    e.printStackTrace();
                     listener.onFailed();
                 }
             }
