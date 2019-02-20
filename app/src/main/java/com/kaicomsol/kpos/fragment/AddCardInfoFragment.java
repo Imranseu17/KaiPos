@@ -38,6 +38,7 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.LostCardDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
+import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.models.CardData;
 import com.kaicomsol.kpos.models.MeterCard;
 import com.kaicomsol.kpos.models.ReadCard;
@@ -495,7 +496,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
     private void addValue(MeterCard meterCard) {
         Date date = new Date(meterCard.getIssueDate());
-        SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat targetFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
         String formatDate = targetFormat.format(date);
         card_content.setVisibility(View.VISIBLE);
         txt_card_no.setText(meterCard.getCardNumber() != null ? meterCard.getCardNumber() : "N/A");

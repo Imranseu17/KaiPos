@@ -670,7 +670,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         layout_print.setVisibility(View.VISIBLE);
 
         Date date = new Date(receipt.getPaymentDate());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT+" "+Constants.TIME_FORMAT);
 
         txt_date_time.setText(dateFormat.format(date));
         txt_transaction_no.setText(String.valueOf(receipt.getPaymentId()));
@@ -736,7 +736,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                                 printCustom("Money Receipt", 3, 1);
 
                                 Date date = new Date(receipt.getPaymentDate());
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+                                SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT+" "+Constants.TIME_FORMAT);
 
                                 printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
                                 printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);

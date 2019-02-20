@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 
 import com.kaicomsol.kpos.R;
+import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.models.Transaction;
 
 import java.text.SimpleDateFormat;
@@ -43,7 +44,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final Transaction transaction = transactionList.get(position);
         ViewHolder vh = (ViewHolder) holder;
         Date date = new Date(transaction.getPaymentDate());
-        SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat targetFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
         String formatDate = targetFormat.format(date);
 
         vh.txt_invoice_type.setText(transaction.getInvoiceType() !=null ? transaction.getInvoiceType() : "N/A");

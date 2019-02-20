@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.HistoryClickListener;
+import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.models.Content;
 
 import java.text.SimpleDateFormat;
@@ -86,7 +87,7 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ViewHolder vh = (ViewHolder) holder;
 
                 Date date = new Date(content.getSaleDateTimeInLong());
-                SimpleDateFormat targetFormat = new SimpleDateFormat("MMM-dd-yyyy hh:mm a");
+                SimpleDateFormat targetFormat = new SimpleDateFormat(Constants.DATE_FORMAT+" "+Constants.TIME_FORMAT);
                 String formatDate = targetFormat.format(date);
 
                 vh.txt_date_time.setText(formatDate);

@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
+import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.models.Content;
 
 import java.text.DecimalFormat;
@@ -63,7 +64,7 @@ public class SalesHistoryDetailsActivity extends AppCompatActivity {
         Content content =   getIntent().getParcelableExtra("content");
 
         Date date = new Date(content.getSaleDateTimeInLong());
-        SimpleDateFormat targetFormat = new SimpleDateFormat("MMM-dd-yyyy hh:mm a");
+        SimpleDateFormat targetFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
         String formatDate = targetFormat.format(date);
 
       DecimalFormat  decimalFormat = new DecimalFormat(".##");
