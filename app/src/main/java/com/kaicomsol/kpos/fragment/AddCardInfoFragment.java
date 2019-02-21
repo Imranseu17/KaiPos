@@ -38,6 +38,7 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.LostCardDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
+import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.models.CardData;
 import com.kaicomsol.kpos.models.MeterCard;
 import com.kaicomsol.kpos.models.ReadCard;
@@ -369,7 +370,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         if (response){
             rechargeCardDismiss();
             hideAnimation();
-            CustomAlertDialog.showSuccess(activity, "Card add successfully");
+            CustomAlertDialog.showSuccess(activity, "Card Add successfully");
             disableButton(btn_add);
             activeButton(btn_active);
             disableButton(btn_delete);
@@ -381,14 +382,14 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
             String cardIdm = ByteArrayToHexString(myTag.getId());
             cardDeleteHidden = true;
             if (!TextUtils.isEmpty(cardIdm)) deleteCard(cardIdm);
-            else CustomAlertDialog.showError(activity, "Card id not found!");
+            else CustomAlertDialog.showError(activity, "Card ID not found!");
         }
     }
 
     @Override
     public void onActiveCard(String active) {
         hideAnimation();
-        CustomAlertDialog.showSuccess(activity, "Card active successfully");
+        CustomAlertDialog.showSuccess(activity, "Card Active successfully");
         disableButton(btn_add);
         disableButton(btn_active);
         activeButton(btn_delete);
@@ -399,7 +400,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onDeleteCard(boolean isDelete) {
         hideAnimation();
-        if (!cardDeleteHidden) CustomAlertDialog.showSuccess(activity, "Card delete successfully");
+        if (!cardDeleteHidden) CustomAlertDialog.showSuccess(activity, "Card Delete successfully");
         activeButton(btn_add);
         disableButton(btn_active);
         disableButton(btn_delete);
@@ -438,7 +439,8 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         }
         if (!TextUtils.isEmpty(error)) CustomAlertDialog.showError(activity, error);
 
-       CardEnum cardEnum  = CardEnum.getByCode(code);
+        CardEnum cardEnum  = CardEnum.getByCode(code);
+
         switch (cardEnum) {
             case ADD_CARD_FAILED:
                 card_content.setVisibility(View.GONE);
@@ -494,7 +496,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
 
     private void addValue(MeterCard meterCard) {
         Date date = new Date(meterCard.getIssueDate());
-        SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat targetFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
         String formatDate = targetFormat.format(date);
         card_content.setVisibility(View.VISIBLE);
         txt_card_no.setText(meterCard.getCardNumber() != null ? meterCard.getCardNumber() : "N/A");

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.MeterClickListener;
+import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.models.MeterList;
 
 import java.text.SimpleDateFormat;
@@ -52,7 +53,7 @@ public class MeterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         final MeterList meter = meterList.get(position);
         ViewHolder vh = (ViewHolder) holder;
         Date date = new Date(meter.getInstallationDate());
-        SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat targetFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
         String formatDate = targetFormat.format(date);
 
         vh.txt_meter_serial.setText(meter.getMeterSerialNo() !=null ? meter.getMeterSerialNo() : "N/A");

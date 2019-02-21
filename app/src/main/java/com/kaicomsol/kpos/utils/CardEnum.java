@@ -42,7 +42,7 @@ public enum  CardEnum {
 
     public static CardEnum getByCode(int code){
         for(CardEnum rs :CardEnum.values()){
-            if(rs.code==code)return rs;
+            if(rs.code == code) return rs;
         }
 
         return null;

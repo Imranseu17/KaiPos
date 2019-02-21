@@ -114,7 +114,8 @@ public class NFCCheckActivity extends AppCompatActivity {
             if (readCard.readCardArgument.CardGroup.equals(CardPropertise.SERVICE_CARD.getCode())) {
                 SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
                     activityHome();
- //               String userId = SharedDataSaveLoad.load(this, getString(R.string.preference_user_id));
+
+//                String userId = SharedDataSaveLoad.load(this, getString(R.string.preference_user_id));
 //                if (!TextUtils.isEmpty(userId) && userId.equals(readCard.readCardArgument.CustomerId)) {
 //                    SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
 //                    activityHome();

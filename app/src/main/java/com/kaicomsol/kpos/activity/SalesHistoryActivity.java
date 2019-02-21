@@ -24,6 +24,7 @@ import com.kaicomsol.kpos.adapter.SalesHistoryAdapter;
 import com.kaicomsol.kpos.callbacks.HistoryClickListener;
 import com.kaicomsol.kpos.callbacks.HistoryView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
+import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.models.Content;
 import com.kaicomsol.kpos.models.SalesHistory;
 import com.kaicomsol.kpos.presenters.HistoryPresenter;
@@ -130,7 +131,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     private void viewConfig(){
 
         final String currentDate = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
-        String currentDateFormatted = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(new Date());
+        String currentDateFormatted = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault()).format(new Date());
 
         startDate = currentDate;
         endDate = currentDate;
@@ -138,7 +139,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         edt_start_date.setText(currentDateFormatted);
         edt_end_date.setText(currentDateFormatted);
 
-        dateFormatter = new SimpleDateFormat("MM-dd-yyyy");
+        dateFormatter = new SimpleDateFormat(Constants.DATE_FORMAT);
         mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -289,7 +290,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     @Override
     public void onHistoryClick(Content content) {
 
-        Intent intent = new Intent(SalesHistoryActivity.this,SalesHistoryDetailsActivity.class) ;
+        Intent intent = new Intent(SalesHistoryActivity.this, SalesHistoryDetailsActivity.class) ;
              intent.putExtra("content",content);
              startActivity(intent);
 
