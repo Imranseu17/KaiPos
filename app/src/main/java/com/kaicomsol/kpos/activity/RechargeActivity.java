@@ -676,7 +676,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
         txt_date_time.setText(dateFormat.format(date));
         txt_transaction_no.setText(String.valueOf(receipt.getPaymentId()));
-        txt_customer_code.setText(readCard.readCardArgument.CustomerId);
+        txt_customer_code.setText(receipt.getCustomerCode());
         txt_prepaid_no.setText(receipt.getPrePaidCode());
         txt_meter_no.setText(receipt.getMeterSerialNo());
         txt_card_no.setText(receipt.getCardNo());
@@ -773,7 +773,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
             printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
             printCustom(getFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
-            printCustom(getFormatStringByLength("Customer Code", readCard.readCardArgument.CustomerId), 0, 1);
+            printCustom(getFormatStringByLength("Customer Code", receipt.getCustomerCode()), 0, 1);
             printCustom(getFormatStringByLength("Prepaid No", receipt.getPrePaidCode()), 0, 1);
             printCustom(getFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
             printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
@@ -793,7 +793,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
             printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
             printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
-            printCustom("Customer Support <0167*******>", 0, 1);
+            printCustom("Customer Support <01707074462>", 0, 1);
             printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
             printNewLine();
             printNewLine();
@@ -849,7 +849,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
                             printCustom(thermalgetformatstringbylength("Date and Time.", dateFormat.format(date)), 0, 1);
                             printCustom(thermalgetformatstringbylength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
-                            printCustom(thermalgetformatstringbylength("Prepaid Code", readCard.readCardArgument.CustomerId), 0, 1);
+                            printCustom(thermalgetformatstringbylength("Customer Code", receipt.getCustomerCode()), 0, 1);
+                            printCustom(thermalgetformatstringbylength("Prepaid No", receipt.getPrePaidCode()), 0, 1);
                             printCustom(thermalgetformatstringbylength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
                             printCustom(thermalgetformatstringbylength("Card No.", receipt.getCardNo()), 0, 1);
                             printCustom(thermalgetformatstringbylength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);

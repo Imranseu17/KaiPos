@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class Receipt {
 
+    @SerializedName("customerCode")
+    @Expose
+    private String customerCode;
     @SerializedName("prePaidCode")
     @Expose
     private String prePaidCode;
@@ -95,5 +98,9 @@ public class Receipt {
 
     public String getPrePaidCode() {
         return prePaidCode;
+    }
+
+    public String getCustomerCode() {
+        return customerCode;
     }
 }
