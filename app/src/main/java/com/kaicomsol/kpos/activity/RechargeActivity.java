@@ -680,6 +680,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         txt_date_time.setText(dateFormat.format(date));
         txt_transaction_no.setText(String.valueOf(receipt.getPaymentId()));
         txt_customer_code.setText(readCard.readCardArgument.CustomerId);
+        txt_prepaid_no.setText(receipt.getPrePaidCode());
         txt_meter_no.setText(receipt.getMeterSerialNo());
         txt_card_no.setText(receipt.getCardNo());
         txt_pos_id.setText(String.valueOf(receipt.getPosId()));
@@ -747,6 +748,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
                             printCustom(getFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
                             printCustom(getFormatStringByLength("Customer Code", readCard.readCardArgument.CustomerId), 0, 1);
+                            printCustom(getFormatStringByLength("Prepaid No.", receipt.getPrePaidCode()), 0, 1);
                             printCustom(getFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
                             printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
                             printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
