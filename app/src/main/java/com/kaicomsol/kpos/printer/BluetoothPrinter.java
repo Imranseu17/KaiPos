@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.kaicomsol.kpos.utils.DebugLog;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -42,13 +44,13 @@ public class BluetoothPrinter {
                     listener.onConnected();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    listener.onFailed();
+                    listener.onFailed(e);
                 }
             }
 
             @Override
             public void onFailed() {
-                listener.onFailed();
+                listener.onFailed("Connection Faield");
             }
         }).execute(printer);
     }
@@ -173,15 +175,23 @@ public class BluetoothPrinter {
             try {
                 socket = device.createRfcommSocketToServiceRecord(uuid);
             } catch (IOException e) {
+                e.printStackTrace();
             }
             try {
                 socket.connect();
             } catch (IOException e) {
+                e.printStackTrace();
                 try {
                     socket = (BluetoothSocket) device.getClass().getMethod("createRfcommSocket", new Class[]{int.class})
                             .invoke(device, 1);
                     socket.connect();
                 } catch (Exception e2) {
+                    e2.printStackTrace();
+                    try {
+                        socket.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                     connected = false;
                 }
             }
@@ -206,8 +216,8 @@ public class BluetoothPrinter {
 
     public interface PrinterConnectListener {
         void onConnected();
-
-        void onFailed();
+        void onFailed(IOException e);
+        void onFailed(String e);
     }
 
     private static String encodeNonAscii(String text) {

@@ -103,10 +103,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private Vibrator vibrator;
     private IntentFilter intentFilter;
     private NetworkChangeReceiver receiver;
-    private BluetoothSocket mBluetoothSocket;
-    private UUID applicationUUID = UUID
-            .fromString("00001101-0000-1000-8000-00805F9B34FB");
-    final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    private BluetoothSocket mBluetoothSocket = null;
 
     //Bind component
     @BindView(R.id.layout_main)
@@ -707,7 +704,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private void bluetoothPrint(final Receipt receipt) {
 
 
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             // Device does not support Bluetooth
             CustomAlertDialog.showError(this, getString(R.string.bluetooth_printer_not_support));
@@ -717,86 +714,96 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
                 final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
 
-                mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
+               if (mBluetoothSocket == null){
+                   mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
 
-                    @Override
-                    public void onConnected() {
-                        OutputStream opstream = null;
-                        try {
-                            opstream = mPrinter.getSocket().getOutputStream();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        outputStream = opstream;
-                            //print command
-                            try {
-                                try {
-                                    Thread.sleep(100);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                outputStream = mPrinter.getSocket().getOutputStream();
-                                byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
-                                outputStream.write(printformat);
-                                printCustom("Money Receipt", 3, 1);
+                       @Override
+                       public void onConnected() {
 
-                                Date date = new Date(receipt.getPaymentDate());
-                                SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT+" "+Constants.TIME_FORMAT);
+                           if (mBluetoothSocket == null) mBluetoothSocket = mPrinter.getSocket();
+                           createReceipt(receipt);
 
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
-                                printCustom(getFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
-                                printCustom(getFormatStringByLength("Customer Code", readCard.readCardArgument.CustomerId), 0, 1);
-                                //printCustom(getFormatStringByLength("Prepaid No", readCard.readCardArgument.CustomerId), 0, 1);
-                                printCustom(getFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
-                                printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
-                                printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
-                                printCustom(getFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+                       }
 
-                                for (int i = 0; i < receipt.getItems().getItems().size(); i++){
-                                    Item item = receipt.getItems().getItems().get(i);
-                                    printCustom(getFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
-                                }
+                       @Override
+                       public void onFailed(IOException e) {
+                           CustomAlertDialog.showError(RechargeActivity.this, "Printer Connection Failed ! Please try again");
+                           e.printStackTrace();
+                       }
 
-                                printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-                                printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
-                                printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
-                                printCustom("Customer Support <0167*******>", 0, 1);
-                                printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
-                                printNewLine();
-                                printNewLine();
-                                printNewLine();
-
-                                outputStream.flush();
-
-                            }  catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailed() {
-
-                        DebugLog.e("Print Error!");
-                    }
-
-                });
+                       @Override
+                       public void onFailed(String e) {
+                           CustomAlertDialog.showError(RechargeActivity.this, "Printer Connection Failed ! Please try again");
+                       }
+                   });
+               }else {
+                   createReceipt(receipt);
+               }
 
 
-            } else
-            {
-                showEnableBluetoothDialog();
-
-            }
+            } else { showEnableBluetoothDialog(); }
 
         }
 
+    }
+
+    public void createReceipt(Receipt receipt){
+
+        OutputStream opstream = null;
+        try {
+            if (mBluetoothSocket != null) opstream = mBluetoothSocket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        outputStream = opstream;
+        //print command
+        try {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
+            outputStream.write(printformat);
+            printCustom("Money Receipt", 3, 1);
+
+            Date date = new Date(receipt.getPaymentDate());
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT+" "+Constants.TIME_FORMAT);
+
+            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+            printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
+            printCustom(getFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
+            printCustom(getFormatStringByLength("Customer Code", readCard.readCardArgument.CustomerId), 0, 1);
+            printCustom(getFormatStringByLength("Prepaid No", receipt.getPrePaidCode()), 0, 1);
+            printCustom(getFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
+            printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
+            printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
+            printCustom(getFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
+            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+            printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
+            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+            printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
+            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+
+            for (int i = 0; i < receipt.getItems().getItems().size(); i++){
+                Item item = receipt.getItems().getItems().get(i);
+                printCustom(getFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+            }
+
+            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+            printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
+            printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
+            printCustom("Customer Support <0167*******>", 0, 1);
+            printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
+            printNewLine();
+            printNewLine();
+            printNewLine();
+
+            outputStream.flush();
+
+        }  catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -814,7 +821,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
                 final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
 
-
                 mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
 
                     @Override
@@ -828,7 +834,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                         outputStream = opstream;
                         try {
                             try {
-                                Thread.sleep(100);
+                                Thread.sleep(1000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -877,11 +883,16 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                     }
 
                     @Override
-                    public void onFailed() {
+                    public void onFailed(IOException e) {
                         //this callback may be running thread so
+                        e.printStackTrace();
                         DebugLog.e("Print Error!");
                     }
 
+                    @Override
+                    public void onFailed(String e) {
+                        DebugLog.e(e);
+                    }
                 });
 
             } else showEnableBluetoothDialog();
