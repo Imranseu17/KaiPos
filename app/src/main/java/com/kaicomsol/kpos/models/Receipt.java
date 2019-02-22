@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class Receipt {
 
+    @SerializedName("prePaidCode")
+    @Expose
+    private String prePaidCode;
     @SerializedName("posId")
     @Expose
     private long posId;
@@ -90,4 +93,7 @@ public class Receipt {
         return paymentDate;
     }
 
+    public String getPrePaidCode() {
+        return prePaidCode;
+    }
 }

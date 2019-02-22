@@ -72,6 +72,9 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
         ButterKnife.bind(this);
 
+        final String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
+        DebugLog.e(deviceId);
+
         //init presenter
         txt_version.setText("Version : "+getVersion());
         mPresenter = new LoginPresenter(this);

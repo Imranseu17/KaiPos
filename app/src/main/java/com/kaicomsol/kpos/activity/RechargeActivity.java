@@ -76,6 +76,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -102,6 +103,10 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private Vibrator vibrator;
     private IntentFilter intentFilter;
     private NetworkChangeReceiver receiver;
+    private BluetoothSocket mBluetoothSocket;
+    private UUID applicationUUID = UUID
+            .fromString("00001101-0000-1000-8000-00805F9B34FB");
+    final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
     //Bind component
     @BindView(R.id.layout_main)
@@ -675,7 +680,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         txt_date_time.setText(dateFormat.format(date));
         txt_transaction_no.setText(String.valueOf(receipt.getPaymentId()));
         txt_customer_code.setText(readCard.readCardArgument.CustomerId);
-        //txt_prepaid_no.setText();
+        txt_prepaid_no.setText(receipt.getPrePaidCode());
         txt_meter_no.setText(receipt.getMeterSerialNo());
         txt_card_no.setText(receipt.getCardNo());
         txt_pos_id.setText(String.valueOf(receipt.getPosId()));
@@ -709,21 +714,20 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         } else {
             boolean enable = mBluetoothAdapter.isEnabled();
             if (enable) {
-                    final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
-                    final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
+                final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
+                final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
 
-                    mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
+                mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
 
-                        @Override
-                        public void onConnected() {
-                            OutputStream opstream = null;
-                            try {
-                                opstream = mPrinter.getSocket().getOutputStream();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            outputStream = opstream;
-
+                    @Override
+                    public void onConnected() {
+                        OutputStream opstream = null;
+                        try {
+                            opstream = mPrinter.getSocket().getOutputStream();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        outputStream = opstream;
                             //print command
                             try {
                                 try {
@@ -770,30 +774,32 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
                                 outputStream.flush();
 
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
+                            }  catch (IOException e) {
+                            e.printStackTrace();
                         }
 
-                        @Override
-                        public void onFailed() {
+                    }
 
-                            DebugLog.e("Print Error!");
-                        }
+                    @Override
+                    public void onFailed() {
 
-                    });
+                        DebugLog.e("Print Error!");
+                    }
+
+                });
 
 
             } else
             {
-               showEnableBluetoothDialog();
+                showEnableBluetoothDialog();
 
             }
 
         }
 
     }
+
+
 
     private void thermalBluetoothPrint(final Receipt receipt) {
 
