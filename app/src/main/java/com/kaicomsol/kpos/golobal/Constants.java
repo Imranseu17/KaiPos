@@ -14,7 +14,6 @@ public class Constants {
     //KGDCL PILOT BASE URL HTTPS
     //public static String BASE_URL = "https://23.101.20.169:8443";
 
-
     public static final String CONNECT_TO_WIFI = "WIFI";
     public static final String CONNECT_TO_MOBILE = "MOBILE";
     public static final String NOT_CONNECT = "NOT_CONNECT";

@@ -393,7 +393,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     private void showAmount() {
-        final CharSequence[] items = {"100 TK", "200 TK", "300 TK", "400 TK", "500 TK", "Manual"};
+        final CharSequence[] items = {"500 TK", "1000 TK", "1500 TK", "2000 TK", "2500 TK", "Manual"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.title_select_amount);
@@ -759,7 +759,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         //print command
         try {
             try {
-                Thread.sleep(100);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
