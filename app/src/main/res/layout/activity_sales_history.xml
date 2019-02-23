@@ -105,4 +105,23 @@
         android:scrollbars="none"
         android:visibility="visible" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/green"
+        android:gravity="center" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textColor="@color/colorWhite"
+            android:textSize="20sp"
+            android:textAppearance="@style/TextAppearance.FontPath"
+            android:id="@+id/total_amount"/>
+    </RelativeLayout>
+
+
+
 </RelativeLayout>

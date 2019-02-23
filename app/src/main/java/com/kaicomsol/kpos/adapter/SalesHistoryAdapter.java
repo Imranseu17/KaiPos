@@ -92,6 +92,7 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 vh.txt_date_time.setText(formatDate);
                 vh.txt_deposit_amount.setText(content.getAmount()+" TK");
+
                 break;
 
             case LOADING:
@@ -135,6 +136,7 @@ public class SalesHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         @BindView(R.id.item_layout) LinearLayout item_layout;
         @BindView(R.id.txt_date_time) TextView txt_date_time;
         @BindView(R.id.txt_deposit_amount) TextView txt_deposit_amount;
+
 
         public ViewHolder(View view) {
             super(view);

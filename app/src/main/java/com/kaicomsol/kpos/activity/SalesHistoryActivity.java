@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
@@ -35,6 +36,7 @@ import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -83,7 +85,11 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     View line;
     @BindView(R.id.recycler_list)
     RecyclerView mRecyclerView;
-    //
+    @BindView(R.id.total_amount)
+    TextView total_amout;
+
+    double totalAmount = 0.0;
+
 
 
     @Override
@@ -216,6 +222,11 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     @Override
     public void onSuccess(SalesHistory salesHistory, int currentPage) {
 
+       List<Content> contentList = salesHistory.getContentList();
+       for (Content content : contentList){
+          totalAmount += content.getAmount();
+       }
+       total_amout.setText("Total Amount: " +totalAmount+ " TK");
         hideAnimation();
         if (salesHistory != null) MY_TOTAL_PAGE = salesHistory.getTotalPages();
         if (currentPage > 1){
@@ -289,7 +300,6 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     @Override
     public void onHistoryClick(Content content) {
-
         Intent intent = new Intent(SalesHistoryActivity.this, SalesHistoryDetailsActivity.class) ;
              intent.putExtra("content",content);
              startActivity(intent);
