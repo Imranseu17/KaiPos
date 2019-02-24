@@ -85,6 +85,8 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     View line;
     @BindView(R.id.recycler_list)
     RecyclerView mRecyclerView;
+    @BindView(R.id.amount_layout)
+    RelativeLayout amount_layout;
     @BindView(R.id.total_amount)
     TextView total_amout;
 
@@ -110,6 +112,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                totalAmount = 0.0;
                 getSalesHistory(currentPage);
             }
         });
@@ -226,7 +229,10 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
        for (Content content : contentList){
           totalAmount += content.getAmount();
        }
+       if (totalAmount > 0.0) amount_layout.setVisibility(View.VISIBLE);
+       else amount_layout.setVisibility(View.GONE);
        total_amout.setText("Total Amount: " +totalAmount+ " TK");
+
         hideAnimation();
         if (salesHistory != null) MY_TOTAL_PAGE = salesHistory.getTotalPages();
         if (currentPage > 1){
@@ -237,7 +243,10 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
             if (salesHistory.getContentList().size() > 0) {
                 line.setVisibility(View.VISIBLE);
                 mAdapter.setHistory(salesHistory.getContentList(), currentPage);
-            }else CustomAlertDialog.showError(this,"Transaction not found");
+            }else {
+                if (mAdapter != null ) mAdapter.clear();
+                CustomAlertDialog.showError(this,"Transaction not found");
+            }
 
                 //showEmptyAnimation();
         }

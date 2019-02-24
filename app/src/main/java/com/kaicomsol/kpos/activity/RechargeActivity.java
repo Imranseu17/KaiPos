@@ -14,6 +14,7 @@ import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
+import android.os.AsyncTask;
 import android.os.Vibrator;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -721,7 +722,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                        public void onConnected() {
 
                            if (mBluetoothSocket == null) mBluetoothSocket = mPrinter.getSocket();
-                           createReceipt(receipt);
+                           new PrintAsyncTask(receipt).execute();
 
                        }
 
@@ -737,7 +738,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                        }
                    });
                }else {
-                   createReceipt(receipt);
+                   new PrintAsyncTask(receipt).execute();
                }
 
 
@@ -758,11 +759,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         outputStream = opstream;
         //print command
         try {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
             outputStream.write(printformat);
             printCustom("Money Receipt", 3, 1);
@@ -1264,6 +1260,26 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         dateTime[0] = c.get(Calendar.DAY_OF_MONTH) + "/" + c.get(Calendar.MONTH) + "/" + c.get(Calendar.YEAR);
         dateTime[1] = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
         return dateTime;
+    }
+
+    class PrintAsyncTask extends AsyncTask<Receipt, Void, Void>{
+
+        private Receipt receipt;
+
+        public PrintAsyncTask(Receipt receipt) {
+            this.receipt = receipt;
+        }
+
+        @Override
+        protected Void doInBackground(Receipt... receipts) {
+            createReceipt(receipt);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
     }
 
 

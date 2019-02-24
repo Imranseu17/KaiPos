@@ -102,13 +102,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/line"
+        android:layout_above="@+id/amount_layout"
         android:scrollbars="none"
         android:visibility="visible" />
 
     <RelativeLayout
+        android:id="@+id/amount_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:visibility="gone"
         android:background="@color/green"
         android:gravity="center" >
 
