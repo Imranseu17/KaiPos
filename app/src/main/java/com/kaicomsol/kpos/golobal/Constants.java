@@ -9,10 +9,10 @@ public class Constants {
     //public static String BASE_URL = "https://23.200.31.203:8443";
 
     //KGDCL LIVE BASE URL
-    //public static String BASE_URL = "http://kpgm1.kgdcl.gov.bd:8443";
+    public static String BASE_URL = "http://kpgm1.kgdcl.gov.bd:8443";
 
     //KGDCL PILOT BASE URL HTTPS
-    public static String BASE_URL = "https://23.101.20.169:8443";
+    //public static String BASE_URL = "https://23.101.20.169:8443";
 
     public static final String CONNECT_TO_WIFI = "WIFI";
     public static final String CONNECT_TO_MOBILE = "MOBILE";

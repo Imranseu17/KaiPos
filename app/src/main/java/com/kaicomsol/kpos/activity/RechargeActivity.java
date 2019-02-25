@@ -783,7 +783,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
             for (int i = 0; i < receipt.getItems().getItems().size(); i++){
                 Item item = receipt.getItems().getItems().get(i);
-                printCustom(getFormatStringByItem(item.getName(), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                if (item.getName().length() > 20){
+                    printCustom(getFormatStringByItem(item.getName().substring(0,18), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                }else {
+                    printCustom(getFormatStringByItem(item.getName(), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                }
             }
 
             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
@@ -1105,16 +1109,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return builder.toString();
     }
 
-    private String thermalgetformatstringbylength(String title, String value) {
-        String concatenation = title + value;
-        int count = concatenation.length();
-        StringBuilder builder = new StringBuilder();
-        String space = new String(new char[32 - count]).replace("\0", " ");
-        builder.append(title);
-        builder.append(space);
-        builder.append(value);
-        return builder.toString();
-    }
 
     private String getFormatStringByItem(String item, String price, String qty, String amount) {
         StringBuilder builder = new StringBuilder();
@@ -1139,15 +1133,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return builder.toString();
     }
 
-    private String thrmalgetformatstringbytotal(String total, String amount) {
-        StringBuilder builder = new StringBuilder();
-        int count = (total + amount).length();
-        builder.append(getSpace(18));
-        builder.append(total);
-        builder.append(getSpace(14 - count));
-        builder.append(amount);
-        return builder.toString();
-    }
 
     private String getSpace(int count) {
         String space = new String(new char[count]).replace("\0", " ");
@@ -1182,7 +1167,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             super.onPostExecute(aVoid);
         }
     }
-
 
 
 }
