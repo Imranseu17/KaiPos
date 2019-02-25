@@ -41,7 +41,7 @@ public class PrintAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         ViewHolder vh = (ViewHolder) holder;
         vh.txt_item.setText(item.getName() !=null ? item.getName() : "N/A");
         vh.txt_price.setText(String.valueOf(decimalFormat.format(item.getPrice())));
-        vh.txt_qty.setText(String.valueOf(item.getQuantity()));
+        vh.txt_qty.setText(String.valueOf(decimalFormat.format(item.getQuantity())));
         vh.txt_amount.setText(String.valueOf(decimalFormat.format(item.getTotal())));
 
     }

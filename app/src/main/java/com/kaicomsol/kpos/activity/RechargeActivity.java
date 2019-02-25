@@ -181,7 +181,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
         DebugLog.i(paymentID+" ID ");
 
-
     }
 
     @Override
@@ -558,6 +557,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 break;
             case INVOICE_ERROR:
                 hideAnimation();
+                if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             case RECEIPT_ERROR:
                 hideAnimation();
@@ -759,9 +759,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         outputStream = opstream;
         //print command
         try {
-            byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
+            byte[] printformat = new byte[]{0x1B, 0x21, 0x01};
             outputStream.write(printformat);
-            printCustom("Money Receipt", 3, 1);
+            printCustom("Money Receipt", 2, 1);
 
             Date date = new Date(receipt.getPaymentDate());
             SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT+" "+Constants.TIME_FORMAT);
@@ -783,7 +783,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
             for (int i = 0; i < receipt.getItems().getItems().size(); i++){
                 Item item = receipt.getItems().getItems().get(i);
-                printCustom(getFormatStringByItem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                printCustom(getFormatStringByItem(item.getName(), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
             }
 
             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
@@ -801,102 +801,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             e.printStackTrace();
         }
     }
-
-
-
-    private void thermalBluetoothPrint(final Receipt receipt) {
-
-
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
-            // Device does not support Bluetooth
-            CustomAlertDialog.showError(this, getString(R.string.bluetooth_printer_not_support));
-        } else {
-            if (mBluetoothAdapter.isEnabled()) {
-
-                final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
-                final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
-
-                mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
-
-                    @Override
-                    public void onConnected() {
-                        OutputStream opstream = null;
-                        try {
-                            opstream = mPrinter.getSocket().getOutputStream();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        outputStream = opstream;
-                        try {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            outputStream = mPrinter.getSocket().getOutputStream();
-                            byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
-                            outputStream.write(printformat);
-                            printCustom("Money Receipt", 3, 1);
-
-                            Date date = new Date(receipt.getPaymentDate());
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
-                            printCustom(thermalgetformatstringbylength("Date and Time.", dateFormat.format(date)), 0, 1);
-                            printCustom(thermalgetformatstringbylength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
-                            printCustom(thermalgetformatstringbylength("Customer Code", receipt.getCustomerCode()), 0, 1);
-                            printCustom(thermalgetformatstringbylength("Prepaid No", receipt.getPrePaidCode()), 0, 1);
-                            printCustom(thermalgetformatstringbylength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
-                            printCustom(thermalgetformatstringbylength("Card No.", receipt.getCardNo()), 0, 1);
-                            printCustom(thermalgetformatstringbylength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
-                            printCustom(thermalgetformatstringbylength("Operator Name", receipt.getOperatorName()), 0, 1);
-                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
-                            printCustom(thermalgetformatstringbylength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
-                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
-                            printCustom(thrmalgetformatstringbyitem("Item", "Price", "Qty", "Amount"), 0, 1);
-                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
-
-                            for (int i = 0; i < receipt.getItems().getItems().size(); i++){
-                                Item item = receipt.getItems().getItems().get(i);
-                                printCustom(thrmalgetformatstringbyitem(item.getName(), String.valueOf(item.getPrice()), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
-                            }
-
-                            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
-                            printCustom(thrmalgetformatstringbytotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
-                            printCustom(new String(new char[32]).replace("\0", "."), 0, 1);
-                            printCustom("Customer Support (" + readCard.readCardArgument.CustomerId + ")", 1, 1);
-                            printCustom("Karnaphuli Gas Distribution Company Ltd.", 1, 1);
-                            printNewLine();
-                            printNewLine();
-                            printNewLine();
-
-                            outputStream.flush();
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailed(IOException e) {
-                        //this callback may be running thread so
-                        e.printStackTrace();
-                        DebugLog.e("Print Error!");
-                    }
-
-                    @Override
-                    public void onFailed(String e) {
-                        DebugLog.e(e);
-                    }
-                });
-
-            } else showEnableBluetoothDialog();
-        }
-
-    }
-
 
     public void showConfirmDialog() {
         new ChooseAlertDialog(this)
@@ -1003,7 +907,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         this.totalAmount = amount;
     }
 
-    //bluetoothPrint();
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1042,17 +945,28 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     public void hideAnimation() {
+        DebugLog.i("FAIELD");
         gas_content.setVisibility(View.VISIBLE);
         if (animationView.isAnimating()) animationView.cancelAnimation();
         layout_loading.setVisibility(View.GONE);
         animationView.setVisibility(View.GONE);
     }
 
+    public void hideInvoiceAnimation() {
+        gas_content.setVisibility(View.VISIBLE);
+        if (animationView.isAnimating()) animationView.cancelAnimation();
+        layout_loading.setVisibility(View.GONE);
+        animationView.setVisibility(View.GONE);
+    }
+
+
+
+
     //print custom
     private void printCustom(String msg, int size, int align) {
 
         //Print config "mode"
-        byte[] cc = new byte[]{0x1B, 0x21, 0x03};  // 0- normal size text
+        byte[] cc = new byte[]{0x1B, 0x21, 0x01};  // 0- normal size text
         byte[] bb = new byte[]{0x1B, 0x21, 0x08};  // 1- only bold text
         byte[] bb2 = new byte[]{0x1B, 0x21, 0x20}; // 2- bold with medium text
         byte[] bb3 = new byte[]{0x1B, 0x21, 0x10}; // 3- bold with large text
@@ -1215,19 +1129,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return builder.toString();
     }
 
-    private String thrmalgetformatstringbyitem(String item, String price, String qty, String amount) {
-        StringBuilder builder = new StringBuilder();
-        int count = (qty + amount).length();
-        builder.append(item);
-        builder.append(getSpace(14- item.length()));
-        builder.append(price);
-        builder.append(getSpace(6 - price.length()));
-        builder.append(qty);
-        builder.append(getSpace(12 - count));
-        builder.append(amount);
-        return builder.toString();
-    }
-
     private String getFormatStringByTotal(String total, String amount) {
         StringBuilder builder = new StringBuilder();
         int count = (total + amount).length();
@@ -1281,6 +1182,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             super.onPostExecute(aVoid);
         }
     }
+
 
 
 }

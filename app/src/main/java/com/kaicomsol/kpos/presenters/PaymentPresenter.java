@@ -296,7 +296,7 @@ public class PaymentPresenter {
                             } else {
                                 mViewInterface.onError(null, RechargeStatus.INVOICE_ERROR.getCode());
                             }
-                        } else mViewInterface.onError(null, RechargeStatus.INVOICE_ERROR.getCode());
+                        } else mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()), RechargeStatus.INVOICE_ERROR.getCode());
                     }
 
                     @Override
