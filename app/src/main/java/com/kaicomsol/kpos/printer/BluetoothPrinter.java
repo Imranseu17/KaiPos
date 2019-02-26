@@ -10,6 +10,7 @@ import com.kaicomsol.kpos.utils.DebugLog;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -44,13 +45,13 @@ public class BluetoothPrinter {
                     listener.onConnected();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    listener.onFailed(e);
+                    listener.onFailed();
                 }
             }
 
             @Override
             public void onFailed() {
-                listener.onFailed("Connection Faield");
+                listener.onFailed();
             }
         }).execute(printer);
     }
@@ -216,8 +217,7 @@ public class BluetoothPrinter {
 
     public interface PrinterConnectListener {
         void onConnected();
-        void onFailed(IOException e);
-        void onFailed(String e);
+        void onFailed();
     }
 
     private static String encodeNonAscii(String text) {

@@ -174,12 +174,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         getSupportActionBar().setTitle(R.string.add_gas);
 
         ButterKnife.bind(this);
+        String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
+        DebugLog.i(paymentID+" ID ");
         //view init
         viewConfig();
         //card configuration
         cardConfig();
-        String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-        DebugLog.i(paymentID+" ID ");
+
 
     }
 
@@ -721,19 +722,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                        @Override
                        public void onConnected() {
 
-                           if (mBluetoothSocket == null) mBluetoothSocket = mPrinter.getSocket();
+                           mBluetoothSocket = mPrinter.getSocket();
                            new PrintAsyncTask(receipt).execute();
 
                        }
 
                        @Override
-                       public void onFailed(IOException e) {
-                           CustomAlertDialog.showError(RechargeActivity.this, "Printer Connection Failed ! Please try again");
-                           e.printStackTrace();
-                       }
-
-                       @Override
-                       public void onFailed(String e) {
+                       public void onFailed() {
                            CustomAlertDialog.showError(RechargeActivity.this, "Printer Connection Failed ! Please try again");
                        }
                    });
@@ -783,7 +778,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
             for (int i = 0; i < receipt.getItems().getItems().size(); i++){
                 Item item = receipt.getItems().getItems().get(i);
-                if (item.getName().length() > 20){
+                if (item.getName().length() > 18){
                     printCustom(getFormatStringByItem(item.getName().substring(0,18), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
                 }else {
                     printCustom(getFormatStringByItem(item.getName(), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
