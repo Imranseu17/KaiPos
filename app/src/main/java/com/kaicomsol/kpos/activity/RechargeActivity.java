@@ -175,9 +175,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
         ButterKnife.bind(this);
         String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-        DebugLog.i(paymentID+" ID ");
+        DebugLog.i(paymentID + " ID ");
         //view init
         viewConfig();
+        //clear all pending request cancel or capture
+        clearPendingRequest();
         //card configuration
         cardConfig();
 
@@ -210,19 +212,37 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     //Subscribe to listen the event
     @Subscribe
     public void getMessage(String status) {
+
         //If cancel failed or pending cancel and internet connection available then call cancel again
         boolean isCancel = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_cancel_failed));
-        if (isCancel){
+        if (isCancel) {
             String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-            if (!status.equals(Constants.NOT_CONNECT) && !TextUtils.isEmpty(paymentID)) cancelPayment(paymentID);
+            if (!status.equals(Constants.NOT_CONNECT) && !TextUtils.isEmpty(paymentID))
+                cancelPayment(paymentID);
         }
         //If capture failed or pending capture and internet connection available then call capture again
         boolean isCapture = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_capture_failed));
-        if (isCapture){
+        if (isCapture) {
             String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-            if (!status.equals(Constants.NOT_CONNECT) && !TextUtils.isEmpty(paymentID)) capturePayment(paymentID);
+            if (!status.equals(Constants.NOT_CONNECT) && !TextUtils.isEmpty(paymentID))
+                capturePayment(paymentID);
         }
+    }
 
+    private void clearPendingRequest() {
+        //If cancel failed or pending cancel and internet connection available then call cancel again
+        boolean isCancel = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_cancel_failed));
+        if (isCancel) {
+            String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
+            if (checkConnection() && !TextUtils.isEmpty(paymentID)) cancelPayment(paymentID);
+        }
+        //If capture failed or pending capture and internet connection available then call capture again
+        boolean isCapture = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_capture_failed));
+        if (isCapture) {
+            String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
+            if (checkConnection() && !TextUtils.isEmpty(paymentID))
+                capturePayment(paymentID);
+        }
     }
 
     @Override
@@ -238,7 +258,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             showAnimation();
             mPresenter.getInvoices(token, cardNo);
             readCard(token, readCard.readCardArgument);
-        }else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
+        } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
     }
 
     private void readCard(String token, HttpResponsAsync.ReadCardArgument argument) {
@@ -322,9 +342,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 String amount = txt_total_amount.getText().toString().trim();
                 double maxAmount = Double.parseDouble(amount);
 
-                if(maxAmount < 5000) showConfirmDialog();
+                if (maxAmount < 5000) showConfirmDialog();
                 else CustomAlertDialog.showWarning(RechargeActivity.this,
-                            "Maximum payment limit is 5000 BDT");
+                        "Maximum payment limit is 5000 BDT");
             }
         });
         btn_print.setOnClickListener(new View.OnClickListener() {
@@ -465,11 +485,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     private void capturePayment(String paymentId) {
-        if (checkConnection()){
+        if (checkConnection()) {
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
             mPresenter.capturePayment(token, paymentId);
-        }else {
-            SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed),true);
+        } else {
+            SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed), true);
         }
 
     }
@@ -478,18 +498,18 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         if (checkConnection()) {
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
             mPresenter.cancelPayment(token, paymentId);
-        }else SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed),true);
+        } else SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed), true);
     }
 
     @Override
     public void onSuccess(Payment payment) {
 
         SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
-        if (partialCardWriteCheck(payment)){
+        if (partialCardWriteCheck(payment)) {
             rechargeCardDismiss();
             capturePayment(String.valueOf(payment.getPaymentId()));
             print(payment.getReceipt());
-        }else cancelPayment(String.valueOf(payment.getPaymentId()));
+        } else cancelPayment(String.valueOf(payment.getPaymentId()));
     }
 
     @Override
@@ -567,10 +587,10 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             case CANCEL_ERROR:
                 hideAnimation();
                 CustomAlertDialog.showError(this, "Transaction failed");
-                SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed),true);
+                SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed), true);
                 break;
             case CAPTURE_ERROR:
-                SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed),true);
+                SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed), true);
                 break;
             case ERROR_CODE_406:
                 if (error != null) CustomAlertDialog.showError(this, error);
@@ -600,18 +620,18 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return cm.getActiveNetworkInfo() != null;
     }
 
-    boolean partialCardWriteCheck(final Payment payment){
+    boolean partialCardWriteCheck(final Payment payment) {
         boolean response = readCard.GasChargeCard(tag, payment.getReceipt().getGasUnit(), payment.getUnitPrice(), payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
         if (!response) return false;
         boolean response1 = readCard.WriteStatus(tag, payment.getNewHistoryNo());
-        if (!response1){
-           try {
-               readCard.GasChargeCard(tag, Double.parseDouble(readCard.readCardArgument.Credit), Double.parseDouble(readCard.readCardArgument.Unit), Integer.parseInt(readCard.readCardArgument.BasicFee), Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue), payment.getReceipt().getMeterSerialNo());
-               return false;
-           }catch (Exception e){
-               readCard.GasChargeCard(tag, Double.parseDouble(readCard.readCardArgument.Credit), Double.parseDouble(readCard.readCardArgument.Unit), Integer.parseInt(readCard.readCardArgument.BasicFee), Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue), payment.getReceipt().getMeterSerialNo());
-               return false;
-           }
+        if (!response1) {
+            try {
+                readCard.GasChargeCard(tag, Double.parseDouble(readCard.readCardArgument.Credit), Double.parseDouble(readCard.readCardArgument.Unit), Integer.parseInt(readCard.readCardArgument.BasicFee), Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue), payment.getReceipt().getMeterSerialNo());
+                return false;
+            } catch (Exception e) {
+                readCard.GasChargeCard(tag, Double.parseDouble(readCard.readCardArgument.Credit), Double.parseDouble(readCard.readCardArgument.Unit), Integer.parseInt(readCard.readCardArgument.BasicFee), Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue), payment.getReceipt().getMeterSerialNo());
+                return false;
+            }
         }
         return true;
     }
@@ -674,7 +694,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         layout_print.setVisibility(View.VISIBLE);
 
         Date date = new Date(receipt.getPaymentDate());
-        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT+" "+Constants.TIME_FORMAT);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT + " " + Constants.TIME_FORMAT);
 
         txt_date_time.setText(dateFormat.format(date));
         txt_transaction_no.setText(String.valueOf(receipt.getPaymentId()));
@@ -716,34 +736,36 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
                 final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
 
-               if (mBluetoothSocket == null){
-                   mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
+                if (mBluetoothSocket == null) {
+                    mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
 
-                       @Override
-                       public void onConnected() {
+                        @Override
+                        public void onConnected() {
 
-                           mBluetoothSocket = mPrinter.getSocket();
-                           new PrintAsyncTask(receipt).execute();
+                            mBluetoothSocket = mPrinter.getSocket();
+                            new PrintAsyncTask(receipt).execute();
 
-                       }
+                        }
 
-                       @Override
-                       public void onFailed() {
-                           CustomAlertDialog.showError(RechargeActivity.this, "Printer Connection Failed ! Please try again");
-                       }
-                   });
-               }else {
-                   new PrintAsyncTask(receipt).execute();
-               }
+                        @Override
+                        public void onFailed() {
+                            CustomAlertDialog.showError(RechargeActivity.this, "Printer Connection Failed ! Please try again");
+                        }
+                    });
+                } else {
+                    new PrintAsyncTask(receipt).execute();
+                }
 
 
-            } else { showEnableBluetoothDialog(); }
+            } else {
+                showEnableBluetoothDialog();
+            }
 
         }
 
     }
 
-    public void createReceipt(Receipt receipt){
+    public void createReceipt(Receipt receipt) {
 
         OutputStream opstream = null;
         try {
@@ -759,7 +781,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             printCustom("Money Receipt", 2, 1);
 
             Date date = new Date(receipt.getPaymentDate());
-            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT+" "+Constants.TIME_FORMAT);
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT + " " + Constants.TIME_FORMAT);
 
             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
             printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
@@ -776,11 +798,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
 
-            for (int i = 0; i < receipt.getItems().getItems().size(); i++){
+            for (int i = 0; i < receipt.getItems().getItems().size(); i++) {
                 Item item = receipt.getItems().getItems().get(i);
-                if (item.getName().length() > 18){
-                    printCustom(getFormatStringByItem(item.getName().substring(0,18), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
-                }else {
+                if (item.getName().length() > 18) {
+                    printCustom(getFormatStringByItem(item.getName().substring(0, 18), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                } else {
                     printCustom(getFormatStringByItem(item.getName(), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
                 }
             }
@@ -796,7 +818,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
             outputStream.flush();
 
-        }  catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -853,7 +875,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         String paymentId = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
 
-        DebugLog.i("Payment ID "+paymentId);
+        DebugLog.i("Payment ID " + paymentId);
         if (checkConnection()) mPresenter.receiptPayment(token, paymentId);
         else showErrorDialog(getString(R.string.no_internet_connection));
     }
@@ -889,7 +911,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     protected void onDestroy() {
         boolean isCancelFailed = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_cancel_failed));
-        if (!isCancelFailed){
+        if (!isCancelFailed) {
             SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
         }
         super.onDestroy();
@@ -957,8 +979,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         layout_loading.setVisibility(View.GONE);
         animationView.setVisibility(View.GONE);
     }
-
-
 
 
     //print custom
@@ -1143,7 +1163,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return dateTime;
     }
 
-    class PrintAsyncTask extends AsyncTask<Receipt, Void, Void>{
+    class PrintAsyncTask extends AsyncTask<Receipt, Void, Void> {
 
         private Receipt receipt;
 
