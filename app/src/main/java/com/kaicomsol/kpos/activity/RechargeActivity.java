@@ -703,7 +703,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
         showPrintLayout(receipt);
         bluetoothPrint(receipt);
-        //thermalBluetoothPrint(receipt);
         getSupportActionBar().setTitle("Print receipts");
 
     }
