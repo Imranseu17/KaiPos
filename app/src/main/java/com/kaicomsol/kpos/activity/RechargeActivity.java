@@ -308,8 +308,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         mRechargeCardDialog.setArguments(args);
         customerCardDialog();
 
-        //decimalFormat = new DecimalFormat(".##");
-        decimalFormat = new DecimalFormat("#,##0.00");
+        decimalFormat = new DecimalFormat(".##");
         mPresenter = new PaymentPresenter(this);
         layoutPrice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -505,7 +504,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     public void onSuccess(Payment payment) {
 
         SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
-        if (partialCardWriteCheck(payment)) {
+        boolean response = readCard.GasChargeCard(tag, payment.getReceipt().getGasUnit(), payment.getUnitPrice(), payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo(), payment.getNewHistoryNo());
+        if (response) {
             rechargeCardDismiss();
             capturePayment(String.valueOf(payment.getPaymentId()));
             print(payment.getReceipt());
@@ -620,21 +620,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return cm.getActiveNetworkInfo() != null;
     }
 
-    boolean partialCardWriteCheck(final Payment payment) {
-        boolean response = readCard.GasChargeCard(tag, payment.getReceipt().getGasUnit(), payment.getUnitPrice(), payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
-        if (!response) return false;
-        boolean response1 = readCard.WriteStatus(tag, payment.getNewHistoryNo());
-        if (!response1) {
-            try {
-                readCard.GasChargeCard(tag, Double.parseDouble(readCard.readCardArgument.Credit), Double.parseDouble(readCard.readCardArgument.Unit), Integer.parseInt(readCard.readCardArgument.BasicFee), Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue), payment.getReceipt().getMeterSerialNo());
-                return false;
-            } catch (Exception e) {
-                readCard.GasChargeCard(tag, Double.parseDouble(readCard.readCardArgument.Credit), Double.parseDouble(readCard.readCardArgument.Unit), Integer.parseInt(readCard.readCardArgument.BasicFee), Double.parseDouble(readCard.readCardArgument.ConfigData.EmergencyValue), payment.getReceipt().getMeterSerialNo());
-                return false;
-            }
-        }
-        return true;
-    }
 
     public static void expand(final View v) {
         v.measure(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
@@ -1129,11 +1114,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         StringBuilder builder = new StringBuilder();
         int count = (qty + amount).length();
         builder.append(item);
-        builder.append(getSpace(21 - item.length()));
+        builder.append(getSpace(19 - item.length()));
         builder.append(price);
         builder.append(getSpace(9 - price.length()));
         builder.append(qty);
-        builder.append(getSpace(12 - count));
+        builder.append(getSpace(14 - count));
         builder.append(amount);
         return builder.toString();
     }
@@ -1182,6 +1167,5 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             super.onPostExecute(aVoid);
         }
     }
-
 
 }

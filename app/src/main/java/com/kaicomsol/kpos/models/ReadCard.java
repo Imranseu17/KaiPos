@@ -657,7 +657,7 @@ public class ReadCard {
     }
 
 
-    public boolean GasChargeCard(Tag tag, double Credit, double Unit, int BasicFee, double emergencyValue, String meter) {
+    public boolean GasChargeCard(Tag tag, double Credit, double Unit, int BasicFee, double emergencyValue, String meter, int CardHistoryNo) {
         String str = meter;
         NfcF nfc = NfcF.get(tag);
         try {
@@ -673,6 +673,7 @@ public class ReadCard {
                 CheckDataLength(data);
                 byte _cardStatus = GetCardStatus(data[0]);
                 datalist.AddReadBlockData(data[0], 3, false);
+
                 if (this.isChargeCheckFailed || isGasChargeCard(_cardStatus, _cardGroup)) {
                     byte[] req = readWithoutEncryption(TargetIDm, size, targetServiceCode, 5);
                     byte[] res = nfc.transceive(req);
@@ -724,6 +725,13 @@ public class ReadCard {
                     SetPar(datalist.GetReadBlockData(8), tempParModel);
                     byte _cardGroup2 = _cardGroup;
                     SetEmergencyValue(datalist.GetReadBlockData(8), emergencyValue);
+                    //@BY_ANWAR
+                    SetCardStatus(datalist.GetReadBlockData(3), 21);
+                    byte[][] myData = parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 5)));
+                    CheckDataLength(myData);
+                    datalist.AddReadBlockData(myData[0], 5, true);
+                    SetCardHistoryNo(myData[0], CardHistoryNo);
+                    //@END_BY_ANWAR
                     writeWithoutEncryption(nfc, datalist);
                     //LogUtil.i("Success to write a card.");
                     if (CheckWroteData(datalist, nfc, tempCngModel2, tempContinueModel, tempContinueModel22, tempCng2Model, tempParModel, emergencyValue)) {

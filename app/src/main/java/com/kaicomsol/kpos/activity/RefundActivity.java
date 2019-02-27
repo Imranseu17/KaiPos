@@ -33,6 +33,7 @@ import com.kaicomsol.kpos.models.Refund;
 import com.kaicomsol.kpos.models.UpdateResponse;
 import com.kaicomsol.kpos.presenters.RefundPresenter;
 import com.kaicomsol.kpos.utils.CardPropertise;
+import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import java.text.DecimalFormat;
@@ -238,6 +239,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
             rechargeCardDismiss();
             updatedData();
             Toast.makeText(this, "Refund update successfully!", Toast.LENGTH_LONG).show();
+        }else if (value > 999.00){
+            CustomAlertDialog.showError(this, "Gas volume limit exceed!");
         }else CustomAlertDialog.showError(this, "Update failed please try again");
 
         //finish();
