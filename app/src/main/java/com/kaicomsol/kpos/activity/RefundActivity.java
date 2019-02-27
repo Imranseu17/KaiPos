@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
@@ -163,35 +164,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        readCard.ReadTag(tag);
-        final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
-        vibrator.vibrate(1000);
-        if (response) {
-            if (readCard.readCardArgument.CardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
-                    && readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_REFUNDED.getCode())) {
-                if (!isCardRefund) {
-                    customerCardDismiss();
-                    layout_refund.setVisibility(View.VISIBLE);
-                    txt_account_no.setText(readCard.readCardArgument.CustomerId);
-                    txt_credit.setText(readCard.readCardArgument.Credit);
-                    txt_refund1.setText(readCard.readCardArgument.Refund1);
-                    txt_refund2.setText(readCard.readCardArgument.Refund2);
-
-                    if (checkConnection()) {
-                        String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
-                        mPresenter.getIssueRefund(token, readCard.readCardArgument.CardIdm, readCard.readCardArgument.Credit, readCard.readCardArgument.Refund1);
-                    } else
-                        CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
-                } else {
-                    rechargeCardDismiss();
-                    updateRefund();
-
-                }
-
-            } else CustomAlertDialog.showError(this, getString(R.string.not_available_refund));
-        } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
-
-        vibrator.cancel();
+        new ReadAsyncTask(tag).execute();
 
 
     }
@@ -358,6 +331,53 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
     @Override
     public void onCloseClick(double amount) {
 
+    }
+
+    class ReadAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+        private Tag tag;
+        public ReadAsyncTask(Tag tag) {
+            this.tag = tag;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+
+            readCard.ReadTag(tag);
+            boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean response) {
+            vibrator.vibrate(1000);
+            if (response) {
+                if (readCard.readCardArgument.CardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
+                        && readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_REFUNDED.getCode())) {
+                    if (!isCardRefund) {
+                        customerCardDismiss();
+                        layout_refund.setVisibility(View.VISIBLE);
+                        txt_account_no.setText(readCard.readCardArgument.CustomerId);
+                        txt_credit.setText(readCard.readCardArgument.Credit);
+                        txt_refund1.setText(readCard.readCardArgument.Refund1);
+                        txt_refund2.setText(readCard.readCardArgument.Refund2);
+
+                        if (checkConnection()) {
+                            String token = SharedDataSaveLoad.load(RefundActivity.this, getString(R.string.preference_access_token));
+                            mPresenter.getIssueRefund(token, readCard.readCardArgument.CardIdm, readCard.readCardArgument.Credit, readCard.readCardArgument.Refund1);
+                        } else
+                            CustomAlertDialog.showError(RefundActivity.this, getString(R.string.no_internet_connection));
+                    } else {
+                        rechargeCardDismiss();
+                        updateRefund();
+
+                    }
+
+                } else CustomAlertDialog.showError(RefundActivity.this, getString(R.string.not_available_refund));
+            } else CustomAlertDialog.showWarning(RefundActivity.this, getString(R.string.err_card_read_failed));
+
+            vibrator.cancel();
+        }
     }
 
 }

@@ -56,6 +56,7 @@ import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.golobal.GlobalBus;
 import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.models.Item;
+import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.Payment;
 import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.models.Receipt;
@@ -268,27 +269,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        if (tag == null) return;
-        readCard.ReadTag(tag);
-        final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
-        vibrator.vibrate(1000);
-        if (response) {
-            if (readCard.readCardArgument.CardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
-                    && (readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_CHARGED_METER.getCode())
-                    || readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_INITIAL.getCode()))) {
+        new ReadAsyncTask(tag).execute();
 
-                txt_account_no.setText(readCard.readCardArgument.CustomerId);
-                DebugLog.e(readCard.readCardArgument.CustomerId);
-                customerCardDismiss();
-                if (isRecharge) gasRecharge();
-                else getInvoices(readCard.readCardArgument.CardIdm);
-
-            } else CustomAlertDialog.showError(this, getString(R.string.err_card_not_valid));
-        } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
-
-        vibrator.cancel();
     }
 
     private void viewConfig() {
@@ -516,7 +499,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     public void onSuccess(Receipt receipt) {
 
         bluetoothPrint(receipt);
-        //thermalBluetoothPrint(receipt);
         getSupportActionBar().setTitle("Print receipts");
         showPrintLayout(receipt);
     }
@@ -1164,6 +1146,42 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+        }
+    }
+
+    class ReadAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+        private Tag tag;
+        public ReadAsyncTask(Tag tag) {
+            this.tag = tag;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+
+            readCard.ReadTag(tag);
+            boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean response) {
+            vibrator.vibrate(1000);
+            if (response) {
+                if (readCard.readCardArgument.CardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
+                        && (readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_CHARGED_METER.getCode())
+                        || readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_INITIAL.getCode()))) {
+
+                    txt_account_no.setText(readCard.readCardArgument.CustomerId);
+                    DebugLog.e(readCard.readCardArgument.CustomerId);
+                    customerCardDismiss();
+                    if (isRecharge) gasRecharge();
+                    else getInvoices(readCard.readCardArgument.CardIdm);
+
+                } else CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
+            } else CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
+
+            vibrator.cancel();
         }
     }
 

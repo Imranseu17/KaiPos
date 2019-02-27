@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
+import android.os.AsyncTask;
 import android.os.Vibrator;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -27,6 +28,7 @@ import com.kaicomsol.kpos.fragment.HistoryFragment;
 import com.kaicomsol.kpos.fragment.PropertiesFragment;
 import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.ReadCard;
+import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 
 import butterknife.BindView;
@@ -92,7 +94,7 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -100,8 +102,8 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
         return super.onOptionsItemSelected(item);
     }
 
-    private void viewConfig(){
-        mCardCheckDialog = CardCheckDialog.newInstance(this,"NFC");
+    private void viewConfig() {
+        mCardCheckDialog = CardCheckDialog.newInstance(this, "NFC");
         mCardCheckDialog.setCancelable(false);
         customerCardDialog();
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -130,16 +132,16 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
 
     }
 
-    private void customerCardDialog(){
-        if (mCardCheckDialog != null){
-            if(!mCardCheckDialog.isAdded()) {
+    private void customerCardDialog() {
+        if (mCardCheckDialog != null) {
+            if (!mCardCheckDialog.isAdded()) {
                 mCardCheckDialog.show(getSupportFragmentManager(), mCardCheckDialog.getTag());
             }
         }
     }
 
-    private void customerCardDismiss(){
-        if (mCardCheckDialog != null){
+    private void customerCardDismiss() {
+        if (mCardCheckDialog != null) {
             mCardCheckDialog.dismiss();
         }
     }
@@ -157,23 +159,9 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        new ReadAsyncTask(tag).execute();
 
-        readCard.ReadTag(tag);
-        boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
-        vibrator.vibrate(1000);
-        if (response){
-            customerCardDismiss();
-            viewPager.setVisibility(View.VISIBLE);
-            tabLayout.setVisibility(View.VISIBLE);
 
-            HttpResponsAsync.ReadCardArgument argument = readCard.readCardArgument;
-            NFCData.getInstance().setArgument(argument);
-        }else {
-
-            CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
-        }
-
-        vibrator.cancel();
     }
 
 
@@ -191,5 +179,38 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
     @Override
     public void onCloseClick(double amount) {
 
+    }
+
+    class ReadAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+
+        private Tag tag;
+        public ReadAsyncTask(Tag tag) {
+            this.tag = tag;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+
+            readCard.ReadTag(tag);
+            boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean response) {
+            vibrator.vibrate(1000);
+            if (response) {
+                customerCardDismiss();
+                viewPager.setVisibility(View.VISIBLE);
+                tabLayout.setVisibility(View.VISIBLE);
+
+                HttpResponsAsync.ReadCardArgument argument = readCard.readCardArgument;
+                NFCData.getInstance().setArgument(argument);
+            } else {
+                CustomAlertDialog.showWarning(InspectActivity.this, getString(R.string.err_card_read_failed));
+            }
+            vibrator.cancel();
+        }
     }
 }
