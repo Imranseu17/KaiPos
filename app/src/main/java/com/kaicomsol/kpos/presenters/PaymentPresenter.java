@@ -7,6 +7,7 @@ import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.models.Payment;
 import com.kaicomsol.kpos.models.PaymentID;
+import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.services.APIClient;
@@ -315,7 +316,7 @@ public class PaymentPresenter {
                 });
     }
 
-    public void readCard(String token, HttpResponsAsync.ReadCardArgument argument) {
+    public void readCard(String token, ReadCard readCard) {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", token);
         map.put("Content-Type", "application/json");
@@ -324,8 +325,8 @@ public class PaymentPresenter {
         JsonObject cardObj = new JsonObject();
         //get card history
         JsonArray jsonHistory = new JsonArray();
-        for(int i = 0; i < argument.CardHistory.size(); i++){
-            HttpResponsAsync.ReadCardArgumentCardHistory cardHistory = argument.CardHistory.get(i);
+        for(int i = 0; i < readCard.readCardArgument.CardHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentCardHistory cardHistory = readCard.readCardArgument.CardHistory.get(i);
             JsonObject objHistory = new JsonObject();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = null;
@@ -342,8 +343,8 @@ public class PaymentPresenter {
 
         //get error history
         JsonArray arrErrorHistory = new JsonArray();
-        for(int i = 0; i < argument.ErrorHistory.size(); i++){
-            HttpResponsAsync.ReadCardArgumentErrorHistory errorHistory = argument.ErrorHistory.get(i);
+        for(int i = 0; i < readCard.readCardArgument.ErrorHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentErrorHistory errorHistory = readCard.readCardArgument.ErrorHistory.get(i);
             JsonObject objErrHistory = new JsonObject();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = null;
@@ -361,8 +362,8 @@ public class PaymentPresenter {
 
         //get Log Day
         JsonArray arrLogDay = new JsonArray();
-        for(int i = 0; i < argument.LogDay.size(); i++){
-            HttpResponsAsync.ReadCardArgumentLogDay logDay = argument.LogDay.get(i);
+        for(int i = 0; i < readCard.readCardArgument.LogDay.size(); i++){
+            HttpResponsAsync.ReadCardArgumentLogDay logDay = readCard.readCardArgument.LogDay.get(i);
             JsonObject objLogDay = new JsonObject();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = null;
@@ -380,8 +381,8 @@ public class PaymentPresenter {
 
         //get Log Hour
         JsonArray arrLogHour = new JsonArray();
-        for(int i = 0; i < argument.LogHour.size(); i++){
-            HttpResponsAsync.ReadCardArgumentLogHour logHour = argument.LogHour.get(i);
+        for(int i = 0; i < readCard.readCardArgument.LogHour.size(); i++){
+            HttpResponsAsync.ReadCardArgumentLogHour logHour = readCard.readCardArgument.LogHour.get(i);
             JsonObject objlogHour = new JsonObject();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = null;
@@ -398,26 +399,26 @@ public class PaymentPresenter {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date date = null;
         try {
-            date = sdf.parse(argument.LidTime);
+            date = sdf.parse(readCard.lidTime);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        cardObj.addProperty("BasicFee", argument.BasicFee);
-        cardObj.addProperty("CardGroup", argument.CardGroup);
-        cardObj.addProperty("CardHistoryNo", argument.CardHistoryNo);
-        cardObj.addProperty("CardIdm", argument.CardIdm);
-        cardObj.addProperty("CardStatus", argument.CardStatus);
-        cardObj.addProperty("Credit", argument.Credit);
-        cardObj.addProperty("CustomerId", argument.CustomerId);
-        cardObj.addProperty("ErrorNo", argument.ErrorNo);
+        cardObj.addProperty("BasicFee", readCard.basicFee);
+        cardObj.addProperty("CardGroup", readCard.cardGroup);
+        cardObj.addProperty("CardHistoryNo", readCard.historyNO);
+        cardObj.addProperty("CardIdm", readCard.cardIDm);
+        cardObj.addProperty("CardStatus", readCard.cardStatus);
+        cardObj.addProperty("Credit", readCard.credit);
+        cardObj.addProperty("CustomerId", readCard.strCustomerId);
+        cardObj.addProperty("ErrorNo", readCard.errorNO);
         cardObj.addProperty("LidTime", date.getTime());
-        cardObj.addProperty("OpenCount", argument.OpenCount);
-        cardObj.addProperty("Refund1", argument.Refund1);
-        cardObj.addProperty("Refund2", argument.Refund2);
-        cardObj.addProperty("Unit", argument.Unit);
-        cardObj.addProperty("UntreatedFee", argument.UntreatedFee);
-        cardObj.addProperty("VersionNo", argument.VersionNo);
+        cardObj.addProperty("OpenCount", readCard.openCount);
+        cardObj.addProperty("Refund1", readCard.refund1);
+        cardObj.addProperty("Refund2", readCard.refund2);
+        cardObj.addProperty("Unit", readCard.unit);
+        cardObj.addProperty("UntreatedFee", readCard.untreatedFee);
+        cardObj.addProperty("VersionNo", readCard.versionNO);
 
         cardObj.add("CardHistory", jsonHistory);
         cardObj.add("ErrorHistory", arrErrorHistory);

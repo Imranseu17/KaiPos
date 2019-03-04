@@ -41,6 +41,8 @@ import android.widget.Toast;
 
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.PrintAdapter;
@@ -56,6 +58,7 @@ import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.golobal.GlobalBus;
 import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.models.Item;
+import com.kaicomsol.kpos.models.LogState;
 import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.Payment;
 import com.kaicomsol.kpos.models.ReadCard;
@@ -88,6 +91,7 @@ import static com.kaicomsol.kpos.golobal.Constants.CONNECTIVITY_ACTION;
 
 public class RechargeActivity extends AppCompatActivity implements PaymentView, CloseClickListener {
 
+    private FirebaseDatabase mDatabase;
     private static final int REQUEST_ENABLE_BT = 0;
     private CardCheckDialog mCardCheckDialog = null;
     private RechargeCardDialog mRechargeCardDialog = null;
@@ -258,12 +262,12 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         if (checkConnection()) {
             showAnimation();
             mPresenter.getInvoices(token, cardNo);
-            readCard(token, readCard.readCardArgument);
+            readCard(token, readCard);
         } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
     }
 
-    private void readCard(String token, HttpResponsAsync.ReadCardArgument argument) {
-        if (readCard.readCardArgument != null) mPresenter.readCard(token, argument);
+    private void readCard(String token, ReadCard readCard) {
+        if (readCard.readCardArgument != null) mPresenter.readCard(token, readCard);
     }
 
     @Override
@@ -275,6 +279,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     private void viewConfig() {
+
+        // Write a message to the database
+        mDatabase = FirebaseDatabase.getInstance();
 
         //internet connectivity receiver
         intentFilter = new IntentFilter();
@@ -449,9 +456,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private void takaToGas(String amount) {
         if (!TextUtils.isEmpty(amount)) {
             double value = Double.parseDouble(amount) / 9.1;
-            txt_taka.setText(amount);
-            txt_price.setText(amount);
-            txt_total_amount.setText(amount);
+            txt_taka.setText(decimalFormat.format(Double.parseDouble(amount)));
+            txt_price.setText(decimalFormat.format(Double.parseDouble(amount)));
+            txt_total_amount.setText(decimalFormat.format(Double.parseDouble(amount)));
             txt_gas.setText(String.valueOf(decimalFormat.format(value)));
         }
     }
@@ -459,8 +466,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private void addPayment() {
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         String amount = txt_total_amount.getText().toString().trim();
-        String cardIdm = readCard.readCardArgument.CardIdm;
-        String cardHistoryNo = readCard.readCardArgument.CardHistoryNo;
+        String cardIdm = readCard.cardIDm;
+        String cardHistoryNo = String.valueOf(readCard.historyNO);
 
         mPresenter.addPayment(token, amount, cardIdm, cardHistoryNo, "1");
 
@@ -477,6 +484,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     private void cancelPayment(String paymentId) {
+        writeNewTransaction(Integer.parseInt(paymentId),"Card Write:Failed");
         if (checkConnection()) {
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
             mPresenter.cancelPayment(token, paymentId);
@@ -486,13 +494,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     public void onSuccess(Payment payment) {
 
-        SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
-        boolean response = readCard.GasChargeCard(tag, payment.getReceipt().getGasUnit(), payment.getUnitPrice(), payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo(), payment.getNewHistoryNo());
-        if (response) {
-            rechargeCardDismiss();
-            capturePayment(String.valueOf(payment.getPaymentId()));
-            print(payment.getReceipt());
-        } else cancelPayment(String.valueOf(payment.getPaymentId()));
+        writeNewTransaction(payment.getPaymentId(),"Authorised:SUCCESS");
+       //Here put asys
+        new WriteAsyncTask(payment).execute();
     }
 
     @Override
@@ -501,6 +505,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         bluetoothPrint(receipt);
         getSupportActionBar().setTitle("Print receipts");
         showPrintLayout(receipt);
+
     }
 
     @Override
@@ -527,10 +532,12 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         RechargeStatus rechargeStatus = RechargeStatus.getByCode(code);
         switch (rechargeStatus) {
             case CAPTURE_SUCCESS:
+                writeNewTransaction(paymentId,"Captured:SUCCESS");
                 SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(paymentId));
                 SharedDataSaveLoad.remove(this, getString(R.string.preference_capture_failed));
                 break;
             case CANCEL_SUCCESS:
+                writeNewTransaction(paymentId, "Cancel:SUCCESS");
                 CustomAlertDialog.showError(this, "Transaction failed");
                 SharedDataSaveLoad.remove(this, getString(R.string.preference_capture_failed));
                 SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
@@ -572,7 +579,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed), true);
                 break;
             case CAPTURE_ERROR:
-                SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed), true);
+                //SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed), true);
+                DebugLog.e("Capture Failed");
                 break;
             case ERROR_CODE_406:
                 if (error != null) CustomAlertDialog.showError(this, error);
@@ -671,7 +679,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         txt_card_no.setText(receipt.getCardNo());
         txt_pos_id.setText(String.valueOf(receipt.getPosId()));
         txt_operator_name.setText(receipt.getOperatorName());
-        txt_deposit_amount.setText(String.valueOf(receipt.getAmountPaid()));
+        txt_deposit_amount.setText(String.valueOf(decimalFormat.format(receipt.getAmountPaid())));
         txt_total.setText(String.valueOf(decimalFormat.format(receipt.getItems().getTotal())));
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
@@ -699,28 +707,33 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         } else {
             boolean enable = mBluetoothAdapter.isEnabled();
             if (enable) {
-                final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
-                final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
+                if (mBluetoothAdapter.getBondedDevices().iterator().hasNext()){
+                    final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
+                    final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
 
-                if (mBluetoothSocket == null) {
-                    mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
+                    if (mBluetoothSocket == null) {
+                        mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
 
-                        @Override
-                        public void onConnected() {
+                            @Override
+                            public void onConnected() {
 
-                            mBluetoothSocket = mPrinter.getSocket();
-                            new PrintAsyncTask(receipt).execute();
+                                mBluetoothSocket = mPrinter.getSocket();
+                                new PrintAsyncTask(receipt).execute();
 
-                        }
+                            }
 
-                        @Override
-                        public void onFailed() {
-                            CustomAlertDialog.showError(RechargeActivity.this, "Printer Connection Failed ! Please try again");
-                        }
-                    });
-                } else {
-                    new PrintAsyncTask(receipt).execute();
+                            @Override
+                            public void onFailed() {
+                                CustomAlertDialog.showError(RechargeActivity.this, "Printer Connection Failed ! Please try again");
+                            }
+                        });
+                    } else {
+                        new PrintAsyncTask(receipt).execute();
+                    }
+                }else {
+                    CustomAlertDialog.showError(RechargeActivity.this, "Printer Not Found ! Please try again");
                 }
+
 
 
             } else {
@@ -759,7 +772,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
             printCustom(getFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-            printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(receipt.getAmountPaid())), 0, 1);
+            printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(decimalFormat.format(receipt.getAmountPaid()))), 0, 1);
             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
             printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
             printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
@@ -1159,8 +1172,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         @Override
         protected Boolean doInBackground(Void... voids) {
 
-            readCard.ReadTag(tag);
-            boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+            final boolean response = readCard.ReadTag(tag);
             return response;
         }
 
@@ -1168,21 +1180,64 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         protected void onPostExecute(Boolean response) {
             vibrator.vibrate(1000);
             if (response) {
-                if (readCard.readCardArgument.CardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
-                        && (readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_CHARGED_METER.getCode())
-                        || readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_INITIAL.getCode()))) {
+                if (readCard.cardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
+                        && (readCard.cardStatus.equals(CardPropertise.CARD_CHARGED_METER.getCode())
+                        || readCard.cardStatus.equals(CardPropertise.CARD_INITIAL.getCode()))) {
 
-                    txt_account_no.setText(readCard.readCardArgument.CustomerId);
-                    DebugLog.e(readCard.readCardArgument.CustomerId);
+                    txt_account_no.setText(readCard.strCustomerId);
                     customerCardDismiss();
                     if (isRecharge) gasRecharge();
-                    else getInvoices(readCard.readCardArgument.CardIdm);
+                    else getInvoices(readCard.cardIDm);
 
                 } else CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
             } else CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
 
             vibrator.cancel();
         }
+    }
+
+    class WriteAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+
+        private Payment payment;
+        public WriteAsyncTask(Payment payment) {
+            this.payment = payment;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+
+            boolean response = readCard.GasChargeCard(tag, payment.getReceipt().getGasUnit(), payment.getUnitPrice(), payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo(), payment.getNewHistoryNo());
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean response) {
+            SharedDataSaveLoad.save(RechargeActivity.this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
+            if (response) {
+                writeNewTransaction(payment.getPaymentId(),"Card Write:SUCCESS");
+                rechargeCardDismiss();
+                capturePayment(String.valueOf(payment.getPaymentId()));
+                print(payment.getReceipt());
+            } else cancelPayment(String.valueOf(payment.getPaymentId()));
+        }
+    }
+
+    private void writeNewTransaction(int paymentId, String status) {
+
+        Date date= new Date();
+        long time = date.getTime();
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+        String formattedDate = df.format(time);
+        String formattedTime = tf.format(time);
+
+        readCard.ReadTag(tag);
+
+        LogState logState = new LogState(readCard.cardStatus, readCard.historyNO, status);
+        DatabaseReference myRef = mDatabase.getReference("transaction-"+formattedDate);
+        myRef.child(String.valueOf(paymentId+"-"+time)).setValue(logState);
     }
 
 }

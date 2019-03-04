@@ -196,16 +196,16 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
     @Override
     public void onSuccess(UpdateResponse updateResponse) {
 
-        double refund1 = Double.parseDouble(readCard.readCardArgument.Refund1);
-        double refund2 = Double.parseDouble(readCard.readCardArgument.Refund2);
-        double credit =Double.parseDouble(readCard.readCardArgument.Credit);
+        double refund1 = Double.parseDouble(readCard.refund1);
+        double refund2 = Double.parseDouble(readCard.refund2);
+        double credit =Double.parseDouble(readCard.credit);
 
         double value = refund1+refund2+credit;
         boolean response = readCard.GasChargeRefundCard(tag, Double.parseDouble(decimalFormat.format(value)),
                 updateResponse.getUnitPrice(),updateResponse.getBaseFee(),updateResponse.getEmergencyValue());
 
         if (credit == 0.0){
-            String historyNo = readCard.readCardArgument.CardHistoryNo;
+            String historyNo = String.valueOf(readCard.historyNO);
            readCard.WriteStatus(tag, Integer.parseInt(historyNo)+1);
         }
         if (response){
@@ -281,8 +281,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
 
     public void updatedData() {
         layout_refund.setVisibility(View.VISIBLE);
-        txt_account_no.setText(readCard.readCardArgument.CustomerId);
-        txt_credit.setText(addCredit(readCard.readCardArgument.Credit, readCard.readCardArgument.Refund1));
+        txt_account_no.setText(readCard.strCustomerId);
+        txt_credit.setText(addCredit(readCard.credit, readCard.refund1));
         txt_refund1.setText("0.0");
         txt_refund2.setText("0.0");
         btn_submit.setEnabled(false);
@@ -343,8 +343,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         @Override
         protected Boolean doInBackground(Void... voids) {
 
-            readCard.ReadTag(tag);
-            boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+            final boolean response = readCard.ReadTag(tag);
             return response;
         }
 
@@ -352,19 +351,19 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         protected void onPostExecute(Boolean response) {
             vibrator.vibrate(1000);
             if (response) {
-                if (readCard.readCardArgument.CardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
-                        && readCard.readCardArgument.CardStatus.equals(CardPropertise.CARD_REFUNDED.getCode())) {
+                if (readCard.cardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
+                        && readCard.cardStatus.equals(CardPropertise.CARD_REFUNDED.getCode())) {
                     if (!isCardRefund) {
                         customerCardDismiss();
                         layout_refund.setVisibility(View.VISIBLE);
-                        txt_account_no.setText(readCard.readCardArgument.CustomerId);
-                        txt_credit.setText(readCard.readCardArgument.Credit);
-                        txt_refund1.setText(readCard.readCardArgument.Refund1);
-                        txt_refund2.setText(readCard.readCardArgument.Refund2);
+                        txt_account_no.setText(readCard.strCustomerId);
+                        txt_credit.setText(readCard.credit);
+                        txt_refund1.setText(readCard.refund1);
+                        txt_refund2.setText(readCard.refund2);
 
                         if (checkConnection()) {
                             String token = SharedDataSaveLoad.load(RefundActivity.this, getString(R.string.preference_access_token));
-                            mPresenter.getIssueRefund(token, readCard.readCardArgument.CardIdm, readCard.readCardArgument.Credit, readCard.readCardArgument.Refund1);
+                            mPresenter.getIssueRefund(token, readCard.cardIDm, readCard.credit, readCard.refund1);
                         } else
                             CustomAlertDialog.showError(RefundActivity.this, getString(R.string.no_internet_connection));
                     } else {

@@ -102,7 +102,7 @@ public class HttpResponsAsync  {
         public String Refund1;
         public String Refund2;
         public String Unit;
-       public String UntreatedFee;
+        public String UntreatedFee;
         public String VersionNo;
 
         public ReadCardArgument() {

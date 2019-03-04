@@ -6,13 +6,13 @@ import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 
 public class NFCData {
 
-
     private HttpResponsAsync.ReadCardArgument argumnet = null;
     private static final NFCData ourInstance = new NFCData();
     private String position = null;
     private String meterSerial = null;
     private Tag tag = null;
     private String customerCode = null;
+    private ReadCard readCard = null;
 
 
 
@@ -61,5 +61,13 @@ public class NFCData {
 
     public void setCustomerCode(String customerCode) {
         this.customerCode = customerCode;
+    }
+
+    public ReadCard getReadCard() {
+        return readCard;
+    }
+
+    public void setReadCard(ReadCard readCard) {
+        this.readCard = readCard;
     }
 }

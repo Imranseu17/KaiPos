@@ -18,6 +18,7 @@ import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.HistoryAdapter;
 import com.kaicomsol.kpos.models.History;
 import com.kaicomsol.kpos.models.NFCData;
+import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 
 import java.util.ArrayList;
@@ -78,8 +79,8 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        HttpResponsAsync.ReadCardArgument argument =  NFCData.getInstance().getArgument();
-        adapterData(argument);
+        ReadCard readCard =  NFCData.getInstance().getReadCard();
+        adapterData(readCard);
     }
 
     @Override
@@ -87,12 +88,12 @@ public class HistoryFragment extends Fragment {
         super.onPause();
 
     }
-    private void adapterData(HttpResponsAsync.ReadCardArgument argument) {
+    private void adapterData(ReadCard readCard) {
 
         List<History> historyList = new ArrayList<>();
 
-        for(int i = 0; i < argument.CardHistory.size(); i++){
-            HttpResponsAsync.ReadCardArgumentCardHistory cardArgument = argument.CardHistory.get(i);
+        for(int i = 0; i < readCard.readCardArgument.CardHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentCardHistory cardArgument = readCard.readCardArgument.CardHistory.get(i);
             historyList.add(new History(cardArgument.HistoryType, cardArgument.HistoryTime));
         }
         mAdapter = new HistoryAdapter(getActivity(), historyList);

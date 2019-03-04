@@ -105,13 +105,11 @@ public class NFCCheckActivity extends AppCompatActivity {
         setIntent(intent);
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        readCard.ReadTag(tag);
-        final boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+        final boolean response = readCard.ReadTag(tag);
         vibrator.vibrate(1000);
 
-
         if (response) {
-            if (readCard.readCardArgument.CardGroup.equals(CardPropertise.SERVICE_CARD.getCode())) {
+            if (readCard.cardGroup.equals(CardPropertise.SERVICE_CARD.getCode())) {
                 SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
                     activityHome();
 

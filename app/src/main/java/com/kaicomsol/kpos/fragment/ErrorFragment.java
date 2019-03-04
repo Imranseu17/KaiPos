@@ -18,6 +18,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.ErrorAdapter;
 import com.kaicomsol.kpos.models.NFCData;
+import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 
 import java.util.ArrayList;
@@ -78,8 +79,8 @@ public class ErrorFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        HttpResponsAsync.ReadCardArgument argument =  NFCData.getInstance().getArgument();
-        adapterData(argument);
+        ReadCard readCard =  NFCData.getInstance().getReadCard();
+        adapterData(readCard);
 
     }
 
@@ -88,12 +89,12 @@ public class ErrorFragment extends Fragment {
         super.onPause();
 
     }
-    private void adapterData(HttpResponsAsync.ReadCardArgument argument) {
+    private void adapterData(ReadCard readCard) {
 
         List<Error> errorList = new ArrayList<>();
 
-        for(int i = 0; i < argument.ErrorHistory.size(); i++){
-            HttpResponsAsync.ReadCardArgumentErrorHistory cardArgument = argument.ErrorHistory.get(i);
+        for(int i = 0; i < readCard.readCardArgument.ErrorHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentErrorHistory cardArgument = readCard.readCardArgument.ErrorHistory.get(i);
             errorList.add(new Error(cardArgument.ErrorGroup, cardArgument.ErrorType, cardArgument.ErrorTime));
         }
 

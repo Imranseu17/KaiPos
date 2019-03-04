@@ -192,8 +192,7 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
         @Override
         protected Boolean doInBackground(Void... voids) {
 
-            readCard.ReadTag(tag);
-            boolean response = readCard.SetReadCardData(tag, readCard.webAPI, readCard.readCardArgument);
+            final boolean response = readCard.ReadTag(tag);
             return response;
         }
 
@@ -205,8 +204,7 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
                 viewPager.setVisibility(View.VISIBLE);
                 tabLayout.setVisibility(View.VISIBLE);
 
-                HttpResponsAsync.ReadCardArgument argument = readCard.readCardArgument;
-                NFCData.getInstance().setArgument(argument);
+                NFCData.getInstance().setReadCard(readCard);
             } else {
                 CustomAlertDialog.showWarning(InspectActivity.this, getString(R.string.err_card_read_failed));
             }
