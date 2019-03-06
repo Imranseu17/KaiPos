@@ -1076,7 +1076,7 @@ public class ReadCard {
                                 //LogUtil.i(e.toString());
                             }
                         }
-                        ReturnLocale();
+                        //ReturnLocale();
                         return true;
                     }
                     this.isChargeCheckFailed = true;
@@ -1087,7 +1087,7 @@ public class ReadCard {
                             //LogUtil.i(e2.toString());
                         }
                     }
-                    ReturnLocale();
+                    //ReturnLocale();
                     return false;
                 }
                 StringBuilder stringBuilder = new StringBuilder();
@@ -1131,7 +1131,7 @@ public class ReadCard {
                             //LogUtil.i(ex.toString());
                         }
                     }
-                    ReturnLocale();
+                    //ReturnLocale();
                     return false;
                 }
                 data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
@@ -1151,7 +1151,7 @@ public class ReadCard {
                             //LogUtil.i(ex2.toString());
                         }
                     }
-                    ReturnLocale();
+                    //ReturnLocale();
                     return false;
                 }
 
@@ -1174,7 +1174,7 @@ public class ReadCard {
 
 
             }
-            ReturnLocale();
+            //ReturnLocale();
 
             return false;
         } catch (Exception e3) {
@@ -1194,7 +1194,7 @@ public class ReadCard {
                     //LogUtil.i(e2222.toString());
                 }
             }
-            ReturnLocale();
+            //ReturnLocale();
             return false;
         } catch (Throwable th) {
             Throwable th2 = th;
@@ -1205,7 +1205,7 @@ public class ReadCard {
                     //LogUtil.i(e22222.toString());
                 }
             }
-            ReturnLocale();
+            //ReturnLocale();
             return false;
         }
     }

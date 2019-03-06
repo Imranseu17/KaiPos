@@ -484,7 +484,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     private void cancelPayment(String paymentId) {
-        writeNewTransaction(Integer.parseInt(paymentId),"Card Write:Failed");
         if (checkConnection()) {
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
             mPresenter.cancelPayment(token, paymentId);
@@ -494,7 +493,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     public void onSuccess(Payment payment) {
 
-        writeNewTransaction(payment.getPaymentId(),"Authorised:SUCCESS");
        //Here put asys
         new WriteAsyncTask(payment).execute();
     }
@@ -532,12 +530,10 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         RechargeStatus rechargeStatus = RechargeStatus.getByCode(code);
         switch (rechargeStatus) {
             case CAPTURE_SUCCESS:
-                writeNewTransaction(paymentId,"Captured:SUCCESS");
                 SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(paymentId));
                 SharedDataSaveLoad.remove(this, getString(R.string.preference_capture_failed));
                 break;
             case CANCEL_SUCCESS:
-                writeNewTransaction(paymentId, "Cancel:SUCCESS");
                 CustomAlertDialog.showError(this, "Transaction failed");
                 SharedDataSaveLoad.remove(this, getString(R.string.preference_capture_failed));
                 SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
@@ -1215,15 +1211,18 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         protected void onPostExecute(Boolean response) {
             SharedDataSaveLoad.save(RechargeActivity.this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
             if (response) {
-                writeNewTransaction(payment.getPaymentId(),"Card Write:SUCCESS");
+                writeNewTransaction(payment.getPaymentId(),payment.getNewHistoryNo(), "Card Write:SUCCESS");
                 rechargeCardDismiss();
                 capturePayment(String.valueOf(payment.getPaymentId()));
                 print(payment.getReceipt());
-            } else cancelPayment(String.valueOf(payment.getPaymentId()));
+            } else {
+                cancelPayment(String.valueOf(payment.getPaymentId()));
+                writeNewTransaction(payment.getPaymentId(),payment.getNewHistoryNo(), "Card Write:FAILED");
+            }
         }
     }
 
-    private void writeNewTransaction(int paymentId, String status) {
+    private void writeNewTransaction(int paymentId, int newHistoryNo, String status) {
 
         Date date= new Date();
         long time = date.getTime();
@@ -1233,9 +1232,10 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String formattedDate = df.format(time);
         String formattedTime = tf.format(time);
 
-        readCard.ReadTag(tag);
+        readCard.ReadTag(tag,"");
+        readCard.SetReadCardData(tag,readCard.webAPI, readCard.readCardArgument);
 
-        LogState logState = new LogState(readCard.cardStatus, readCard.historyNO, status);
+        LogState logState = new LogState(readCard.cardStatus, readCard.historyNO, newHistoryNo, status);
         DatabaseReference myRef = mDatabase.getReference("transaction-"+formattedDate);
         myRef.child(String.valueOf(paymentId+"-"+time)).setValue(logState);
     }
