@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.CardAdapter;
+import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.Card;
 import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.ReadCard;
@@ -85,8 +86,8 @@ public class PropertiesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ReadCard readCard = NFCData.getInstance().getReadCard();
-        if (readCard != null) adapterData(readCard);
+        AccessFalica accessFalica = NFCData.getInstance().getAccessFalica();
+        if (accessFalica != null) adapterData(accessFalica);
 
     }
 
@@ -95,7 +96,7 @@ public class PropertiesFragment extends Fragment {
         super.onPause();
 
     }
-    private void adapterData(ReadCard readCard) {
+    private void adapterData(AccessFalica accessFalica) {
         
         List<Card> cardList = new ArrayList<>();
 //        long dateTime = Long.parseLong(argument.LidTime);
@@ -103,22 +104,22 @@ public class PropertiesFragment extends Fragment {
 //        SimpleDateFormat targetFormat = new SimpleDateFormat("MM-dd-yyyy");
 //        String formatDate = targetFormat.format(date);
 
-        cardList.add(new Card(getString(R.string.version_No), readCard.versionNO));
-        cardList.add(new Card(getString(R.string.card_status), getStatus(readCard.cardStatus)));
-        cardList.add(new Card(getString(R.string.card_Id), readCard.cardIDm));
-        cardList.add(new Card(getString(R.string.customer_Id),readCard.strCustomerId));
-        cardList.add(new Card(getString(R.string.card_Group), getGroup(readCard.cardGroup)));
-        cardList.add(new Card(getString(R.string.credit), readCard.credit));
-        cardList.add(new Card(getString(R.string.unit), readCard.unit));
-        cardList.add(new Card(getString(R.string.basic_fee), readCard.basicFee));
-        cardList.add(new Card(getString(R.string.refund1), readCard.refund1));
-        cardList.add(new Card(getString(R.string.refund2), readCard.refund2));
-        cardList.add(new Card(getString(R.string.untreated_fee), readCard.untreatedFee));
-        cardList.add(new Card(getString(R.string.open_count), readCard.openCount));
-        cardList.add(new Card(getString(R.string.emergency_balence), readCard.readCardArgument.ConfigData.EmergencyValue));
-        cardList.add(new Card(getString(R.string.card_history_no), String.valueOf(readCard.historyNO)));
-        cardList.add(new Card(getString(R.string.card_error_no), String.valueOf(readCard.errorNO)));
-        cardList.add(new Card(getString(R.string.lid_time), readCard.lidTime));
+        cardList.add(new Card(getString(R.string.version_No), accessFalica.versionNO));
+        cardList.add(new Card(getString(R.string.card_status), getStatus(accessFalica.cardStatus)));
+        cardList.add(new Card(getString(R.string.card_Id), accessFalica.cardIDm));
+        cardList.add(new Card(getString(R.string.customer_Id),accessFalica.strCustomerId));
+        cardList.add(new Card(getString(R.string.card_Group), getGroup(accessFalica.cardGroup)));
+        cardList.add(new Card(getString(R.string.credit), accessFalica.credit));
+        cardList.add(new Card(getString(R.string.unit), accessFalica.unit));
+        cardList.add(new Card(getString(R.string.basic_fee), accessFalica.basicFee));
+        cardList.add(new Card(getString(R.string.refund1), accessFalica.refund1));
+        cardList.add(new Card(getString(R.string.refund2), accessFalica.refund2));
+        cardList.add(new Card(getString(R.string.untreated_fee), accessFalica.untreatedFee));
+        cardList.add(new Card(getString(R.string.open_count), accessFalica.openCount));
+        cardList.add(new Card(getString(R.string.emergency_balence), accessFalica.readCardArgument.ConfigData.EmergencyValue));
+        cardList.add(new Card(getString(R.string.card_history_no), String.valueOf(accessFalica.historyNO)));
+        cardList.add(new Card(getString(R.string.card_error_no), String.valueOf(accessFalica.errorNO)));
+        cardList.add(new Card(getString(R.string.lid_time), accessFalica.lidTime));
         
         mAdapter = new CardAdapter(getContext(), cardList);
         mRecyclerView.setAdapter(mAdapter);

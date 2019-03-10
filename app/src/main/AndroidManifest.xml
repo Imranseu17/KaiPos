@@ -35,17 +35,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/nfc_tech_filter" />
         </activity>
         <activity
             android:name=".activity.LoginActivity"
@@ -63,7 +52,11 @@
         <activity
             android:name=".activity.RefundActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
+        </activity>
         <activity
             android:name=".activity.AccountSearchActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -72,7 +65,11 @@
             android:name=".activity.NFCCheckActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/NoTheme" />
+            android:theme="@style/NoTheme">
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
+        </activity>
         <activity
             android:name=".activity.AccountListActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -81,12 +78,20 @@
             android:name=".activity.InspectActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/NoTheme" />
+            android:theme="@style/NoTheme">
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
+        </activity>
         <activity
             android:name=".activity.RechargeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
+        </activity>
         <activity
             android:name=".activity.CustomerDetailsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

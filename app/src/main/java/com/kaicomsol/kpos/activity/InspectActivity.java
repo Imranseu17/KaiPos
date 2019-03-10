@@ -26,6 +26,7 @@ import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.fragment.ErrorFragment;
 import com.kaicomsol.kpos.fragment.HistoryFragment;
 import com.kaicomsol.kpos.fragment.PropertiesFragment;
+import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.models.Receipt;
@@ -47,7 +48,7 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
     @BindView(R.id.viewpager)
     ViewPager viewPager;
 
-    private ReadCard readCard = new ReadCard();
+    private AccessFalica mAccessFalica = new AccessFalica();
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
     private NfcAdapter mAdapter;
@@ -192,7 +193,8 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
         @Override
         protected Boolean doInBackground(Void... voids) {
 
-            final boolean response = readCard.ReadTag(tag);
+            mAccessFalica.ReadTag(tag);
+            final boolean response = mAccessFalica.getInspectCard(tag);
             return response;
         }
 
@@ -204,7 +206,7 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
                 viewPager.setVisibility(View.VISIBLE);
                 tabLayout.setVisibility(View.VISIBLE);
 
-                NFCData.getInstance().setReadCard(readCard);
+                NFCData.getInstance().setAccessFalica(mAccessFalica);
             } else {
                 CustomAlertDialog.showWarning(InspectActivity.this, getString(R.string.err_card_read_failed));
             }

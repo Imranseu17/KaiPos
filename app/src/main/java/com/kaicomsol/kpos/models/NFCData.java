@@ -12,7 +12,7 @@ public class NFCData {
     private String meterSerial = null;
     private Tag tag = null;
     private String customerCode = null;
-    private ReadCard readCard = null;
+    private AccessFalica mAccessFalica = null;
 
 
 
@@ -63,11 +63,11 @@ public class NFCData {
         this.customerCode = customerCode;
     }
 
-    public ReadCard getReadCard() {
-        return readCard;
+    public AccessFalica getAccessFalica() {
+        return mAccessFalica;
     }
 
-    public void setReadCard(ReadCard readCard) {
-        this.readCard = readCard;
+    public void setAccessFalica(AccessFalica mAccessFalica) {
+        this.mAccessFalica = mAccessFalica;
     }
 }

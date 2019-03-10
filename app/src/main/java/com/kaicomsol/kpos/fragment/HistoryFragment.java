@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.HistoryAdapter;
+import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.History;
 import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.ReadCard;
@@ -79,8 +80,8 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ReadCard readCard =  NFCData.getInstance().getReadCard();
-        adapterData(readCard);
+        AccessFalica accessFalica =  NFCData.getInstance().getAccessFalica();
+        adapterData(accessFalica);
     }
 
     @Override
@@ -88,12 +89,12 @@ public class HistoryFragment extends Fragment {
         super.onPause();
 
     }
-    private void adapterData(ReadCard readCard) {
+    private void adapterData(AccessFalica accessFalica) {
 
         List<History> historyList = new ArrayList<>();
 
-        for(int i = 0; i < readCard.readCardArgument.CardHistory.size(); i++){
-            HttpResponsAsync.ReadCardArgumentCardHistory cardArgument = readCard.readCardArgument.CardHistory.get(i);
+        for(int i = 0; i < accessFalica.readCardArgument.CardHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentCardHistory cardArgument = accessFalica.readCardArgument.CardHistory.get(i);
             historyList.add(new History(cardArgument.HistoryType, cardArgument.HistoryTime));
         }
         mAdapter = new HistoryAdapter(getActivity(), historyList);

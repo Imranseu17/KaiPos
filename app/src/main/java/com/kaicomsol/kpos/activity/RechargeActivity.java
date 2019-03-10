@@ -56,6 +56,7 @@ import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.fragment.InvoiceFragment;
 import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.golobal.GlobalBus;
+import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.models.Item;
 import com.kaicomsol.kpos.models.LogState;
@@ -95,13 +96,15 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private static final int REQUEST_ENABLE_BT = 0;
     private CardCheckDialog mCardCheckDialog = null;
     private RechargeCardDialog mRechargeCardDialog = null;
+    private boolean isCredit = false;
     private boolean isRecharge = false;
     private DecimalFormat decimalFormat;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
     private NfcAdapter mAdapter;
     private PendingIntent pendingIntent;
-    private ReadCard readCard = new ReadCard();
+    private AccessFalica mAccessFalica = new AccessFalica();
+    private String cardIdm;
     private Tag tag;
     private PaymentPresenter mPresenter;
     private double totalAmount = 0.0;
@@ -260,21 +263,36 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         if (checkConnection()) {
+            isRecharge = true;
             showAnimation();
             mPresenter.getInvoices(token, cardNo);
-            readCard(token, readCard);
+            new ReadAsyncTask(tag).execute();
         } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
     }
 
-    private void readCard(String token, ReadCard readCard) {
-        if (readCard.readCardArgument != null) mPresenter.readCard(token, readCard);
+    private void readCard(String token, AccessFalica accessFalica) {
+        if (mAccessFalica.readCardArgument != null) mPresenter.readCard(token, accessFalica);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        new ReadAsyncTask(tag).execute();
+        if (tag != null) {
+            mAccessFalica.ReadTag(tag);
+            boolean response = mAccessFalica.checkCardRecharge(tag);
+            if (response) {
+                cardIdm = mAccessFalica.GetCardIdm(tag.getId());
+                txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
+                customerCardDismiss();
+                if (isRecharge) creditWrite();
+                else getInvoices(cardIdm);
+//                if (isRecharge) gasRecharge();
+//                else getInvoices(cardIdm);
+
+            } else CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
+
+        } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
 
     }
 
@@ -331,8 +349,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 String amount = txt_total_amount.getText().toString().trim();
                 double maxAmount = Double.parseDouble(amount);
 
-                if (maxAmount < 5000) showConfirmDialog();
-                else CustomAlertDialog.showWarning(RechargeActivity.this,
+                if (maxAmount < 5000) {
+                    mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+                    rechargeCardDialog();
+                    //showConfirmDialog();
+                }else CustomAlertDialog.showWarning(RechargeActivity.this,
                         "Maximum payment limit is 5000 BDT");
             }
         });
@@ -350,9 +371,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
     }
 
+    private void creditWrite(){
+        boolean response = mAccessFalica.creditChargeCard(tag, 13.99, 9.1, 0, 9.1, "u00001116");
+        rechargeCardDismiss();
+    }
+
     private void cardConfig() {
 
-        readCard = new ReadCard();
+        mAccessFalica = new AccessFalica();
         pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
@@ -363,7 +389,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             throw new RuntimeException("fail", e);
         }
         intentFiltersArray = new IntentFilter[]{ndef};
-
 
         techListsArray = new String[][]{
                 new String[]{NfcF.class.getName()}
@@ -466,10 +491,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private void addPayment() {
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         String amount = txt_total_amount.getText().toString().trim();
-        String cardIdm = readCard.cardIDm;
-        String cardHistoryNo = String.valueOf(readCard.historyNO);
-
-        mPresenter.addPayment(token, amount, cardIdm, cardHistoryNo, "1");
+        mAccessFalica.ReadTag(tag);
+        String cardHistoryNo = mAccessFalica.getHistoryNo(tag);
+        if (cardHistoryNo != null){
+            mPresenter.addPayment(token, amount, cardIdm, cardHistoryNo, "1");
+        }
 
     }
 
@@ -493,7 +519,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     public void onSuccess(Payment payment) {
 
-       //Here put asys
+        //Here put asys
         new WriteAsyncTask(payment).execute();
     }
 
@@ -703,7 +729,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         } else {
             boolean enable = mBluetoothAdapter.isEnabled();
             if (enable) {
-                if (mBluetoothAdapter.getBondedDevices().iterator().hasNext()){
+                if (mBluetoothAdapter.getBondedDevices().iterator().hasNext()) {
                     final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
                     final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
 
@@ -726,10 +752,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                     } else {
                         new PrintAsyncTask(receipt).execute();
                     }
-                }else {
+                } else {
                     CustomAlertDialog.showError(RechargeActivity.this, "Printer Not Found ! Please try again");
                 }
-
 
 
             } else {
@@ -1161,6 +1186,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     class ReadAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
         private Tag tag;
+
         public ReadAsyncTask(Tag tag) {
             this.tag = tag;
         }
@@ -1168,34 +1194,24 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         @Override
         protected Boolean doInBackground(Void... voids) {
 
-            final boolean response = readCard.ReadTag(tag);
+            mAccessFalica.ReadTag(tag);
+            final boolean response = mAccessFalica.getReadCard(tag);
             return response;
         }
 
         @Override
         protected void onPostExecute(Boolean response) {
-            vibrator.vibrate(1000);
             if (response) {
-                if (readCard.cardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
-                        && (readCard.cardStatus.equals(CardPropertise.CARD_CHARGED_METER.getCode())
-                        || readCard.cardStatus.equals(CardPropertise.CARD_INITIAL.getCode()))) {
-
-                    txt_account_no.setText(readCard.strCustomerId);
-                    customerCardDismiss();
-                    if (isRecharge) gasRecharge();
-                    else getInvoices(readCard.cardIDm);
-
-                } else CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
-            } else CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
-
-            vibrator.cancel();
+                String token = SharedDataSaveLoad.load(RechargeActivity.this, getString(R.string.preference_access_token));
+                readCard(token, mAccessFalica);
+            }
         }
     }
 
     class WriteAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
-
         private Payment payment;
+
         public WriteAsyncTask(Payment payment) {
             this.payment = payment;
         }
@@ -1203,28 +1219,28 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         @Override
         protected Boolean doInBackground(Void... voids) {
 
-            boolean response = readCard.GasChargeCard(tag, payment.getReceipt().getGasUnit(), payment.getUnitPrice(), payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo(), payment.getNewHistoryNo());
+            boolean response = mAccessFalica.writeStatus(tag, payment.getNewHistoryNo());
             return response;
         }
 
         @Override
         protected void onPostExecute(Boolean response) {
+            rechargeCardDismiss();
             SharedDataSaveLoad.save(RechargeActivity.this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
             if (response) {
-                writeNewTransaction(payment.getPaymentId(),payment.getNewHistoryNo(), "Card Write:SUCCESS");
-                rechargeCardDismiss();
+                writeNewTransaction(payment.getPaymentId(), payment.getNewHistoryNo(), "Card Write:SUCCESS");
                 capturePayment(String.valueOf(payment.getPaymentId()));
                 print(payment.getReceipt());
             } else {
+                writeNewTransaction(payment.getPaymentId(), payment.getNewHistoryNo(), "Card Write:FAILED");
                 cancelPayment(String.valueOf(payment.getPaymentId()));
-                writeNewTransaction(payment.getPaymentId(),payment.getNewHistoryNo(), "Card Write:FAILED");
             }
         }
     }
 
     private void writeNewTransaction(int paymentId, int newHistoryNo, String status) {
 
-        Date date= new Date();
+        Date date = new Date();
         long time = date.getTime();
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -1232,12 +1248,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String formattedDate = df.format(time);
         String formattedTime = tf.format(time);
 
-        readCard.ReadTag(tag,"");
-        readCard.SetReadCardData(tag,readCard.webAPI, readCard.readCardArgument);
+        mAccessFalica.ReadTag(tag);
+        String historyNo = mAccessFalica.getHistoryNo(tag);
+        String cardStatus = mAccessFalica.getCardStatus(tag);
 
-        LogState logState = new LogState(readCard.cardStatus, readCard.historyNO, newHistoryNo, status);
-        DatabaseReference myRef = mDatabase.getReference("transaction-"+formattedDate);
-        myRef.child(String.valueOf(paymentId+"-"+time)).setValue(logState);
+        LogState logState = new LogState(cardStatus, historyNo, newHistoryNo, status);
+        DatabaseReference myRef = mDatabase.getReference("transaction-" + formattedDate);
+        myRef.child(String.valueOf(paymentId + "-" + time)).setValue(logState);
     }
 
 }

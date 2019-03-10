@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.Error;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -79,8 +81,8 @@ public class ErrorFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ReadCard readCard =  NFCData.getInstance().getReadCard();
-        adapterData(readCard);
+        AccessFalica accessFalica =  NFCData.getInstance().getAccessFalica();
+        adapterData(accessFalica);
 
     }
 
@@ -89,12 +91,12 @@ public class ErrorFragment extends Fragment {
         super.onPause();
 
     }
-    private void adapterData(ReadCard readCard) {
+    private void adapterData(AccessFalica accessFalica) {
 
         List<Error> errorList = new ArrayList<>();
 
-        for(int i = 0; i < readCard.readCardArgument.ErrorHistory.size(); i++){
-            HttpResponsAsync.ReadCardArgumentErrorHistory cardArgument = readCard.readCardArgument.ErrorHistory.get(i);
+        for(int i = 0; i < accessFalica.readCardArgument.ErrorHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentErrorHistory cardArgument = accessFalica.readCardArgument.ErrorHistory.get(i);
             errorList.add(new Error(cardArgument.ErrorGroup, cardArgument.ErrorType, cardArgument.ErrorTime));
         }
 

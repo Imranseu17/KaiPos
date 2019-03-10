@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +20,10 @@ import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
+import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.utils.CardPropertise;
+import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import butterknife.BindView;
@@ -31,6 +34,7 @@ public class NFCCheckActivity extends AppCompatActivity {
 
 
     private ReadCard readCard;
+    private AccessFalica falica;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
     private NfcAdapter mAdapter;
@@ -63,6 +67,7 @@ public class NFCCheckActivity extends AppCompatActivity {
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         readCard = new ReadCard();
+        falica = new AccessFalica();
 
         pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -104,14 +109,13 @@ public class NFCCheckActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-        final boolean response = readCard.ReadTag(tag);
-        vibrator.vibrate(1000);
-
-        if (response) {
-            if (readCard.cardGroup.equals(CardPropertise.SERVICE_CARD.getCode())) {
+        String cardGroup = "";
+        if (tag != null) {
+            falica.ReadTag(tag);
+            cardGroup = falica.getCardGroup(tag);
+            if (!TextUtils.isEmpty(cardGroup) && cardGroup.equals(CardPropertise.SERVICE_CARD.getCode())) {
                 SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
-                    activityHome();
+                activityHome();
 
 //                String userId = SharedDataSaveLoad.load(this, getString(R.string.preference_user_id));
 //                if (!TextUtils.isEmpty(userId) && userId.equals(readCard.readCardArgument.CustomerId)) {
@@ -120,12 +124,10 @@ public class NFCCheckActivity extends AppCompatActivity {
 //                } else {
 //                    CustomAlertDialog.showError(this, "Service card & user mismatch");
 //                }
-            } else {
-                CustomAlertDialog.showError(this, getString(R.string.err_service_card));
-            }
-        } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
-        vibrator.cancel();
 
+            }else CustomAlertDialog.showError(this, getString(R.string.err_service_card));
+
+        } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
     }
 
 

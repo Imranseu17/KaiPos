@@ -92,7 +92,7 @@
                         android:drawableBottom="@color/colorAccent"
                         android:hint="Meter Serial No"
                         android:imeOptions="actionNext"
-                        android:inputType="numberDecimal"
+                        android:inputType="text"
                         android:maxLines="1"
                         android:textAppearance="@style/TextAppearance.FontPath" />
 

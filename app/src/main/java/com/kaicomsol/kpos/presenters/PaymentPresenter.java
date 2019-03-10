@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.kaicomsol.kpos.callbacks.PaymentView;
 import com.kaicomsol.kpos.models.APIErrors;
+import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.models.Payment;
 import com.kaicomsol.kpos.models.PaymentID;
@@ -316,7 +317,7 @@ public class PaymentPresenter {
                 });
     }
 
-    public void readCard(String token, ReadCard readCard) {
+    public void readCard(String token, AccessFalica accessFalica) {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", token);
         map.put("Content-Type", "application/json");
@@ -325,8 +326,8 @@ public class PaymentPresenter {
         JsonObject cardObj = new JsonObject();
         //get card history
         JsonArray jsonHistory = new JsonArray();
-        for(int i = 0; i < readCard.readCardArgument.CardHistory.size(); i++){
-            HttpResponsAsync.ReadCardArgumentCardHistory cardHistory = readCard.readCardArgument.CardHistory.get(i);
+        for(int i = 0; i < accessFalica.readCardArgument.CardHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentCardHistory cardHistory = accessFalica.readCardArgument.CardHistory.get(i);
             JsonObject objHistory = new JsonObject();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = null;
@@ -343,8 +344,8 @@ public class PaymentPresenter {
 
         //get error history
         JsonArray arrErrorHistory = new JsonArray();
-        for(int i = 0; i < readCard.readCardArgument.ErrorHistory.size(); i++){
-            HttpResponsAsync.ReadCardArgumentErrorHistory errorHistory = readCard.readCardArgument.ErrorHistory.get(i);
+        for(int i = 0; i < accessFalica.readCardArgument.ErrorHistory.size(); i++){
+            HttpResponsAsync.ReadCardArgumentErrorHistory errorHistory = accessFalica.readCardArgument.ErrorHistory.get(i);
             JsonObject objErrHistory = new JsonObject();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = null;
@@ -362,8 +363,8 @@ public class PaymentPresenter {
 
         //get Log Day
         JsonArray arrLogDay = new JsonArray();
-        for(int i = 0; i < readCard.readCardArgument.LogDay.size(); i++){
-            HttpResponsAsync.ReadCardArgumentLogDay logDay = readCard.readCardArgument.LogDay.get(i);
+        for(int i = 0; i < accessFalica.readCardArgument.LogDay.size(); i++){
+            HttpResponsAsync.ReadCardArgumentLogDay logDay = accessFalica.readCardArgument.LogDay.get(i);
             JsonObject objLogDay = new JsonObject();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = null;
@@ -381,8 +382,8 @@ public class PaymentPresenter {
 
         //get Log Hour
         JsonArray arrLogHour = new JsonArray();
-        for(int i = 0; i < readCard.readCardArgument.LogHour.size(); i++){
-            HttpResponsAsync.ReadCardArgumentLogHour logHour = readCard.readCardArgument.LogHour.get(i);
+        for(int i = 0; i < accessFalica.readCardArgument.LogHour.size(); i++){
+            HttpResponsAsync.ReadCardArgumentLogHour logHour = accessFalica.readCardArgument.LogHour.get(i);
             JsonObject objlogHour = new JsonObject();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = null;
@@ -399,26 +400,26 @@ public class PaymentPresenter {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date date = null;
         try {
-            date = sdf.parse(readCard.lidTime);
+            date = sdf.parse(accessFalica.lidTime);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        cardObj.addProperty("BasicFee", readCard.basicFee);
-        cardObj.addProperty("CardGroup", readCard.cardGroup);
-        cardObj.addProperty("CardHistoryNo", readCard.historyNO);
-        cardObj.addProperty("CardIdm", readCard.cardIDm);
-        cardObj.addProperty("CardStatus", readCard.cardStatus);
-        cardObj.addProperty("Credit", readCard.credit);
-        cardObj.addProperty("CustomerId", readCard.strCustomerId);
-        cardObj.addProperty("ErrorNo", readCard.errorNO);
+        cardObj.addProperty("BasicFee", accessFalica.basicFee);
+        cardObj.addProperty("CardGroup", accessFalica.cardGroup);
+        cardObj.addProperty("CardHistoryNo", accessFalica.historyNO);
+        cardObj.addProperty("CardIdm", accessFalica.cardIDm);
+        cardObj.addProperty("CardStatus", accessFalica.cardStatus);
+        cardObj.addProperty("Credit", accessFalica.credit);
+        cardObj.addProperty("CustomerId", accessFalica.strCustomerId);
+        cardObj.addProperty("ErrorNo", accessFalica.errorNO);
         cardObj.addProperty("LidTime", date.getTime());
-        cardObj.addProperty("OpenCount", readCard.openCount);
-        cardObj.addProperty("Refund1", readCard.refund1);
-        cardObj.addProperty("Refund2", readCard.refund2);
-        cardObj.addProperty("Unit", readCard.unit);
-        cardObj.addProperty("UntreatedFee", readCard.untreatedFee);
-        cardObj.addProperty("VersionNo", readCard.versionNO);
+        cardObj.addProperty("OpenCount", accessFalica.openCount);
+        cardObj.addProperty("Refund1", accessFalica.refund1);
+        cardObj.addProperty("Refund2", accessFalica.refund2);
+        cardObj.addProperty("Unit", accessFalica.unit);
+        cardObj.addProperty("UntreatedFee", accessFalica.untreatedFee);
+        cardObj.addProperty("VersionNo", accessFalica.versionNO);
 
         cardObj.add("CardHistory", jsonHistory);
         cardObj.add("ErrorHistory", arrErrorHistory);
