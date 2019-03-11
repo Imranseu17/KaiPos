@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.activity.LoginActivity;
+import com.kaicomsol.kpos.activity.RechargeActivity;
 import com.kaicomsol.kpos.callbacks.CardInfoView;
 import com.kaicomsol.kpos.callbacks.LostCardListener;
 import com.kaicomsol.kpos.dialogs.CardCheckDialog;
@@ -39,6 +41,7 @@ import com.kaicomsol.kpos.dialogs.LostCardDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.golobal.Constants;
+import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.CardData;
 import com.kaicomsol.kpos.models.MeterCard;
 import com.kaicomsol.kpos.models.ReadCard;
@@ -69,7 +72,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     private String prepaidCode = "";
     private boolean cardDeleteHidden = false;
     //NFC card info initial
-    ReadCard readCard = new ReadCard();
+    private AccessFalica mAccessFalica;
     public Tag myTag = null;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
@@ -187,11 +190,9 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         return out;
     }
 
-
-
-
-
     private void viewConfig() {
+        //Access Falica Init
+        mAccessFalica = new AccessFalica();
         prepaidCode = SharedDataSaveLoad.load(activity, getString(R.string.preference_prepaid_code));
         mPresenter = new CardPresenter(this);
         mRechargeCardDialog = new RechargeCardDialog();
@@ -356,34 +357,9 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onAddCard(boolean isAdded) {
 
-        boolean response = false;
-        try {
-            if (myTag != null){
-                readCard.ReadTag(myTag);
-                response = readCard.GamInitCard(myTag, prepaidCode,(byte) 119, unitPrice, basePrice, emergencyValue);
-            }else response = false;
-
-        } catch (Throwable t) {
-            response = false;
-            t.printStackTrace();
-        }
-        if (response){
-            rechargeCardDismiss();
-            hideAnimation();
-            CustomAlertDialog.showSuccess(activity, "Card Add successfully");
-            disableButton(btn_add);
-            activeButton(btn_active);
-            disableButton(btn_delete);
-            disableButton(btn_lost);
-            getMeterInfo();
-        }else {
-            rechargeCardDismiss();
-            CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
-            String cardIdm = ByteArrayToHexString(myTag.getId());
-            cardDeleteHidden = true;
-            if (!TextUtils.isEmpty(cardIdm)) deleteCard(cardIdm);
-            else CustomAlertDialog.showError(activity, "Card ID not found!");
-        }
+        if (myTag != null){
+            new WriteInitAsyncTask(myTag).execute();
+        }else CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
     }
 
     @Override
@@ -622,6 +598,44 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
         card_content.setVisibility(View.VISIBLE);
         if (animationView.isAnimating()) animationView.cancelAnimation();
         animationView.setVisibility(View.GONE);
+    }
+
+    class WriteInitAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+        private Tag tag;
+
+        public WriteInitAsyncTask(Tag tag) {
+            this.tag = tag;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+
+            mAccessFalica.ReadTag(tag);
+            final boolean response = mAccessFalica.writeCardInitialize(tag, prepaidCode, unitPrice, basePrice, emergencyValue);
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean response) {
+            if (response){
+                rechargeCardDismiss();
+                hideAnimation();
+                CustomAlertDialog.showSuccess(activity, "Card Add successfully");
+                disableButton(btn_add);
+                activeButton(btn_active);
+                disableButton(btn_delete);
+                disableButton(btn_lost);
+                getMeterInfo();
+            }else {
+                rechargeCardDismiss();
+                CustomAlertDialog.showWarning(activity, getString(R.string.err_card_read_failed));
+                String cardIdm = ByteArrayToHexString(myTag.getId());
+                cardDeleteHidden = true;
+                if (!TextUtils.isEmpty(cardIdm)) deleteCard(cardIdm);
+                else CustomAlertDialog.showError(activity, "Card ID not found!");
+            }
+        }
     }
 
 }

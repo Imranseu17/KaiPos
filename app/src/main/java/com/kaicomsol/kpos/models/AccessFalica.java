@@ -10,6 +10,7 @@ import android.support.v4.internal.view.SupportMenu;
 
 import com.epson.epos2.keyboard.Keyboard;
 import com.google.common.base.Ascii;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kaicomsol.kpos.nfcfelica.ClockTimeModel;
 import com.kaicomsol.kpos.nfcfelica.Cng2Model;
@@ -110,7 +111,7 @@ public class AccessFalica {
 
             return null;
         } catch (Exception e) {
-            if (nfc != null){
+            if (nfc != null) {
                 try {
                     nfc.close();
                 } catch (IOException e1) {
@@ -186,10 +187,10 @@ public class AccessFalica {
                     nfc.close();
                 } catch (IOException e2) {
                     e.printStackTrace();
-                    if (nfc != null){
+                    if (nfc != null) {
                         try {
                             nfc.close();
-                        }catch (Exception e3){
+                        } catch (Exception e3) {
 
                         }
                     }
@@ -225,10 +226,10 @@ public class AccessFalica {
                     nfc.close();
                 } catch (IOException e2) {
                     e.printStackTrace();
-                    if (nfc != null){
+                    if (nfc != null) {
                         try {
                             nfc.close();
-                        }catch (Exception e3){
+                        } catch (Exception e3) {
 
                         }
                     }
@@ -1387,9 +1388,7 @@ public class AccessFalica {
                 //Finally write
                 writeWithoutEncryption(nfc, datalist);
                 double _credit = GetCredit(datalist.GetReadBlockData(3));
-
                 if (_credit == Credit) {
-                    DebugLog.e("ONE");
                     if (nfc != null) {
                         try {
                             nfc.close();
@@ -1406,7 +1405,6 @@ public class AccessFalica {
                         e2.printStackTrace();
                     }
                 }
-                DebugLog.e("TWO");
                 return false;
             }
             return false;
@@ -1424,10 +1422,10 @@ public class AccessFalica {
                     e2.printStackTrace();
                 }
             }
-            DebugLog.e("THREE");
             return false;
         }
     }
+
     private void CheckDataLength(byte[][] data) {
         if (this.size != data.length) {
             RuntimeException runtimeException = new RuntimeException("CheckDataLength");
@@ -1487,7 +1485,7 @@ public class AccessFalica {
             writeWithoutEncryption(nfc, dataList);
         } catch (IOException e) {
             e.printStackTrace();
-            if (nfc != null){
+            if (nfc != null) {
                 try {
                     nfc.close();
                 } catch (IOException e1) {
@@ -1506,7 +1504,7 @@ public class AccessFalica {
             writeWithoutEncryption(nfc, dataList);
         } catch (IOException e) {
             e.printStackTrace();
-            if (nfc != null){
+            if (nfc != null) {
                 try {
                     nfc.close();
                 } catch (IOException e1) {
@@ -1524,7 +1522,7 @@ public class AccessFalica {
             writeWithoutEncryption(nfc, dataList);
         } catch (IOException e) {
             e.printStackTrace();
-            if (nfc != null){
+            if (nfc != null) {
                 try {
                     nfc.close();
                 } catch (IOException e1) {
@@ -2363,9 +2361,16 @@ public class AccessFalica {
         return ((double) BCDTo(GetByteToBitString(getData, IsEncryption.Encrypt, 4, 3))) / 1000.0d;
     }
 
-    public boolean writeStatus(Tag tag, int CardHistoryNo) {
+    public boolean writeStatus(Tag tag, int CardHistoryNo, FirebaseDatabase mDatabase) {
         NfcF nfc = NfcF.get(tag);
         try {
+            Date date = new Date();
+            long time = date.getTime();
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = df.format(time);
+
+
             nfc.connect();
             byte[][] data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
             CheckDataLength(data);
@@ -2381,6 +2386,7 @@ public class AccessFalica {
             data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
             CheckDataLength(data);
 
+            DatabaseReference myRef = mDatabase.getReference("version-1-1-6-" + formattedDate);
             StringBuilder stringBuilder;
             if (GetCardStatus(data[0]) != Ascii.NAK) {
                 stringBuilder = new StringBuilder();
@@ -2388,7 +2394,10 @@ public class AccessFalica {
                 stringBuilder.append(this.strCardId);
                 stringBuilder.append("\nStatus : ");
                 stringBuilder.append(data[0]);
-                stringBuilder.append("\n");;
+                stringBuilder.append("\n");
+
+
+                myRef.setValue(stringBuilder.toString());
                 if (nfc != null) {
                     try {
                         nfc.close();
@@ -2406,6 +2415,7 @@ public class AccessFalica {
                 stringBuilder.append("\nHistoryNo : ");
                 stringBuilder.append(CardHistoryNo);
                 stringBuilder.append("\n");
+                myRef.setValue(stringBuilder);
                 if (nfc != null) {
                     try {
                         nfc.close();
@@ -2423,10 +2433,18 @@ public class AccessFalica {
             }
             return true;
         } catch (Exception e) {
+            Date date = new Date();
+            long time = date.getTime();
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = df.format(time);
+
             StringBuilder stringBuilder2 = new StringBuilder();
             stringBuilder2.append("Exception at WriteStatus.\n");
             stringBuilder2.append(this.strCardId);
             stringBuilder2.append("\n");
+            DatabaseReference myRef = mDatabase.getReference("version-1-1-6-" + formattedDate);
+            myRef.setValue(stringBuilder2.toString());
             if (nfc != null) {
                 try {
                     nfc.close();
@@ -3376,174 +3394,96 @@ public class AccessFalica {
     }
 
 
-    public boolean GamInitCard(Tag tag, String CustomerId, byte CardGroup, double unitPrice, int basePrice, double emergencyValue) throws Throwable {
-        Exception e;
-        double d;
-        Throwable th;
-        Throwable th2;
-        byte b;
-        String str;
+    public boolean writeCardInitialize(Tag tag, String CustomerId, double unitPrice, int basePrice, double emergencyValue) {
         NfcF nfc = NfcF.get(tag);
         try {
             nfc.connect();
             BlockDataList datalist = new BlockDataList();
-            int i = 0;
-            while (i < FelicaBlock.Max_block) {
-                if (!(i == 9 || i == 10)) {
-                    datalist.AddReadBlockData(null, i, false);
-                }
-                i++;
-            }
+            //if any problem bellow code un-comment
+//            int i = 0;
+//            while (i < FelicaBlock.Max_block) {
+//                if (!(i == 9 || i == 10)) {
+//                    datalist.AddReadBlockData(null, i, false);
+//                }
+//                i++;
+//            }
             SetVersionNo(datalist.GetReadBlockData(0), 1);
             SetCardStatus(datalist.GetReadBlockData(3), 48);
             SetCardIdm(datalist.GetReadBlockData(0), GetCardIdm(TargetIDm));
             try {
                 SetCustomerId(datalist.GetReadBlockData(1), datalist.GetReadBlockData(2), CustomerId);
-                try {
-                    SetCardGroup(datalist.GetReadBlockData(2), CardGroup);
-                    SetCredit(datalist.GetReadBlockData(3), 0.0d);
-                    SetUnit(datalist.GetReadBlockData(3), unitPrice);
-                    SetBasicFee(datalist.GetReadBlockData(3), basePrice);
-                    SetRefund1(datalist.GetReadBlockData(4), 0.0d);
-                    SetRefund2(datalist.GetReadBlockData(4), 0.0d);
-                    SetUntreatedFee(datalist.GetReadBlockData(4), 0);
-                    SetIndexValue(datalist.GetReadBlockData(5), 0.0d);
-                    SetCardHistoryNo(datalist.GetReadBlockData(5), 0);
-                    SetErrorNo(datalist.GetReadBlockData(5), 0);
-                    SetLogDays(datalist.GetReadBlockData(5), 0);
-                    CngModel tempCngModel = new CngModel();
-                    tempCngModel.ContinueFlg1 = 1;
-                    tempCngModel.ContinueFlg2 = 1;
-                    SetCng(datalist.GetReadBlockData(5), tempCngModel);
-                    ContinueModel tempContinueModel = new ContinueModel();
-                    tempContinueModel.ContinueTime = 10;
-                    tempContinueModel.ContinueValue = 10;
-                    tempContinueModel.ContinueCon = 1;
-                    tempContinueModel.ContinueFlg = 1;
-                    SetContinue1(datalist.GetReadBlockData(6), tempContinueModel);
-                    tempContinueModel.ContinueTime = 24;
-                    tempContinueModel.ContinueValue = 5;
-                    tempContinueModel.ContinueCon = 2;
-                    tempContinueModel.ContinueFlg = 1;
-                    SetContinue2(datalist.GetReadBlockData(6), tempContinueModel);
-                    SetMaxFlow(datalist.GetReadBlockData(6), new MaxFlowModel());
-                    SetOpenCock(datalist.GetReadBlockData(6), new OpenCockModel());
-                    SetLogInterval(datalist.GetReadBlockData(6), 0);
-                    SetLogCount(datalist.GetReadBlockData(6), 0);
-                    SetOpenCount(datalist.GetReadBlockData(7), 0);
-                    SetClockTime(datalist.GetReadBlockData(7), new ClockTimeModel());
-                    SetLidTime(datalist.GetReadBlockData(7), null);
-                    SetWeekStart(datalist.GetReadBlockData(7), 0);
-                    SetWeekControl(datalist.GetReadBlockData(7), 0);
-                    Cng2Model tempCng2Model = new Cng2Model();
-                    tempCng2Model.QuakeConFlg = 1;
-                    tempCng2Model.EmergencyConFlg = 1;
-                    tempCng2Model.EmergencyValueFlg = 1;
-                    SetCng2(datalist.GetReadBlockData(8), tempCng2Model);
-                    ParModel tempParModel = new ParModel();
-                    tempParModel.QuakeCon = 2;
-                    tempParModel.EmergencyCon = 1;
-                    SetPar(datalist.GetReadBlockData(8), tempParModel);
-                    SetCnt(datalist.GetReadBlockData(8), new CntModel());
-                } catch (Exception e2) {
-                    e = e2;
-                    d = emergencyValue;
-                    if (nfc != null) {
-                    }
-                    ReturnLocale();
-                    return false;
-                } catch (Throwable th3) {
-                    th = th3;
-                    d = emergencyValue;
-                    th2 = th;
-                    if (nfc != null) {
-                    }
-                    ReturnLocale();
-                    throw th2;
-                }
-                try {
-                    SetEmergencyValue(datalist.GetReadBlockData(8), emergencyValue);
-                    writeWithoutEncryption(nfc, datalist);
-                    if (nfc != null) {
-                        try {
-                            nfc.close();
-                        } catch (IOException e3) {
-                            IOException e4 = e3;
-                            StringBuilder stringBuilder = new StringBuilder();
-                            stringBuilder.append("StackTrace : ");
-//                            stringBuilder.append(//LogUtil.Output(e4.getStackTrace()));
-                            //LogUtil.i(stringBuilder.toString());
-                        }
-                    }
-                    ReturnLocale();
-                    return true;
-                } catch (Exception e5) {
-                    e = e5;
-                } catch (Throwable th4) {
-                    th = th4;
-                    th2 = th;
-                    if (nfc != null) {
-                    }
-                    ReturnLocale();
-                    throw th2;
-                }
-            } catch (Exception e6) {
-                e = e6;
-                b = CardGroup;
-                d = emergencyValue;
+                SetCardGroup(datalist.GetReadBlockData(2), (byte) 119); // Gard Group 119 = Customer Card
+                SetCredit(datalist.GetReadBlockData(3), 0.0d);
+                SetUnit(datalist.GetReadBlockData(3), unitPrice);
+                SetBasicFee(datalist.GetReadBlockData(3), basePrice);
+                SetRefund1(datalist.GetReadBlockData(4), 0.0d);
+                SetRefund2(datalist.GetReadBlockData(4), 0.0d);
+                SetUntreatedFee(datalist.GetReadBlockData(4), 0);
+                SetIndexValue(datalist.GetReadBlockData(5), 0.0d);
+                SetCardHistoryNo(datalist.GetReadBlockData(5), 0);
+                SetErrorNo(datalist.GetReadBlockData(5), 0);
+                SetLogDays(datalist.GetReadBlockData(5), 0);
+                CngModel tempCngModel = new CngModel();
+                tempCngModel.ContinueFlg1 = 1;
+                tempCngModel.ContinueFlg2 = 1;
+                SetCng(datalist.GetReadBlockData(5), tempCngModel);
+                ContinueModel tempContinueModel = new ContinueModel();
+                tempContinueModel.ContinueTime = 10;
+                tempContinueModel.ContinueValue = 10;
+                tempContinueModel.ContinueCon = 1;
+                tempContinueModel.ContinueFlg = 1;
+                SetContinue1(datalist.GetReadBlockData(6), tempContinueModel);
+                tempContinueModel.ContinueTime = 24;
+                tempContinueModel.ContinueValue = 5;
+                tempContinueModel.ContinueCon = 2;
+                tempContinueModel.ContinueFlg = 1;
+                SetContinue2(datalist.GetReadBlockData(6), tempContinueModel);
+                SetMaxFlow(datalist.GetReadBlockData(6), new MaxFlowModel());
+                SetOpenCock(datalist.GetReadBlockData(6), new OpenCockModel());
+                SetLogInterval(datalist.GetReadBlockData(6), 0);
+                SetLogCount(datalist.GetReadBlockData(6), 0);
+                SetOpenCount(datalist.GetReadBlockData(7), 0);
+                SetClockTime(datalist.GetReadBlockData(7), new ClockTimeModel());
+                SetLidTime(datalist.GetReadBlockData(7), null);
+                SetWeekStart(datalist.GetReadBlockData(7), 0);
+                SetWeekControl(datalist.GetReadBlockData(7), 0);
+                Cng2Model tempCng2Model = new Cng2Model();
+                tempCng2Model.QuakeConFlg = 1;
+                tempCng2Model.EmergencyConFlg = 1;
+                tempCng2Model.EmergencyValueFlg = 1;
+                SetCng2(datalist.GetReadBlockData(8), tempCng2Model);
+                ParModel tempParModel = new ParModel();
+                tempParModel.QuakeCon = 2;
+                tempParModel.EmergencyCon = 1;
+                SetPar(datalist.GetReadBlockData(8), tempParModel);
+                SetCnt(datalist.GetReadBlockData(8), new CntModel());
+                SetEmergencyValue(datalist.GetReadBlockData(8), emergencyValue);
+                writeWithoutEncryption(nfc, datalist);
+            } catch (Exception e2) {
+
                 if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
-                ReturnLocale();
+
                 return false;
-            } catch (Throwable th5) {
-                th = th5;
-                b = CardGroup;
-                d = emergencyValue;
-                th2 = th;
-                if (nfc != null) {
-                }
-                ReturnLocale();
-                throw th2;
+
             }
-        } catch (Exception e7) {
-            e = e7;
-            str = CustomerId;
-            b = CardGroup;
-            d = emergencyValue;
+
+            return true;
+        } catch (Exception e) {
             if (nfc != null) {
                 try {
                     nfc.close();
-                } catch (IOException e32) {
-                    IOException e8 = e32;
-                    StringBuilder stringBuilder2 = new StringBuilder();
-                    stringBuilder2.append("StackTrace : ");
-//                    stringBuilder2.append(LogUtil.Output(e8.getStackTrace()));
-                    //LogUtil.i(stringBuilder2.toString());
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
-            ReturnLocale();
             return false;
-        } catch (Throwable th6) {
-            th = th6;
-            str = CustomerId;
-            b = CardGroup;
-            d = emergencyValue;
-            th2 = th;
-            if (nfc != null) {
-                try {
-                    nfc.close();
-                } catch (IOException e322) {
-                    IOException e9 = e322;
-                    StringBuilder stringBuilder3 = new StringBuilder();
-                    stringBuilder3.append("StackTrace : ");
-//                    stringBuilder3.append(LogUtil.Output(e9.getStackTrace()));
-                    //LogUtil.i(stringBuilder3.toString());
-                }
-            }
-            ReturnLocale();
-            throw th2;
         }
-        return false;
     }
 
     private void SetVersionNo(byte[] setData, int versionNo) {

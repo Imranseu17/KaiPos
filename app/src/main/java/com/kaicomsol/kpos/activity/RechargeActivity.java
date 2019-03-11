@@ -96,7 +96,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private static final int REQUEST_ENABLE_BT = 0;
     private CardCheckDialog mCardCheckDialog = null;
     private RechargeCardDialog mRechargeCardDialog = null;
-    private boolean isCredit = false;
     private boolean isRecharge = false;
     private DecimalFormat decimalFormat;
     private IntentFilter[] intentFiltersArray;
@@ -280,17 +279,18 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag != null) {
             mAccessFalica.ReadTag(tag);
-            boolean response = mAccessFalica.checkCardRecharge(tag);
-            if (response) {
-                cardIdm = mAccessFalica.GetCardIdm(tag.getId());
-                txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
-                customerCardDismiss();
-                if (isRecharge) creditWrite();
-                else getInvoices(cardIdm);
-//                if (isRecharge) gasRecharge();
-//                else getInvoices(cardIdm);
-
-            } else CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
+            if (!isRecharge) {
+                boolean response = mAccessFalica.checkCardRecharge(tag);
+                if (response) {
+                    cardIdm = mAccessFalica.GetCardIdm(tag.getId());
+                    txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
+                    customerCardDismiss();
+                    getInvoices(cardIdm);
+                } else
+                    CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
+            } else if (isRecharge) {
+                gasRecharge();
+            }
 
         } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
 
@@ -346,15 +346,15 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String amount = txt_total_amount.getText().toString().trim();
-                double maxAmount = Double.parseDouble(amount);
 
-                if (maxAmount < 5000) {
-                    mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
-                    rechargeCardDialog();
-                    //showConfirmDialog();
-                }else CustomAlertDialog.showWarning(RechargeActivity.this,
-                        "Maximum payment limit is 5000 BDT");
+                String amount = txt_total_amount.getText().toString().trim();
+                double creditAmount = Double.parseDouble(amount);
+
+                if (creditAmount < 5000) {
+                    showConfirmDialog();
+                } else
+                    CustomAlertDialog.showWarning(RechargeActivity.this, "Maximum payment limit is 5000 BDT");
+
             }
         });
         btn_print.setOnClickListener(new View.OnClickListener() {
@@ -369,11 +369,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         if (checkConnection()) {
             addPayment();
         } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
-    }
-
-    private void creditWrite(){
-        boolean response = mAccessFalica.creditChargeCard(tag, 13.99, 9.1, 0, 9.1, "u00001116");
-        rechargeCardDismiss();
     }
 
     private void cardConfig() {
@@ -493,7 +488,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String amount = txt_total_amount.getText().toString().trim();
         mAccessFalica.ReadTag(tag);
         String cardHistoryNo = mAccessFalica.getHistoryNo(tag);
-        if (cardHistoryNo != null){
+        if (cardHistoryNo != null) {
             mPresenter.addPayment(token, amount, cardIdm, cardHistoryNo, "1");
         }
 
@@ -519,7 +514,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     public void onSuccess(Payment payment) {
 
-        //Here put asys
+        //write volume and status
         new WriteAsyncTask(payment).execute();
     }
 
@@ -1219,20 +1214,28 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         @Override
         protected Boolean doInBackground(Void... voids) {
 
-            boolean response = mAccessFalica.writeStatus(tag, payment.getNewHistoryNo());
+            mAccessFalica.ReadTag(tag);
+            boolean response = mAccessFalica.creditChargeCard(tag, payment.getReceipt().getGasUnit(), payment.getUnitPrice(), payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
             return response;
         }
 
         @Override
         protected void onPostExecute(Boolean response) {
-            rechargeCardDismiss();
+
             SharedDataSaveLoad.save(RechargeActivity.this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
             if (response) {
-                writeNewTransaction(payment.getPaymentId(), payment.getNewHistoryNo(), "Card Write:SUCCESS");
-                capturePayment(String.valueOf(payment.getPaymentId()));
-                print(payment.getReceipt());
+                mAccessFalica.ReadTag(tag);
+                boolean response1 = mAccessFalica.writeStatus(tag, payment.getNewHistoryNo(), mDatabase);
+                if (response1) {
+                    rechargeCardDismiss();
+                    capturePayment(String.valueOf(payment.getPaymentId()));
+                    print(payment.getReceipt());
+                } else {
+                    rechargeCardDismiss();
+                    cancelPayment(String.valueOf(payment.getPaymentId()));
+                }
             } else {
-                writeNewTransaction(payment.getPaymentId(), payment.getNewHistoryNo(), "Card Write:FAILED");
+                rechargeCardDismiss();
                 cancelPayment(String.valueOf(payment.getPaymentId()));
             }
         }

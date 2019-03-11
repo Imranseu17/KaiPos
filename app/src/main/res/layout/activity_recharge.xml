@@ -407,7 +407,6 @@
                     android:textAllCaps="false"
                     android:textAppearance="@style/TextAppearance.FontPath"
                     android:textColor="@color/colorWhite" />
-
             </LinearLayout>
 
         </ScrollView>

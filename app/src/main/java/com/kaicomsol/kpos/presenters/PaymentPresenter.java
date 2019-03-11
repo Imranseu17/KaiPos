@@ -434,8 +434,6 @@ public class PaymentPresenter {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                        DebugLog.e(response.code()+" onResponse()");
-
                         if (response.code() == 401) {
                             mViewInterface.onLogout(response.code());
                             return;
