@@ -160,7 +160,65 @@ public class AccessFalica {
 
             cardGroup = String.format("%02X", new Object[]{Integer.valueOf(Integer.valueOf(GetCardGroup(datalist.GetReadBlockData(2))).intValue() & 255)});
             cardStatus = String.format("%02X", new Object[]{Integer.valueOf(Integer.valueOf(GetCardStatus(datalist.GetReadBlockData(3))).intValue() & 255)});
-            if ((cardGroup.equals("77") && cardStatus.equals("06")) || cardStatus.equals("30")) {
+            if (cardGroup.equals("77") && (cardStatus.equals("06") || cardStatus.equals("30"))) {
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return true;
+            }
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return false;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e2) {
+                    e.printStackTrace();
+                    if (nfc != null) {
+                        try {
+                            nfc.close();
+                        } catch (Exception e3) {
+
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+
+    //@Proved@
+    public boolean checkHistoryStatus(Tag tag, int newHistoryNo) {
+        NfcF nfc = NfcF.get(tag);
+        try {
+            Date date = new Date();
+            long time = date.getTime();
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = df.format(time);
+
+            nfc.connect();
+            BlockDataList datalist = new BlockDataList();
+            datalist.AddReadBlockData(parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 5)))[0], 5, true);
+            datalist.AddReadBlockData(parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 3)))[0], 3, true);
+
+            int cardHistory = GetCardHistoryNo(datalist.GetReadBlockData(5));
+            cardStatus = String.format("%02X", new Object[]{Integer.valueOf(Integer.valueOf(GetCardStatus(datalist.GetReadBlockData(3))).intValue() & 255)});
+            if (cardHistory == newHistoryNo && cardStatus.equals("15")) {
                 if (nfc != null) {
                     try {
                         nfc.close();
@@ -2074,37 +2132,6 @@ public class AccessFalica {
                 CheckWriteResult(nfc.transceive(writeWithoutEncryption(TargetIDm, targetServiceCode, Data.ReadBlock, Data.ReadData)));
                 j++;
             } catch (Exception e) {
-                if (j >= 1) {
-                    this.isChargeCheckFailed = true;
-                }
-                byte[] _byte = new byte[Data.ReadData.length];
-                if (Data.ReadBlock <= 10) {
-                    int i = 0;
-                    if (Data.ReadBlock == 0) {
-                        i = 2;
-                        _byte[0] = Data.ReadData[0];
-                        _byte[1] = Data.ReadData[1];
-                    }
-                    while (i < Data.ReadData.length) {
-                        _byte[i] = Decryption(IsEncryption.Encrypt, Data.ReadData[i]);
-                        i++;
-                    }
-                }
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("Exception at writeWithoutEncryption.\n");
-                stringBuilder.append(byteArraytoHexString(TargetIDm));
-                stringBuilder.append("\n");
-                stringBuilder.append(byteArraytoHexString(this.targetServiceCode));
-                stringBuilder.append("\n");
-                stringBuilder.append(Data.ReadBlock);
-                stringBuilder.append("\n");
-                stringBuilder.append(byteArraytoHexString(Data.ReadData));
-                stringBuilder.append("\n");
-                stringBuilder.append(byteArraytoHexString(_byte));
-                stringBuilder.append("\ndataList length : ");
-                stringBuilder.append(j);
-                stringBuilder.append("\nStackTrace : ");
-                DebugLog.e(stringBuilder.toString());
                 throw e;
             }
         }
@@ -2361,7 +2388,7 @@ public class AccessFalica {
         return ((double) BCDTo(GetByteToBitString(getData, IsEncryption.Encrypt, 4, 3))) / 1000.0d;
     }
 
-    public boolean writeStatus(Tag tag, int CardHistoryNo, FirebaseDatabase mDatabase) {
+    public boolean writeStatusCombind(Tag tag, int CardHistoryNo, FirebaseDatabase mDatabase) {
         NfcF nfc = NfcF.get(tag);
         try {
             Date date = new Date();
@@ -2386,17 +2413,14 @@ public class AccessFalica {
             data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
             CheckDataLength(data);
 
-            DatabaseReference myRef = mDatabase.getReference("version-1-1-6-" + formattedDate);
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-7-" + formattedDate);
             StringBuilder stringBuilder;
             if (GetCardStatus(data[0]) != Ascii.NAK) {
                 stringBuilder = new StringBuilder();
-                stringBuilder.append("At CardStatus checking.\nCardId : ");
+                stringBuilder.append("Card ID : ");
                 stringBuilder.append(this.strCardId);
-                stringBuilder.append("\nStatus : ");
+                stringBuilder.append(" || Status : ");
                 stringBuilder.append(data[0]);
-                stringBuilder.append("\n");
-
-
                 myRef.setValue(stringBuilder.toString());
                 if (nfc != null) {
                     try {
@@ -2410,11 +2434,10 @@ public class AccessFalica {
             CheckDataLength(data);
             if (GetCardHistoryNo(data[0]) != CardHistoryNo) {
                 stringBuilder = new StringBuilder();
-                stringBuilder.append("At CardHistoryNo checking.\nCardId : ");
+                stringBuilder.append("Card ID : ");
                 stringBuilder.append(this.strCardId);
-                stringBuilder.append("\nHistoryNo : ");
+                stringBuilder.append(" || HistoryNo : ");
                 stringBuilder.append(CardHistoryNo);
-                stringBuilder.append("\n");
                 myRef.setValue(stringBuilder);
                 if (nfc != null) {
                     try {
@@ -2440,10 +2463,158 @@ public class AccessFalica {
             String formattedDate = df.format(time);
 
             StringBuilder stringBuilder2 = new StringBuilder();
-            stringBuilder2.append("Exception at WriteStatus.\n");
-            stringBuilder2.append(this.strCardId);
-            stringBuilder2.append("\n");
-            DatabaseReference myRef = mDatabase.getReference("version-1-1-6-" + formattedDate);
+            stringBuilder2.append("Exception : ");
+            stringBuilder2.append(e.getMessage());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-7-" + formattedDate);
+            myRef.setValue(stringBuilder2.toString());
+            DebugLog.e(stringBuilder2.toString());
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex3) {
+                    //LogUtil.i(ex3.toString());
+                }
+            }
+            return false;
+        } catch (Throwable th) {
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex4) {
+
+                }
+            }
+            return false;
+        }
+    }
+
+    //write history
+    public boolean writeHistory(Tag tag, int CardHistoryNo, FirebaseDatabase mDatabase) {
+        NfcF nfc = NfcF.get(tag);
+        try {
+            Date date = new Date();
+            long time = date.getTime();
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = df.format(time);
+
+            nfc.connect();
+            BlockDataList dataList = new BlockDataList();
+            byte[][] data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
+            CheckDataLength(data);
+            dataList.AddReadBlockData(data[0], 5, false);
+            SetCardHistoryNo(data[0], CardHistoryNo);
+            writeWithoutEncryption(nfc, dataList);
+
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-9-" + formattedDate);
+            data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
+            CheckDataLength(data);
+            if (GetCardHistoryNo(data[0]) != CardHistoryNo) {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("Card ID : ");
+                stringBuilder.append(this.strCardId);
+                stringBuilder.append(" || HistoryNo : ");
+                stringBuilder.append(CardHistoryNo);
+                myRef.setValue(stringBuilder);
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException ex2) {
+                    }
+                }
+                return false;
+            }
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex22) {
+                    //LogUtil.i(ex22.toString());
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            Date date = new Date();
+            long time = date.getTime();
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = df.format(time);
+
+            StringBuilder stringBuilder2 = new StringBuilder();
+            stringBuilder2.append("Exception : ");
+            stringBuilder2.append(e.getMessage());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-9-" + formattedDate);
+            myRef.setValue(stringBuilder2.toString());
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex3) {
+                    //LogUtil.i(ex3.toString());
+                }
+            }
+            return false;
+        } catch (Throwable th) {
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex4) {
+
+                }
+            }
+            return false;
+        }
+    }
+
+    //write status
+
+    public boolean writeStatus(Tag tag, FirebaseDatabase mDatabase) {
+        NfcF nfc = NfcF.get(tag);
+        try {
+            Date date = new Date();
+            long time = date.getTime();
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = df.format(time);
+
+            nfc.connect();
+            BlockDataList dataList = new BlockDataList();
+            byte[][] data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
+            CheckDataLength(data);
+            dataList.AddReadBlockData(data[0], 3, false);
+            SetCardStatus(data[0], 21);
+            writeWithoutEncryption(nfc, dataList);
+
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-9-" + formattedDate);
+            data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
+            CheckDataLength(data);
+
+            if (GetCardStatus(data[0]) != Ascii.NAK) {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("Card ID : ");
+                stringBuilder.append(this.strCardId);
+                stringBuilder.append(" || Status : ");
+                stringBuilder.append(data[0]);
+                myRef.setValue(stringBuilder.toString());
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException ex) {
+                    }
+                }
+                return false;
+            }
+
+            return true;
+        } catch (Exception e) {
+            Date date = new Date();
+            long time = date.getTime();
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = df.format(time);
+
+            StringBuilder stringBuilder2 = new StringBuilder();
+            stringBuilder2.append("Exception : ");
+            stringBuilder2.append(e.getMessage());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-9-" + formattedDate);
             myRef.setValue(stringBuilder2.toString());
             if (nfc != null) {
                 try {

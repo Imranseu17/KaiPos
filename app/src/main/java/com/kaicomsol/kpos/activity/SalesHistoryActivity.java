@@ -33,6 +33,7 @@ import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.PaginationScrollListener;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -50,6 +51,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;
+    private DecimalFormat decimalFormat;
     private String startDate = "";
     private String endDate = "";
 
@@ -148,6 +150,8 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
         edt_start_date.setText(currentDateFormatted);
         edt_end_date.setText(currentDateFormatted);
 
+        decimalFormat = new DecimalFormat(".##");
+
         dateFormatter = new SimpleDateFormat(Constants.DATE_FORMAT);
         mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(this);
@@ -231,7 +235,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
        }
        if (totalAmount > 0.0) amount_layout.setVisibility(View.VISIBLE);
        else amount_layout.setVisibility(View.GONE);
-       total_amout.setText("Total Amount: " +totalAmount+ " TK");
+       total_amout.setText("Total Amount: " +dateFormatter.format(totalAmount)+ " TK");
 
         hideAnimation();
         if (salesHistory != null) MY_TOTAL_PAGE = salesHistory.getTotalPages();

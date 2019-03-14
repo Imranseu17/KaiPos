@@ -97,6 +97,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private CardCheckDialog mCardCheckDialog = null;
     private RechargeCardDialog mRechargeCardDialog = null;
     private boolean isRecharge = false;
+    private boolean isRetry = false;
     private DecimalFormat decimalFormat;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
@@ -196,10 +197,10 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     protected void onResume() {
         super.onResume();
-        //show card dialog
         mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
         //Register connectivity check
         registerReceiver(receiver, intentFilter);
+
     }
 
     @Override
@@ -263,6 +264,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         if (checkConnection()) {
             isRecharge = true;
+            isRetry = true;
             showAnimation();
             mPresenter.getInvoices(token, cardNo);
             new ReadAsyncTask(tag).execute();
@@ -278,8 +280,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         super.onNewIntent(intent);
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag != null) {
-            mAccessFalica.ReadTag(tag);
             if (!isRecharge) {
+                mAccessFalica.ReadTag(tag);
                 boolean response = mAccessFalica.checkCardRecharge(tag);
                 if (response) {
                     cardIdm = mAccessFalica.GetCardIdm(tag.getId());
@@ -288,7 +290,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                     getInvoices(cardIdm);
                 } else
                     CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
-            } else if (isRecharge) {
+            } else if (isRecharge && isRetry) {
                 gasRecharge();
             }
 
@@ -314,6 +316,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         Bundle args = new Bundle();
         args.putString("msg", "Until payment success");
         mRechargeCardDialog.setArguments(args);
+
         customerCardDialog();
 
         decimalFormat = new DecimalFormat(".##");
@@ -389,12 +392,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 new String[]{NfcF.class.getName()}
         };
         mAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
+
     }
 
 
     private void customerCardDialog() {
         if (mCardCheckDialog != null) {
             if (!mCardCheckDialog.isAdded()) {
+                //show card dialog
                 mCardCheckDialog.show(getSupportFragmentManager(), mCardCheckDialog.getTag());
             }
         }
@@ -403,6 +408,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private void rechargeCardDialog() {
         if (mRechargeCardDialog != null) {
             if (!mRechargeCardDialog.isAdded()) {
+                mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
                 mRechargeCardDialog.show(getSupportFragmentManager(), mRechargeCardDialog.getTag());
             }
         }
@@ -418,7 +424,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private void rechargeCardDismiss() {
         if (mRechargeCardDialog != null) {
             mRechargeCardDialog.dismiss();
-            isRecharge = false;
         }
     }
 
@@ -514,6 +519,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     public void onSuccess(Payment payment) {
 
+        //When transaction failed user can not try authorize call without press submit
+        isRetry = false;
         //write volume and status
         new WriteAsyncTask(payment).execute();
     }
@@ -828,8 +835,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
-                        mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
                         rechargeCardDialog();
+                        isRetry = true;
                         isRecharge = true;
                     }
                 })
@@ -1223,17 +1230,36 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         protected void onPostExecute(Boolean response) {
 
             SharedDataSaveLoad.save(RechargeActivity.this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
+            //If card volume and config data write successfully
             if (response) {
+                //If History No write successfully
                 mAccessFalica.ReadTag(tag);
-                boolean response1 = mAccessFalica.writeStatus(tag, payment.getNewHistoryNo(), mDatabase);
-                if (response1) {
-                    rechargeCardDismiss();
-                    capturePayment(String.valueOf(payment.getPaymentId()));
-                    print(payment.getReceipt());
+                boolean isWriteHistory = mAccessFalica.writeHistory(tag, payment.getNewHistoryNo(), mDatabase);
+                if (isWriteHistory) {
+                    //If Card Status write successfully
+                    mAccessFalica.ReadTag(tag);
+                    boolean isWriteStatus = mAccessFalica.writeStatus(tag, mDatabase);
+                    if (isWriteStatus) {
+                        //Final check here
+                        mAccessFalica.ReadTag(tag);
+                        boolean isSuccess = mAccessFalica.checkHistoryStatus(tag, payment.getNewHistoryNo());
+                        if (isSuccess) {
+                            rechargeCardDismiss();
+                            capturePayment(String.valueOf(payment.getPaymentId()));
+                            print(payment.getReceipt());
+                        } else {
+                            rechargeCardDismiss();
+                            cancelPayment(String.valueOf(payment.getPaymentId()));
+                        }
+                    } else {
+                        rechargeCardDismiss();
+                        cancelPayment(String.valueOf(payment.getPaymentId()));
+                    }
                 } else {
                     rechargeCardDismiss();
                     cancelPayment(String.valueOf(payment.getPaymentId()));
                 }
+
             } else {
                 rechargeCardDismiss();
                 cancelPayment(String.valueOf(payment.getPaymentId()));
