@@ -29,7 +29,8 @@ import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
-import com.kaicomsol.kpos.models.ReadCard;
+import com.kaicomsol.kpos.models.AccessFalica;
+import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.Refund;
 import com.kaicomsol.kpos.models.UpdateResponse;
 import com.kaicomsol.kpos.presenters.RefundPresenter;
@@ -53,7 +54,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
     private String[][] techListsArray;
     private NfcAdapter mAdapter;
     private PendingIntent pendingIntent;
-    private ReadCard readCard;
+    private AccessFalica mAccessFalica;
     private Tag tag;
     private int id = 0;
     private boolean isCardRefund = false;
@@ -103,7 +104,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
 
     private void viewConfig() {
 
-        readCard = new ReadCard();
+        mAccessFalica = new AccessFalica();
         mCardCheckDialog = CardCheckDialog.newInstance(this, "User");
         mRechargeCardDialog = new RechargeCardDialog();
         Bundle args = new Bundle();
@@ -196,17 +197,18 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
     @Override
     public void onSuccess(UpdateResponse updateResponse) {
 
-        double refund1 = Double.parseDouble(readCard.refund1);
-        double refund2 = Double.parseDouble(readCard.refund2);
-        double credit =Double.parseDouble(readCard.credit);
+        double refund1 = Double.parseDouble(mAccessFalica.refund1);
+        double refund2 = Double.parseDouble(mAccessFalica.refund2);
+        double credit =Double.parseDouble(mAccessFalica.credit);
 
         double value = refund1+refund2+credit;
-        boolean response = readCard.GasChargeRefundCard(tag, Double.parseDouble(decimalFormat.format(value)),
+        boolean response = mAccessFalica.GasChargeRefundCard(tag, Double.parseDouble(decimalFormat.format(value)),
                 updateResponse.getUnitPrice(),updateResponse.getBaseFee(),updateResponse.getEmergencyValue());
 
         if (credit == 0.0){
-            String historyNo = String.valueOf(readCard.historyNO);
-           readCard.WriteStatus(tag, Integer.parseInt(historyNo)+1);
+            String historyNo = String.valueOf(mAccessFalica.historyNO);
+            mAccessFalica.ReadTag(tag);
+            mAccessFalica.writeHistoryStatus(tag, Integer.parseInt(historyNo)+1);
         }
         if (response){
             rechargeCardDismiss();
@@ -281,8 +283,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
 
     public void updatedData() {
         layout_refund.setVisibility(View.VISIBLE);
-        txt_account_no.setText(readCard.strCustomerId);
-        txt_credit.setText(addCredit(readCard.credit, readCard.refund1));
+        txt_account_no.setText(mAccessFalica.strCustomerId);
+        txt_credit.setText(addCredit(mAccessFalica.credit, mAccessFalica.refund1));
         txt_refund1.setText("0.0");
         txt_refund2.setText("0.0");
         btn_submit.setEnabled(false);
@@ -342,8 +344,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-
-            final boolean response = readCard.ReadTag(tag);
+            mAccessFalica.ReadTag(tag);
+            final boolean response = mAccessFalica.getReadRefundCard(tag);
             return response;
         }
 
@@ -351,19 +353,19 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         protected void onPostExecute(Boolean response) {
             vibrator.vibrate(1000);
             if (response) {
-                if (readCard.cardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
-                        && readCard.cardStatus.equals(CardPropertise.CARD_REFUNDED.getCode())) {
+                if (mAccessFalica.cardGroup.equals(CardPropertise.CUSTOMER_CARD.getCode())
+                        && mAccessFalica.cardStatus.equals(CardPropertise.CARD_REFUNDED.getCode())) {
                     if (!isCardRefund) {
                         customerCardDismiss();
                         layout_refund.setVisibility(View.VISIBLE);
-                        txt_account_no.setText(readCard.strCustomerId);
-                        txt_credit.setText(readCard.credit);
-                        txt_refund1.setText(readCard.refund1);
-                        txt_refund2.setText(readCard.refund2);
+                        txt_account_no.setText(mAccessFalica.strCustomerId);
+                        txt_credit.setText(mAccessFalica.credit);
+                        txt_refund1.setText(mAccessFalica.refund1);
+                        txt_refund2.setText(mAccessFalica.refund2);
 
                         if (checkConnection()) {
                             String token = SharedDataSaveLoad.load(RefundActivity.this, getString(R.string.preference_access_token));
-                            mPresenter.getIssueRefund(token, readCard.cardIDm, readCard.credit, readCard.refund1);
+                            mPresenter.getIssueRefund(token, mAccessFalica.cardIDm, mAccessFalica.credit, mAccessFalica.refund1);
                         } else
                             CustomAlertDialog.showError(RefundActivity.this, getString(R.string.no_internet_connection));
                     } else {

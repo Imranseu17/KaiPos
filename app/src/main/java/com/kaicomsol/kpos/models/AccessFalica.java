@@ -605,6 +605,79 @@ public class AccessFalica {
         }
     }
 
+    public boolean getReadRefundCard(Tag tag){
+
+
+        NfcF nfc = NfcF.get(tag);
+        try {
+            nfc.connect();
+            strCardId = GetCardIdm(tag.getId());
+            String _cardIdm = GetCardIdm(TargetIDm);
+
+            if (strCardId.equals(_cardIdm)) {
+                int block, i;
+                BlockDataList datalist = new BlockDataList();
+                datalist.AddReadBlockData(parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 1)))[0], 1, true);
+                datalist.AddReadBlockData(parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 2)))[0], 2, true);
+                datalist.AddReadBlockData(parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 3)))[0], 3, true);
+                datalist.AddReadBlockData(parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 4)))[0], 4, true);
+                datalist.AddReadBlockData(parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 5)))[0], 5, true);
+                byte[] req = readWithoutEncryption(TargetIDm, size, targetServiceCode, 18);
+                byte[] res = nfc.transceive(req);
+                datalist.AddReadBlockData(parse(res)[0], 18, true);
+
+                cardStatus = String.format("%02X", new Object[]{Integer.valueOf
+                        (Integer.valueOf(GetCardStatus(datalist.GetReadBlockData(3))).intValue() & 255)});
+                cardIDm = GetCardIdm(TargetIDm);
+                historyNO = Integer.parseInt(String.valueOf(GetCardHistoryNo(datalist.GetReadBlockData(5))));
+                strCustomerId = GetCustomerId(datalist.GetReadBlockData(1), datalist.GetReadBlockData(2));
+                cardGroup = String.format("%02X", new Object[]{Integer.valueOf
+                        (Integer.valueOf(GetCardGroup(datalist.GetReadBlockData(2))).intValue() & 255)});
+                credit = String.valueOf(GetCredit(datalist.GetReadBlockData(3)));
+                refund1 = String.valueOf(GetRefund1(datalist.GetReadBlockData(4)));
+                refund2 = String.valueOf(GetRefund2(datalist.GetReadBlockData(4)));
+
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException e) {
+                    }
+                }
+
+                return true;
+
+            }
+
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e2) {
+                }
+            }
+
+            return false;
+
+        } catch (Exception e3) {
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e22) {
+                }
+            }
+            return false;
+        } catch (Throwable th) {
+            Throwable th2 = th;
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e222) {
+                }
+            }
+
+            return false;
+        }
+    }
+
     public boolean getInspectCard(Tag tag) {
 
         NfcF nfc = NfcF.get(tag);
@@ -765,8 +838,6 @@ public class AccessFalica {
                         //LogUtil.i(e.toString());
                     }
                 }
-
-
                 return true;
 
             }
@@ -800,6 +871,87 @@ public class AccessFalica {
                 }
             }
 
+            return false;
+        }
+    }
+
+    public boolean writeHistoryStatus(Tag tag, int CardHistoryNo) {
+        NfcF nfc = NfcF.get(tag);
+        try {
+            nfc.connect();
+            byte[][] data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
+            CheckDataLength(data);
+            BlockDataList dataList = new BlockDataList();
+            dataList.AddReadBlockData(data[0], 3, false);
+
+            SetCardStatus(data[0], 21);
+            data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
+            CheckDataLength(data);
+            dataList.AddReadBlockData(data[0], 5, false);
+            SetCardHistoryNo(data[0], CardHistoryNo);
+            writeWithoutEncryption(nfc, dataList);
+            data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
+            CheckDataLength(data);
+
+            StringBuilder stringBuilder;
+            if (GetCardStatus(data[0]) != Ascii.NAK) {
+                stringBuilder = new StringBuilder();
+                stringBuilder.append("At CardStatus checking.\nCardId : ");
+                stringBuilder.append(this.strCardId);
+                stringBuilder.append("\nStatus : ");
+                stringBuilder.append(data[0]);
+                stringBuilder.append("\n");
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException ex) {
+                    }
+                }
+                return false;
+            }
+            data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
+            CheckDataLength(data);
+            if (GetCardHistoryNo(data[0]) != CardHistoryNo) {
+                stringBuilder = new StringBuilder();
+                stringBuilder.append("At CardHistoryNo checking.\nCardId : ");
+                stringBuilder.append(this.strCardId);
+                stringBuilder.append("\nHistoryNo : ");
+                stringBuilder.append(CardHistoryNo);
+                stringBuilder.append("\n");
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException ex2) {
+                    }
+                }
+                return false;
+            }
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex22) {
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            StringBuilder stringBuilder2 = new StringBuilder();
+            stringBuilder2.append("Exception at WriteStatus.\n");
+            stringBuilder2.append(this.strCardId);
+            stringBuilder2.append("\n");
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex3) {
+                }
+            }
+            return false;
+        } catch (Throwable th) {
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex4) {
+                }
+            }
             return false;
         }
     }

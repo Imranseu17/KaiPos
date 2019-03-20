@@ -235,7 +235,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
        }
        if (totalAmount > 0.0) amount_layout.setVisibility(View.VISIBLE);
        else amount_layout.setVisibility(View.GONE);
-       total_amout.setText("Total Amount: " +dateFormatter.format(totalAmount)+ " TK");
+       total_amout.setText("Total Amount: " +decimalFormat.format(totalAmount)+ " TK");
 
         hideAnimation();
         if (salesHistory != null) MY_TOTAL_PAGE = salesHistory.getTotalPages();
