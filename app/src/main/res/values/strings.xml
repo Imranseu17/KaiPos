@@ -4,6 +4,7 @@
     <string name="preference_is_service_check" translatable="false">preference_is_service_check</string>
     <string name="preference_language_key" translatable="false">preference_language_key</string>
     <string name="preference_device_id" translatable="false">preference_device_id</string>
+    <string name="preference_temp_history" translatable="false">preference_temp_history</string>
     <string name="preference_printer_name" translatable="false">preference_printer_name</string>
     <string name="preference_printer_address" translatable="false">preference_printer_address</string>
     <string name="preference_dc_dr" translatable="false">preference_dc_dr</string>

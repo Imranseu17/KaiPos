@@ -243,7 +243,7 @@ public class AccessFalica {
             StringBuilder stringBuilder2 = new StringBuilder();
             stringBuilder2.append("Exception Check: ");
             stringBuilder2.append(e.getMessage());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-10-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
             myRef.setValue(stringBuilder2.toString());
 
             if (nfc != null) {
@@ -2567,7 +2567,7 @@ public class AccessFalica {
             SetCardHistoryNo(data[0], CardHistoryNo);
             writeWithoutEncryption(nfc, dataList);
 
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-10-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
             data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
             CheckDataLength(data);
             if (GetCardHistoryNo(data[0]) != CardHistoryNo) {
@@ -2599,7 +2599,7 @@ public class AccessFalica {
             StringBuilder stringBuilder2 = new StringBuilder();
             stringBuilder2.append("Exception HistoryNo: ");
             stringBuilder2.append(e.getMessage());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-10-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
             myRef.setValue(stringBuilder2.toString());
             if (nfc != null) {
                 try {
@@ -2636,7 +2636,7 @@ public class AccessFalica {
             SetCardStatus(data[0], 21);
             writeWithoutEncryption(nfc, dataList);
 
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-10-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
             data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 3)));
             CheckDataLength(data);
 
@@ -2670,7 +2670,7 @@ public class AccessFalica {
             StringBuilder stringBuilder2 = new StringBuilder();
             stringBuilder2.append("Exception Status: ");
             stringBuilder2.append(e.getMessage());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-10-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
             myRef.setValue(stringBuilder2.toString());
             if (nfc != null) {
                 try {
