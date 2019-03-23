@@ -1291,13 +1291,22 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                                     rechargeCardDismiss();
                                     cancelPayment(String.valueOf(payment.getPaymentId()));
                                 } else {
-                                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                                    DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
                                     mAccessFalica.ReadTag(tag);
-                                    String cardHistoryNo = mAccessFalica.getHistoryNo(tag);
-                                    myRef.setValue(cardIdm + " Card History No : " + cardHistoryNo + " || Previous History No : " + historyNo);
-                                    rechargeCardDismiss();
-                                    cancelPayment(String.valueOf(payment.getPaymentId()));
+                                    boolean isBackHistoryWrite2 = mAccessFalica.writeHistory(tag, Integer.parseInt(historyNo), mDatabase);
+                                    if (isBackHistoryWrite2) {
+                                        rechargeCardDismiss();
+                                        cancelPayment(String.valueOf(payment.getPaymentId()));
+                                    } else {
+                                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                                        DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
+                                        mAccessFalica.ReadTag(tag);
+                                        String cardHistoryNo = mAccessFalica.getHistoryNo(tag);
+                                        myRef.setValue(cardIdm+": CHN : " + cardHistoryNo + " || PHN : " + historyNo);
+
+                                        rechargeCardDismiss();
+                                        cancelPayment(String.valueOf(payment.getPaymentId()));
+                                    }
+
                                 }
 
                             }
