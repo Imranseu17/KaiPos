@@ -1282,31 +1282,30 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                             capturePayment(String.valueOf(payment.getPaymentId()));
                             print(payment.getReceipt());
                         } else {
-                            rechargeCardDismiss();
-                            cancelPayment(String.valueOf(payment.getPaymentId()));
+                            //History write issues
+                            String historyNo = SharedDataSaveLoad.load(RechargeActivity.this, getString(R.string.preference_temp_history));
+                            if (historyNo != null) {
+                                mAccessFalica.ReadTag(tag);
+                                boolean isBackHistoryWrite = mAccessFalica.writeHistory(tag, Integer.parseInt(historyNo), mDatabase);
+                                if (isBackHistoryWrite) {
+                                    rechargeCardDismiss();
+                                    cancelPayment(String.valueOf(payment.getPaymentId()));
+                                } else {
+                                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                                    DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
+                                    mAccessFalica.ReadTag(tag);
+                                    String cardHistoryNo = mAccessFalica.getHistoryNo(tag);
+                                    myRef.setValue(cardIdm + " Card History No : " + cardHistoryNo + " || Previous History No : " + historyNo);
+                                    rechargeCardDismiss();
+                                    cancelPayment(String.valueOf(payment.getPaymentId()));
+                                }
+
+                            }
                         }
                     }
                 } else {
-                    //History write issues
-                    String historyNo = SharedDataSaveLoad.load(RechargeActivity.this, getString(R.string.preference_temp_history));
-                    if (historyNo != null){
-                        mAccessFalica.ReadTag(tag);
-                        boolean isBackHistoryWrite = mAccessFalica.writeHistory(tag, Integer.parseInt(historyNo), mDatabase);
-                        if (isBackHistoryWrite){
-                            rechargeCardDismiss();
-                            cancelPayment(String.valueOf(payment.getPaymentId()));
-                        }else {
-                            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                            DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
-                            mAccessFalica.ReadTag(tag);
-                            String cardHistoryNo = mAccessFalica.getHistoryNo(tag);
-                            myRef.setValue(cardIdm+" Card History No : "+cardHistoryNo +" || Previous History No : "+historyNo);
-                            rechargeCardDismiss();
-                            cancelPayment(String.valueOf(payment.getPaymentId()));
-                        }
-
-                    }
-
+                    rechargeCardDismiss();
+                    cancelPayment(String.valueOf(payment.getPaymentId()));
                 }
 
             } else {
