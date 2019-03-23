@@ -2692,6 +2692,78 @@ public class AccessFalica {
         }
     }
 
+    public boolean WriteStatus(Tag tag, int CardHistoryNo, FirebaseDatabase mDatabase) {
+        NfcF nfc = NfcF.get(tag);
+        try {
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-10-" + timestamp.getTime());
+
+            nfc.connect();
+            byte[][] data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 3)));
+            CheckDataLength(data);
+            BlockDataList dataList = new BlockDataList();
+            dataList.AddReadBlockData(data[0], 3, false);
+            SetCardStatus(data[0], 21);
+            data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 5)));
+            CheckDataLength(data);
+            dataList.AddReadBlockData(data[0], 5, false);
+            SetCardHistoryNo(data[0], CardHistoryNo);
+            writeWithoutEncryption(nfc, dataList);
+            data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 3)));
+            CheckDataLength(data);
+            if (GetCardStatus(data[0]) != Ascii.NAK) {
+                myRef.setValue("STATUS WRITE FAILED : "+GetCardStatus(data[0]));
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException ex) {
+                    }
+                }
+                return false;
+            }
+            data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 5)));
+            CheckDataLength(data);
+            if (GetCardHistoryNo(data[0]) != CardHistoryNo) {
+                myRef.setValue("HISTORY WRITE FAILED : "+GetCardHistoryNo(data[0]) +" == "+ CardHistoryNo);
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException ex2) {
+                    }
+                }
+                return false;
+            }
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex22) {
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-10-" + timestamp.getTime());
+            myRef.setValue("Exception Write Status and History");
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex3) {
+                    return false;
+                }
+            }
+            return false;
+        } catch (Throwable th) {
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException ex4) {
+
+                }
+            }
+            return false;
+        }
+    }
+
     private void SetCardStatus(byte[] setData, int cardStatus) {
         if (!(cardStatus == 0 || cardStatus == 21 || cardStatus == 48)) {
             switch (cardStatus) {

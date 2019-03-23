@@ -205,7 +205,7 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
         boolean response = mAccessFalica.GasChargeRefundCard(tag, Double.parseDouble(decimalFormat.format(value)),
                 updateResponse.getUnitPrice(),updateResponse.getBaseFee(),updateResponse.getEmergencyValue());
 
-        if (credit == 0.0){
+        if (response && credit == 0.0){
             String historyNo = String.valueOf(mAccessFalica.historyNO);
             mAccessFalica.ReadTag(tag);
             mAccessFalica.writeHistoryStatus(tag, Integer.parseInt(historyNo)+1);
@@ -218,7 +218,6 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
             CustomAlertDialog.showError(this, "Gas volume limit exceed!");
         }else CustomAlertDialog.showError(this, "Update failed please try again");
 
-        //finish();
     }
 
     @Override

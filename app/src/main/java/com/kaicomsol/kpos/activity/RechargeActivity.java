@@ -1285,6 +1285,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                         }
                     }
                 } else {
+                    //History write issues
+                    mAccessFalica.ReadTag(tag);
+                    mAccessFalica.writeHistory(tag, payment.getNewHistoryNo(), mDatabase);
                     rechargeCardDismiss();
                     cancelPayment(String.valueOf(payment.getPaymentId()));
                 }
