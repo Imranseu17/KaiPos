@@ -31,6 +31,11 @@ import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.ReadCard;
 import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
+import com.kaicomsol.kpos.utils.DebugLog;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -207,6 +212,48 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
                 tabLayout.setVisibility(View.VISIBLE);
 
                 NFCData.getInstance().setAccessFalica(mAccessFalica);
+            } else {
+                CustomAlertDialog.showWarning(InspectActivity.this, getString(R.string.err_card_read_failed));
+            }
+            vibrator.cancel();
+        }
+    }
+
+    class ReadTestAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+
+        private Tag tag;
+        public ReadTestAsyncTask(Tag tag) {
+            this.tag = tag;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+
+            mAccessFalica.ReadTag(tag);
+            final boolean response = mAccessFalica.getReadCard(tag);
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean response) {
+            vibrator.vibrate(1000);
+            if (response) {
+                customerCardDismiss();
+                for(int i = 0; i < 20; i++){
+                    HttpResponsAsync.ReadCardArgumentLogHour logDay = mAccessFalica.readCardArgument.LogHour.get(i);
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    Date date = null;
+                    try {
+                        date = sdf.parse(logDay.GasTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    DebugLog.e("GasTime : "+sdf.format(date));
+                    DebugLog.e("GasValue : "+logDay.GasValue);
+
+                }
+
             } else {
                 CustomAlertDialog.showWarning(InspectActivity.this, getString(R.string.err_card_read_failed));
             }

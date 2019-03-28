@@ -1,6 +1,9 @@
 package com.kaicomsol.kpos.activity;
 
 import android.app.PendingIntent;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -16,6 +19,7 @@ import android.nfc.Tag;
 import android.nfc.tech.NfcF;
 import android.os.AsyncTask;
 import android.os.Vibrator;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -83,6 +87,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -94,12 +99,10 @@ import static com.kaicomsol.kpos.golobal.Constants.CONNECTIVITY_ACTION;
 
 public class RechargeActivity extends AppCompatActivity implements PaymentView, CloseClickListener {
 
-    private FirebaseDatabase mDatabase;
+    private TransactionViewModel mTransactionViewModel;
     private static final int REQUEST_ENABLE_BT = 0;
     private CardCheckDialog mCardCheckDialog = null;
-    private RechargeCardDialog mRechargeCardDialog = null;
     private boolean isRecharge = false;
-    private boolean isRetry = false;
     private DecimalFormat decimalFormat;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
@@ -107,24 +110,17 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private PendingIntent pendingIntent;
     private AccessFalica mAccessFalica = new AccessFalica();
     private String cardIdm;
+    private String cardHistoryNo;
     private Tag tag;
     private PaymentPresenter mPresenter;
-    private double totalAmount = 0.0;
-    private static OutputStream outputStream;
     private Vibrator vibrator;
     private IntentFilter intentFilter;
-    private NetworkChangeReceiver receiver;
-    private BluetoothSocket mBluetoothSocket = null;
 
     //Bind component
-    @BindView(R.id.layout_main)
-    LinearLayout layout_main;
-    @BindView(R.id.layout_loading)
-    LinearLayout layout_loading;
+    @BindView(R.id.layout_recharge)
+    LinearLayout layout_recharge;
     @BindView(R.id.animation_view)
     LottieAnimationView animationView;
-    @BindView(R.id.gas_content)
-    ScrollView gas_content;
     @BindView(R.id.txt_account_no)
     TextView txt_account_no;
     @BindView(R.id.layout_price)
@@ -145,35 +141,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     Button btn_submit;
 
 
-    //print component bind
-    @BindView(R.id.layout_print)
-    RelativeLayout layout_print;
-    @BindView(R.id.recycler_list)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.txt_date_time)
-    TextView txt_date_time;
-    @BindView(R.id.txt_transaction_no)
-    TextView txt_transaction_no;
-    @BindView(R.id.txt_customer_code)
-    TextView txt_customer_code;
-    @BindView(R.id.txt_prepaid_no)
-    TextView txt_prepaid_no;
-    @BindView(R.id.txt_meter_no)
-    TextView txt_meter_no;
-    @BindView(R.id.txt_card_no)
-    TextView txt_card_no;
-    @BindView(R.id.txt_pos_id)
-    TextView txt_pos_id;
-    @BindView(R.id.txt_operator_name)
-    TextView txt_operator_name;
-    @BindView(R.id.txt_deposit_amount)
-    TextView txt_deposit_amount;
-    @BindView(R.id.txt_total)
-    TextView txt_total;
-    @BindView(R.id.btn_print)
-    Button btn_print;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -185,11 +152,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
         ButterKnife.bind(this);
         String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-        DebugLog.i(paymentID + " ID ");
         //view init
         viewConfig();
-        //clear all pending request cancel or capture
-        clearPendingRequest();
         //card configuration
         cardConfig();
 
@@ -200,8 +164,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     protected void onResume() {
         super.onResume();
         mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
-        //Register connectivity check
-        registerReceiver(receiver, intentFilter);
 
     }
 
@@ -209,56 +171,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     protected void onPause() {
         super.onPause();
         mAdapter.disableForegroundDispatch(this);
-        //Un-Register connectivity check
-        unregisterReceiver(receiver);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        GlobalBus.getBus().register(this);
-    }
-
-    //Subscribe to listen the event
-    @Subscribe
-    public void getMessage(String status) {
-
-        //If cancel failed or pending cancel and internet connection available then call cancel again
-        boolean isCancel = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_cancel_failed));
-        if (isCancel) {
-            String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-            if (!status.equals(Constants.NOT_CONNECT) && !TextUtils.isEmpty(paymentID))
-                cancelPayment(paymentID);
-        }
-        //If capture failed or pending capture and internet connection available then call capture again
-        boolean isCapture = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_capture_failed));
-        if (isCapture) {
-            String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-            if (!status.equals(Constants.NOT_CONNECT) && !TextUtils.isEmpty(paymentID))
-                capturePayment(paymentID);
-        }
-    }
-
-    private void clearPendingRequest() {
-        //If cancel failed or pending cancel and internet connection available then call cancel again
-        boolean isCancel = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_cancel_failed));
-        if (isCancel) {
-            String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-            if (checkConnection() && !TextUtils.isEmpty(paymentID)) cancelPayment(paymentID);
-        }
-        //If capture failed or pending capture and internet connection available then call capture again
-        boolean isCapture = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_capture_failed));
-        if (isCapture) {
-            String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-            if (checkConnection() && !TextUtils.isEmpty(paymentID))
-                capturePayment(paymentID);
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        GlobalBus.getBus().unregister(this);
     }
 
     private void getInvoices(String cardNo) {
@@ -266,8 +178,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         if (checkConnection()) {
             isRecharge = true;
-            isRetry = true;
-            showAnimation();
+            showAnimationInvoice();
             mPresenter.getInvoices(token, cardNo);
             new ReadAsyncTask(tag).execute();
         } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
@@ -288,6 +199,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 switch (response) {
                     case 200:
                         cardIdm = mAccessFalica.GetCardIdm(tag.getId());
+                        cardHistoryNo = mAccessFalica.getHistoryNo(tag);
                         txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
                         customerCardDismiss();
                         getInvoices(cardIdm);
@@ -301,8 +213,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                     default:
                         CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
                 }
-            } else if (isRecharge && isRetry) {
-                gasRecharge();
             }
 
         } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
@@ -311,23 +221,17 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     private void viewConfig() {
 
-        // Write a message to the database
-        mDatabase = FirebaseDatabase.getInstance();
-
         //internet connectivity receiver
         intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_ACTION);
-        receiver = new NetworkChangeReceiver();
         //Vibrator init
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        // Get a new or existing ViewModel from the ViewModelProvider.
+        mTransactionViewModel = ViewModelProviders.of(this).get(TransactionViewModel.class);
+        mTransactionViewModel.deleteAll();
         //card check dialog
         mCardCheckDialog = CardCheckDialog.newInstance(this, "User");
         mCardCheckDialog.setCancelable(false);
-        mRechargeCardDialog = new RechargeCardDialog();
-        Bundle args = new Bundle();
-        args.putString("msg", "Until payment success");
-        mRechargeCardDialog.setArguments(args);
-
         customerCardDialog();
 
         decimalFormat = new DecimalFormat(".##");
@@ -371,12 +275,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
             }
         });
-        btn_print.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showConfirmPrintAlert();
-            }
-        });
     }
 
     private void gasRecharge() {
@@ -416,25 +314,9 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         }
     }
 
-    private void rechargeCardDialog() {
-        if (mRechargeCardDialog != null) {
-            if (!mRechargeCardDialog.isAdded()) {
-                mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
-                mRechargeCardDialog.show(getSupportFragmentManager(), mRechargeCardDialog.getTag());
-            }
-        }
-    }
-
-
     private void customerCardDismiss() {
         if (mCardCheckDialog != null) {
             mCardCheckDialog.dismiss();
-        }
-    }
-
-    private void rechargeCardDismiss() {
-        if (mRechargeCardDialog != null) {
-            mRechargeCardDialog.dismiss();
         }
     }
 
@@ -502,55 +384,44 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private void addPayment() {
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         String amount = txt_total_amount.getText().toString().trim();
-        mAccessFalica.ReadTag(tag);
-        String cardHistoryNo = mAccessFalica.getHistoryNo(tag);
         if (cardHistoryNo != null) {
             SharedDataSaveLoad.save(this, getString(R.string.preference_temp_history), cardHistoryNo);
+            showAnimation();
             mPresenter.addPayment(token, amount, cardIdm, cardHistoryNo, "1");
         }
 
     }
 
-    private void capturePayment(String paymentId) {
-        if (checkConnection()) {
-            String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
-            mPresenter.capturePayment(token, paymentId);
-        } else {
-            SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed), true);
-        }
-
-    }
-
-    private void cancelPayment(String paymentId) {
-        if (checkConnection()) {
-            isRetry = true;
-            String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
-            mPresenter.cancelPayment(token, paymentId);
-        } else SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed), true);
-    }
 
     @Override
     public void onSuccess(Payment payment) {
+        //Add local authorise data
+        hideAnimation();
 
-        //When transaction failed user can not try authorize call without press submit
-        isRetry = false;
-        //write volume and status
-        new WriteAsyncTask(payment).execute();
-    }
-
-    @Override
-    public void onSuccess(Receipt receipt) {
-
-        bluetoothPrint(receipt);
-        getSupportActionBar().setTitle("Print receipts");
-        showPrintLayout(receipt);
+        Transaction transaction = new Transaction(cardIdm, payment.getPaymentId(), payment.getReceipt().getGasUnit(), payment.getUnitPrice(),
+                payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo(), cardHistoryNo, payment.getNewHistoryNo(),
+                "authorize");
+        final int id = payment.getPaymentId();
+        mTransactionViewModel.insert(transaction);
+        mTransactionViewModel.getTransactionByCardIdm(cardIdm).observe(this, new Observer<Transaction>() {
+            @Override
+            public void onChanged(@Nullable Transaction transaction) {
+                if (transaction != null) {
+                    DebugLog.e(transaction.getPaymentId() +" ||| "+id);
+                    Intent intent = new Intent(RechargeActivity.this, CardWriteActivity.class);
+                    intent.putExtra("cardIdm", cardIdm);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
 
     }
 
     @Override
     public void onSuccess(Invoices invoices) {
         mAdapter.disableForegroundDispatch(this);
-        hideAnimation();
+        hideAnimationInvoice();
         if (invoices != null) {
             if (invoices.getInvoices() != null && invoices.getInvoices().size() > 0) {
                 String invoiceList = new Gson().toJson(invoices);
@@ -566,28 +437,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     @Override
-    public void onSuccess(int paymentId, int code) {
-
-        RechargeStatus rechargeStatus = RechargeStatus.getByCode(code);
-        switch (rechargeStatus) {
-            case CAPTURE_SUCCESS:
-                SharedDataSaveLoad.save(this, getString(R.string.preference_payment_id), String.valueOf(paymentId));
-                SharedDataSaveLoad.remove(this, getString(R.string.preference_capture_failed));
-                break;
-            case CANCEL_SUCCESS:
-                CustomAlertDialog.showError(this, "Transaction failed");
-                SharedDataSaveLoad.remove(this, getString(R.string.preference_capture_failed));
-                SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
-                SharedDataSaveLoad.remove(this, getString(R.string.preference_cancel_failed));
-                break;
-            default:
-                CustomAlertDialog.showError(this, "Error occurred Please try again");
-                break;
-
-        }
-    }
-
-    @Override
     public void onSuccess(String readCard) {
 
 
@@ -600,26 +449,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         RechargeStatus rechargeStatus = RechargeStatus.getByCode(code);
         switch (rechargeStatus) {
             case PAYMENT_ERROR:
+                hideAnimation();
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             case INVOICE_ERROR:
-                hideAnimation();
-                if (error != null) CustomAlertDialog.showError(this, error);
-                break;
-            case RECEIPT_ERROR:
-                hideAnimation();
-                CustomAlertDialog.showError(this, "Print error please try again");
-                break;
-            case CANCEL_ERROR:
-                hideAnimation();
-                CustomAlertDialog.showError(this, "Transaction failed");
-                SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed), true);
-                break;
-            case CAPTURE_ERROR:
-                //SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed), true);
-                DebugLog.e("Capture Failed");
-                break;
-            case ERROR_CODE_406:
+                hideAnimationInvoice();
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             default:
@@ -700,143 +534,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         v.startAnimation(a);
     }
 
-    private void showPrintLayout(Receipt receipt) {
-        layout_loading.setVisibility(View.GONE);
-        gas_content.setVisibility(View.GONE);
-        layout_print.setVisibility(View.VISIBLE);
-
-        Date date = new Date(receipt.getPaymentDate());
-        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT + " " + Constants.TIME_FORMAT);
-
-        txt_date_time.setText(dateFormat.format(date));
-        txt_transaction_no.setText(String.valueOf(receipt.getPaymentId()));
-        txt_customer_code.setText(receipt.getCustomerCode());
-        txt_prepaid_no.setText(receipt.getPrePaidCode());
-        txt_meter_no.setText(receipt.getMeterSerialNo());
-        txt_card_no.setText(receipt.getCardNo());
-        txt_pos_id.setText(String.valueOf(receipt.getPosId()));
-        txt_operator_name.setText(receipt.getOperatorName());
-        txt_deposit_amount.setText(String.valueOf(decimalFormat.format(receipt.getAmountPaid())));
-        txt_total.setText(String.valueOf(decimalFormat.format(receipt.getItems().getTotal())));
-
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        PrintAdapter mAdapter = new PrintAdapter(receipt.getItems().getItems());
-        mRecyclerView.setAdapter(mAdapter);
-    }
-
-
-    private void print(Receipt receipt) {
-
-        showPrintLayout(receipt);
-        bluetoothPrint(receipt);
-        getSupportActionBar().setTitle("Print receipts");
-
-    }
-
-    private void bluetoothPrint(final Receipt receipt) {
-
-
-        final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
-            // Device does not support Bluetooth
-            CustomAlertDialog.showError(this, getString(R.string.bluetooth_printer_not_support));
-        } else {
-            boolean enable = mBluetoothAdapter.isEnabled();
-            if (enable) {
-                if (mBluetoothAdapter.getBondedDevices().iterator().hasNext()) {
-                    final BluetoothDevice mBtDevice = mBluetoothAdapter.getBondedDevices().iterator().next();
-                    final BluetoothPrinter mPrinter = new BluetoothPrinter(mBtDevice);
-
-                    if (mBluetoothSocket == null) {
-                        mPrinter.connectPrinter(new BluetoothPrinter.PrinterConnectListener() {
-
-                            @Override
-                            public void onConnected() {
-
-                                mBluetoothSocket = mPrinter.getSocket();
-                                new PrintAsyncTask(receipt).execute();
-
-                            }
-
-                            @Override
-                            public void onFailed() {
-                                CustomAlertDialog.showError(RechargeActivity.this, "Printer Connection Failed ! Please try again");
-                            }
-                        });
-                    } else {
-                        new PrintAsyncTask(receipt).execute();
-                    }
-                } else {
-                    CustomAlertDialog.showError(RechargeActivity.this, "Printer Not Found ! Please try again");
-                }
-
-
-            } else {
-                showEnableBluetoothDialog();
-            }
-
-        }
-
-    }
-
-    public void createReceipt(Receipt receipt) {
-
-        OutputStream opstream = null;
-        try {
-            if (mBluetoothSocket != null) opstream = mBluetoothSocket.getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        outputStream = opstream;
-        //print command
-        try {
-            byte[] printformat = new byte[]{0x1B, 0x21, 0x01};
-            outputStream.write(printformat);
-            printCustom("Money Receipt", 2, 1);
-
-            Date date = new Date(receipt.getPaymentDate());
-            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT + " " + Constants.TIME_FORMAT);
-
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-            printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
-            printCustom(getFormatStringByLength("Transaction No.", String.valueOf(receipt.getPaymentId())), 0, 1);
-            printCustom(getFormatStringByLength("Customer Code", receipt.getCustomerCode()), 0, 1);
-            printCustom(getFormatStringByLength("Prepaid No", receipt.getPrePaidCode()), 0, 1);
-            printCustom(getFormatStringByLength("Meter No.", receipt.getMeterSerialNo()), 0, 1);
-            printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
-            printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
-            printCustom(getFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-            printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(decimalFormat.format(receipt.getAmountPaid()))), 0, 1);
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-            printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-
-            for (int i = 0; i < receipt.getItems().getItems().size(); i++) {
-                Item item = receipt.getItems().getItems().get(i);
-                if (item.getName().length() > 18) {
-                    printCustom(getFormatStringByItem(item.getName().substring(0, 18), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
-                } else {
-                    printCustom(getFormatStringByItem(item.getName(), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
-                }
-            }
-
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-            printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
-            printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
-            printCustom("Customer Support <01707074462>", 0, 1);
-            printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
-            printNewLine();
-            printNewLine();
-            printNewLine();
-
-            outputStream.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void showConfirmDialog() {
         new ChooseAlertDialog(this)
@@ -848,8 +545,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
-                        rechargeCardDialog();
-                        isRetry = true;
+                        gasRecharge();
                         isRecharge = true;
                     }
                 })
@@ -862,66 +558,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 }).show();
     }
 
-    public void showConfirmPrintAlert() {
-        new ChooseAlertDialog(this)
-                .setDialogType(PromptDialog.DIALOG_TYPE_SUCCESS)
-                .setAnimationEnable(true)
-                .setTitleText(getString(R.string.confirmation))
-                .setContentText(getString(R.string.confirmation_another_print))
-                .setNegativeListener(getString(R.string.yes), new ChooseAlertDialog.OnNegativeListener() {
-                    @Override
-                    public void onClick(ChooseAlertDialog dialog) {
-                        dialog.dismiss();
-                        receiptPayment();
-                    }
-                })
-                .setPositiveListener(getString(R.string.no), new ChooseAlertDialog.OnPositiveListener() {
-                    @Override
-                    public void onClick(ChooseAlertDialog dialog) {
-                        dialog.dismiss();
-
-                    }
-                }).show();
-    }
-
-    private void receiptPayment() {
-
-
-        String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
-        String paymentId = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
-
-        DebugLog.i("Payment ID " + paymentId);
-        if (checkConnection()) mPresenter.receiptPayment(token, paymentId);
-        else showErrorDialog(getString(R.string.no_internet_connection));
-    }
-
-    public void showEnableBluetoothDialog() {
-        new ChooseAlertDialog(this)
-                .setDialogType(PromptDialog.DIALOG_TYPE_SUCCESS)
-                .setAnimationEnable(true)
-                .setTitleText(getString(R.string.bluetooth_enable))
-                .setContentText(getString(R.string.info_enable_bluetooth))
-                .setNegativeListener(getString(R.string.enable), new ChooseAlertDialog.OnNegativeListener() {
-                    @Override
-                    public void onClick(ChooseAlertDialog dialog) {
-                        dialog.dismiss();
-                        bluetoothEnabled();
-                        Toast.makeText(RechargeActivity.this, getString(R.string.bluetooth_enabling), Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setPositiveListener(getString(R.string.no), new ChooseAlertDialog.OnPositiveListener() {
-                    @Override
-                    public void onClick(ChooseAlertDialog dialog) {
-                        dialog.dismiss();
-
-                    }
-                }).show();
-    }
-
-    private void bluetoothEnabled() {
-        Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(intent, REQUEST_ENABLE_BT);
-    }
 
     @Override
     protected void onDestroy() {
@@ -940,7 +576,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onCloseClick(double amount) {
-        this.totalAmount = amount;
+
     }
 
 
@@ -971,9 +607,22 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 }).show();
     }
 
+    public void showAnimationInvoice() {
+        layout_recharge.setVisibility(View.GONE);
+        animationView.setVisibility(View.VISIBLE);
+        animationView.setAnimation("animation_loading.json");
+        animationView.playAnimation();
+        animationView.loop(true);
+    }
+
+    public void hideAnimationInvoice() {
+        layout_recharge.setVisibility(View.VISIBLE);
+        if (animationView.isAnimating()) animationView.cancelAnimation();
+        animationView.setVisibility(View.GONE);
+    }
+
     public void showAnimation() {
-        gas_content.setVisibility(View.GONE);
-        layout_loading.setVisibility(View.VISIBLE);
+        layout_recharge.setVisibility(View.GONE);
         animationView.setVisibility(View.VISIBLE);
         animationView.setAnimation("animation_loading.json");
         animationView.playAnimation();
@@ -981,222 +630,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     public void hideAnimation() {
-        DebugLog.i("FAIELD");
-        gas_content.setVisibility(View.VISIBLE);
         if (animationView.isAnimating()) animationView.cancelAnimation();
-        layout_loading.setVisibility(View.GONE);
-        animationView.setVisibility(View.GONE);
-    }
-
-    public void hideInvoiceAnimation() {
-        gas_content.setVisibility(View.VISIBLE);
-        if (animationView.isAnimating()) animationView.cancelAnimation();
-        layout_loading.setVisibility(View.GONE);
         animationView.setVisibility(View.GONE);
     }
 
 
-    //print custom
-    private void printCustom(String msg, int size, int align) {
-
-        //Print config "mode"
-        byte[] cc = new byte[]{0x1B, 0x21, 0x01};  // 0- normal size text
-        byte[] bb = new byte[]{0x1B, 0x21, 0x08};  // 1- only bold text
-        byte[] bb2 = new byte[]{0x1B, 0x21, 0x20}; // 2- bold with medium text
-        byte[] bb3 = new byte[]{0x1B, 0x21, 0x10}; // 3- bold with large text
-        try {
-            switch (size) {
-                case 0:
-                    outputStream.write(cc);
-                    break;
-                case 1:
-                    outputStream.write(bb);
-                    break;
-                case 2:
-                    outputStream.write(bb2);
-                    break;
-                case 3:
-                    outputStream.write(bb3);
-                    break;
-            }
-
-            switch (align) {
-                case 0:
-                    //left align
-                    outputStream.write(PrinterCommands.ESC_ALIGN_LEFT);
-                    break;
-                case 1:
-                    //center align
-                    outputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
-                    break;
-                case 2:
-                    //right align
-                    outputStream.write(PrinterCommands.ESC_ALIGN_RIGHT);
-                    break;
-            }
-            outputStream.write(msg.getBytes());
-            outputStream.write(PrinterCommands.LF);
-
-            //outputStream.write(cc);
-            //printNewLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    //print photo
-    public void printPhoto(int img) {
-        try {
-            Bitmap bmp = BitmapFactory.decodeResource(getResources(),
-                    img);
-            if (bmp != null) {
-                byte[] command = Utils.decodeBitmap(bmp);
-                outputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
-                printText(command);
-            } else {
-                Log.e("Print Photo error", "the file isn't exists");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("PrintTools", "the file isn't exists");
-        }
-    }
-
-    //print unicode
-    public void printUnicode() {
-        try {
-            outputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
-            printText(Utils.UNICODE_TEXT);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    //print new line
-    private void printNewLine() {
-        try {
-            outputStream.write(PrinterCommands.FEED_LINE);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public static void resetPrint() {
-        try {
-            outputStream.write(PrinterCommands.ESC_FONT_COLOR_DEFAULT);
-            outputStream.write(PrinterCommands.FS_FONT_ALIGN);
-            outputStream.write(PrinterCommands.ESC_ALIGN_LEFT);
-            outputStream.write(PrinterCommands.ESC_CANCEL_BOLD);
-            outputStream.write(PrinterCommands.LF);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    //print text
-    private void printText(String msg) {
-        try {
-            // Print normal text
-            outputStream.write(msg.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    //print byte[]
-    private void printText(byte[] msg) {
-        try {
-            // Print normal text
-            outputStream.write(msg);
-            printNewLine();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private String leftRightAlign(String str1, String str2) {
-        String ans = str1 + str2;
-        if (ans.length() < 31) {
-            int n = (31 - str1.length() + str2.length());
-            ans = str1 + new String(new char[n]).replace("\0", " ") + str2;
-        }
-        return ans;
-    }
-
-    private String getFormatStringByLength(String title, String value) {
-        String concatenation = title + value;
-        int count = concatenation.length();
-        StringBuilder builder = new StringBuilder();
-        String space = new String(new char[42 - count]).replace("\0", " ");
-        builder.append(title);
-        builder.append(space);
-        builder.append(value);
-        return builder.toString();
-    }
-
-
-    private String getFormatStringByItem(String item, String price, String qty, String amount) {
-        StringBuilder builder = new StringBuilder();
-        int count = (qty + amount).length();
-        builder.append(item);
-        builder.append(getSpace(19 - item.length()));
-        builder.append(price);
-        builder.append(getSpace(9 - price.length()));
-        builder.append(qty);
-        builder.append(getSpace(14 - count));
-        builder.append(amount);
-        return builder.toString();
-    }
-
-    private String getFormatStringByTotal(String total, String amount) {
-        StringBuilder builder = new StringBuilder();
-        int count = (total + amount).length();
-        builder.append(getSpace(23));
-        builder.append(total);
-        builder.append(getSpace(19 - count));
-        builder.append(amount);
-        return builder.toString();
-    }
-
-
-    private String getSpace(int count) {
-        String space = new String(new char[count]).replace("\0", " ");
-        return space;
-    }
-
-
-    private String[] getDateTime() {
-        final Calendar c = Calendar.getInstance();
-        String dateTime[] = new String[2];
-        dateTime[0] = c.get(Calendar.DAY_OF_MONTH) + "/" + c.get(Calendar.MONTH) + "/" + c.get(Calendar.YEAR);
-        dateTime[1] = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
-        return dateTime;
-    }
-
-    class PrintAsyncTask extends AsyncTask<Receipt, Void, Void> {
-
-        private Receipt receipt;
-
-        public PrintAsyncTask(Receipt receipt) {
-            this.receipt = receipt;
-        }
-
-        @Override
-        protected Void doInBackground(Receipt... receipts) {
-            createReceipt(receipt);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-    }
 
     class ReadAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
@@ -1221,126 +659,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 readCard(token, mAccessFalica);
             }
         }
-    }
-
-    class WriteAsyncTask extends AsyncTask<Void, Void, Boolean> {
-
-        private Payment payment;
-
-        public WriteAsyncTask(Payment payment) {
-            this.payment = payment;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-
-            mAccessFalica.ReadTag(tag);
-            boolean response = mAccessFalica.creditChargeCard(tag, payment.getReceipt().getGasUnit(), payment.getUnitPrice(), payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo());
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean response) {
-
-            SharedDataSaveLoad.save(RechargeActivity.this, getString(R.string.preference_payment_id), String.valueOf(payment.getPaymentId()));
-            //If card volume and config data write successfully
-            if (response) {
-                //If History No write successfully
-                mAccessFalica.ReadTag(tag);
-                boolean isWriteHistory = mAccessFalica.writeHistory(tag, payment.getNewHistoryNo(), mDatabase);
-                if (isWriteHistory) {
-                    //If Card Status write successfully
-                    mAccessFalica.ReadTag(tag);
-                    boolean isWriteStatus = mAccessFalica.writeStatus(tag, mDatabase);
-                    if (isWriteStatus) {
-                        //Final check here
-                        mAccessFalica.ReadTag(tag);
-                        boolean isSuccess = mAccessFalica.checkHistoryStatus(tag, payment.getNewHistoryNo(), mDatabase);
-                        if (isSuccess) {
-                            rechargeCardDismiss();
-                            capturePayment(String.valueOf(payment.getPaymentId()));
-                            print(payment.getReceipt());
-                        } else {
-                            //Final check here
-                            mAccessFalica.ReadTag(tag);
-                            boolean isCheck = mAccessFalica.checkHistoryStatus(tag, payment.getNewHistoryNo(), mDatabase);
-                            if (isCheck) {
-                                rechargeCardDismiss();
-                                capturePayment(String.valueOf(payment.getPaymentId()));
-                                print(payment.getReceipt());
-                            } else {
-                                rechargeCardDismiss();
-                                cancelPayment(String.valueOf(payment.getPaymentId()));
-                            }
-                        }
-                    } else {
-                        //if live problem found write successfully but transaction failed please add re-check
-                        mAccessFalica.ReadTag(tag);
-                        boolean isSuccess = mAccessFalica.checkHistoryStatus(tag, payment.getNewHistoryNo(), mDatabase);
-                        if (isSuccess) {
-                            rechargeCardDismiss();
-                            capturePayment(String.valueOf(payment.getPaymentId()));
-                            print(payment.getReceipt());
-                        } else {
-                            //History write issues
-                            String historyNo = SharedDataSaveLoad.load(RechargeActivity.this, getString(R.string.preference_temp_history));
-                            if (historyNo != null) {
-                                mAccessFalica.ReadTag(tag);
-                                boolean isBackHistoryWrite = mAccessFalica.writeHistory(tag, Integer.parseInt(historyNo), mDatabase);
-                                if (isBackHistoryWrite) {
-                                    rechargeCardDismiss();
-                                    cancelPayment(String.valueOf(payment.getPaymentId()));
-                                } else {
-                                    mAccessFalica.ReadTag(tag);
-                                    boolean isBackHistoryWrite2 = mAccessFalica.writeHistory(tag, Integer.parseInt(historyNo), mDatabase);
-                                    if (isBackHistoryWrite2) {
-                                        rechargeCardDismiss();
-                                        cancelPayment(String.valueOf(payment.getPaymentId()));
-                                    } else {
-                                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                                        DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
-                                        mAccessFalica.ReadTag(tag);
-                                        String cardHistoryNo = mAccessFalica.getHistoryNo(tag);
-                                        myRef.setValue(cardIdm+": CHN : " + cardHistoryNo + " || PHN : " + historyNo);
-
-                                        rechargeCardDismiss();
-                                        cancelPayment(String.valueOf(payment.getPaymentId()));
-                                    }
-
-                                }
-
-                            }
-                        }
-                    }
-                } else {
-                    rechargeCardDismiss();
-                    cancelPayment(String.valueOf(payment.getPaymentId()));
-                }
-
-            } else {
-                rechargeCardDismiss();
-                cancelPayment(String.valueOf(payment.getPaymentId()));
-            }
-        }
-    }
-
-    private void writeNewTransaction(int paymentId, int newHistoryNo, String status) {
-
-        Date date = new Date();
-        long time = date.getTime();
-
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
-        String formattedDate = df.format(time);
-        String formattedTime = tf.format(time);
-
-        mAccessFalica.ReadTag(tag);
-        String historyNo = mAccessFalica.getHistoryNo(tag);
-        String cardStatus = mAccessFalica.getCardStatus(tag);
-
-        LogState logState = new LogState(cardStatus, historyNo, newHistoryNo, status);
-        DatabaseReference myRef = mDatabase.getReference("transaction-" + formattedDate);
-        myRef.child(String.valueOf(paymentId + "-" + time)).setValue(logState);
     }
 
 }

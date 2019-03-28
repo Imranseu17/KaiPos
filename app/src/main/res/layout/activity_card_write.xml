@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.RechargeActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_try_again"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:text="Try Again"/>
+
+        <RelativeLayout
+            android:id="@+id/layout_print"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_10sdp"
+            android:visibility="gone">
+
+            <include android:id="@+id/invoice_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                layout="@layout/invoice_layout"/>
+
+            <Button
+                android:id="@+id/btn_print"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="@dimen/_150sdp"
+                android:layout_height="@dimen/_44sdp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/drop_shadow"
+                android:padding="@dimen/_8sdp"
+                android:text="@string/label_print"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textColor="@color/colorWhite" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</LinearLayout>

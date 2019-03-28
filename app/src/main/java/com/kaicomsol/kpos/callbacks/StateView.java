@@ -4,11 +4,11 @@ import com.kaicomsol.kpos.models.Invoices;
 import com.kaicomsol.kpos.models.Payment;
 import com.kaicomsol.kpos.models.Receipt;
 
-public interface PaymentView {
+public interface StateView {
 
-    public void onSuccess(Payment payment);
-    public void onSuccess(Invoices invoices);
-    public void onSuccess(String readCard);
+    public void onSuccess(Receipt receipt);
+    public void onCaptureSuccess(int paymentId);
+    public void onCancelSuccess(int paymentId);
     public void onError(String error, int code);
     public void onLogout(int code);
 }

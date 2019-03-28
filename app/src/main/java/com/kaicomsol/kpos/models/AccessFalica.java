@@ -44,6 +44,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
@@ -555,7 +556,6 @@ public class AccessFalica {
                     param2.GasValue = String.valueOf(tempLogData2[i].GasValue);
                     readCardArgument.LogDay.add(param2);
                     i++;
-
                     httpResponsAsync = new HttpResponsAsync();
                 }
 
@@ -2692,43 +2692,50 @@ public class AccessFalica {
         }
     }
 
-    public boolean WriteStatus(Tag tag, int CardHistoryNo, FirebaseDatabase mDatabase) {
+    public boolean writeStatus(Tag tag, int historyNo, int newHistoryNo, FirebaseDatabase mDatabase) {
         NfcF nfc = NfcF.get(tag);
         try {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-10-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-12-" + timestamp.getTime());
 
             nfc.connect();
-            byte[][] data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 3)));
+            byte[][] data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 5)));
             CheckDataLength(data);
             BlockDataList dataList = new BlockDataList();
+            //Write Card History No
+            dataList.AddReadBlockData(data[0], 5, false);
+            SetCardHistoryNo(data[0], newHistoryNo);
+            //Write Card Status
+            data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 3)));
+            CheckDataLength(data);
             dataList.AddReadBlockData(data[0], 3, false);
             SetCardStatus(data[0], 21);
-            data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 5)));
-            CheckDataLength(data);
-            dataList.AddReadBlockData(data[0], 5, false);
-            SetCardHistoryNo(data[0], CardHistoryNo);
+            //Finally write card history and card status
             writeWithoutEncryption(nfc, dataList);
+            if (GetCardHistoryNo(data[0]) != newHistoryNo) {
+                myRef.setValue("HISTORY WRITE FAILED : "+GetCardHistoryNo(data[0]) +" == "+ newHistoryNo);
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException ex2) {
+                    }
+                }
+                return false;
+            }
             data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 3)));
             CheckDataLength(data);
             if (GetCardStatus(data[0]) != Ascii.NAK) {
+                //
+                data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 3)));
+                dataList.AddReadBlockData(data[0], 5, false);
+                SetCardHistoryNo(data[0], historyNo);
+                writeWithoutEncryption(nfc, dataList);
+
                 myRef.setValue("STATUS WRITE FAILED : "+GetCardStatus(data[0]));
                 if (nfc != null) {
                     try {
                         nfc.close();
                     } catch (IOException ex) {
-                    }
-                }
-                return false;
-            }
-            data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 5)));
-            CheckDataLength(data);
-            if (GetCardHistoryNo(data[0]) != CardHistoryNo) {
-                myRef.setValue("HISTORY WRITE FAILED : "+GetCardHistoryNo(data[0]) +" == "+ CardHistoryNo);
-                if (nfc != null) {
-                    try {
-                        nfc.close();
-                    } catch (IOException ex2) {
                     }
                 }
                 return false;
@@ -2742,7 +2749,7 @@ public class AccessFalica {
             return true;
         } catch (Exception e) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-10-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-12-" + timestamp.getTime());
             myRef.setValue("Exception Write Status and History");
             if (nfc != null) {
                 try {
@@ -3221,7 +3228,6 @@ public class AccessFalica {
         }
     }
 
-    @SuppressLint("WrongConstant")
     private GMA_LOG_DATA[] GetLogDay() {
         int i = 2;
         int _index = bin2int(GetByteToBitString((byte[]) LogDay.get(0), IsEncryption.NotEncrypt, 0, 2));
@@ -3272,6 +3278,9 @@ public class AccessFalica {
         for (i = _index; i >= 0; i--) {
             _sortedList.add((Integer) sdFormat.get(i));
         }
+        //RND BY ANWAR
+        Collections.sort(_sortedList);
+        //END RND BY ANWAR
         int i5 = 367;
         while (true) {
             i = i5;
@@ -3300,7 +3309,8 @@ public class AccessFalica {
                     _log[i7].GasTime = (Calendar) _gasTime.clone();
                     if (i7 > 0) {
                         i2 = _index;
-                        _log[i7].GasValue = _gasValue - ((((double) ((Integer) _sortedList.get(i7 - 1)).intValue()) * 100.0d) / 1000.0d);
+                        //_log[i7].GasValue = _gasValue - ((((double) ((Integer) _sortedList.get(i7 - 1)).intValue()) * 100.0d) / 1000.0d);
+                        _log[i7].GasValue = _gasValue - ((((double) ((Integer) _sortedList.get(i7 - 1)).intValue())));
                     } else {
                         i2 = _index;
                         _log[i7].GasValue = _gasValue;
