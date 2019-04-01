@@ -286,6 +286,7 @@ public class PaymentPresenter {
                 });
     }
 
+
     private void getErrorMessage(int code, ResponseBody responseBody) {
         switch (code) {
             case 500:

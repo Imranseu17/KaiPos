@@ -2565,9 +2565,17 @@ public class AccessFalica {
             CheckDataLength(data);
             dataList.AddReadBlockData(data[0], 5, false);
             SetCardHistoryNo(data[0], CardHistoryNo);
+
+            //Get Card Status
+            byte[][] statusData = parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 3)));
+            CheckDataLength(statusData);
+            //Add status data in blog
+            dataList.AddReadBlockData(statusData[0], 3, false);
+            SetCredit(dataList.GetReadBlockData(3), 0.0);
+
             writeWithoutEncryption(nfc, dataList);
 
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-12-" + timestamp.getTime());
             data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
             CheckDataLength(data);
             if (GetCardHistoryNo(data[0]) != CardHistoryNo) {
@@ -2597,9 +2605,9 @@ public class AccessFalica {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
             StringBuilder stringBuilder2 = new StringBuilder();
-            stringBuilder2.append("Exception HistoryNo: ");
+            stringBuilder2.append("Exception Write HistoryNo: ");
             stringBuilder2.append(e.getMessage());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-11-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-12-" + timestamp.getTime());
             myRef.setValue(stringBuilder2.toString());
             if (nfc != null) {
                 try {
@@ -2705,15 +2713,17 @@ public class AccessFalica {
             //Write Card History No
             dataList.AddReadBlockData(data[0], 5, false);
             SetCardHistoryNo(data[0], newHistoryNo);
+            int cardHistoryNo = GetCardHistoryNo(data[0]);
             //Write Card Status
             data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 3)));
             CheckDataLength(data);
             dataList.AddReadBlockData(data[0], 3, false);
             SetCardStatus(data[0], 21);
+            byte cardStaus = GetCardStatus(data[0]);
             //Finally write card history and card status
             writeWithoutEncryption(nfc, dataList);
-            if (GetCardHistoryNo(data[0]) != newHistoryNo) {
-                myRef.setValue("HISTORY WRITE FAILED : "+GetCardHistoryNo(data[0]) +" == "+ newHistoryNo);
+            if (cardHistoryNo != newHistoryNo) {
+                myRef.setValue("HISTORY WRITE FAILED : "+cardHistoryNo +" == "+ newHistoryNo);
                 if (nfc != null) {
                     try {
                         nfc.close();
@@ -2722,16 +2732,14 @@ public class AccessFalica {
                 }
                 return false;
             }
-            data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 3)));
-            CheckDataLength(data);
-            if (GetCardStatus(data[0]) != Ascii.NAK) {
+            if (cardStaus != Ascii.NAK) {
                 //
-                data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 3)));
+                data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 5)));
                 dataList.AddReadBlockData(data[0], 5, false);
                 SetCardHistoryNo(data[0], historyNo);
                 writeWithoutEncryption(nfc, dataList);
 
-                myRef.setValue("STATUS WRITE FAILED : "+GetCardStatus(data[0]));
+                myRef.setValue("STATUS WRITE FAILED : "+cardStaus);
                 if (nfc != null) {
                     try {
                         nfc.close();

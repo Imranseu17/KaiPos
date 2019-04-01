@@ -371,6 +371,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return super.onOptionsItemSelected(item);
     }
 
+
     private void takaToGas(String amount) {
         if (!TextUtils.isEmpty(amount)) {
             double value = Double.parseDouble(amount) / 9.1;
@@ -401,13 +402,12 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         Transaction transaction = new Transaction(cardIdm, payment.getPaymentId(), payment.getReceipt().getGasUnit(), payment.getUnitPrice(),
                 payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo(), cardHistoryNo, payment.getNewHistoryNo(),
                 "authorize");
-        final int id = payment.getPaymentId();
         mTransactionViewModel.insert(transaction);
         mTransactionViewModel.getTransactionByCardIdm(cardIdm).observe(this, new Observer<Transaction>() {
             @Override
             public void onChanged(@Nullable Transaction transaction) {
                 if (transaction != null) {
-                    DebugLog.e(transaction.getPaymentId() +" ||| "+id);
+
                     Intent intent = new Intent(RechargeActivity.this, CardWriteActivity.class);
                     intent.putExtra("cardIdm", cardIdm);
                     startActivity(intent);
@@ -457,6 +457,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             default:
+                hideAnimation();
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
 
@@ -630,8 +631,10 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     public void hideAnimation() {
-        if (animationView.isAnimating()) animationView.cancelAnimation();
+        layout_recharge.setVisibility(View.GONE);
         animationView.setVisibility(View.GONE);
+        if (animationView.isAnimating()) animationView.cancelAnimation();
+
     }
 
 

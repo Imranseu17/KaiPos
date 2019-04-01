@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:hint="Payment success"
+                android:hint="Until payment success"
                 android:textColor="@color/pink"
                 android:textAppearance="@style/TextAppearance.FontSemiBold"
                 android:textSize="20sp" />
