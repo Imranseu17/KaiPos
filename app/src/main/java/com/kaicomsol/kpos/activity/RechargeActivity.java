@@ -139,6 +139,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     TextView txt_total_amount;
     @BindView(R.id.btn_submit)
     Button btn_submit;
+    @BindView(R.id.txt_tax)
+    TextView txt_tax;
 
 
     @Override
@@ -329,7 +331,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             public void onClick(DialogInterface dialog, int item) {
                 String amount = items[item].toString();
                 if (amount.equals("Manual")) {
+                    txt_price.setText("Manual ");
+                    txt_taka.setText("0.0 ");
+                    txt_gas.setText("0.0 ");
+                    txt_tax.setText("0.0 ");
+                    txt_total_amount.setText("0.0 ");
                     expand(inputLayoutAmount);
+                    inputLayoutAmount.requestFocus();
+
                 } else {
                     String value = amount.replace(" TK", "");
                     txt_price.setText(value);
@@ -344,7 +353,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+
         if (item.getTitle().equals("Manual")) {
+            txt_price.setText("Manual ");
+            txt_taka.setText("0.0 ");
+            txt_gas.setText("0.0 ");
+            txt_tax.setText("0.0 ");
+            txt_total_amount.setText("0.0 ");
             expand(inputLayoutAmount);
         } else {
             String amount = item.getTitle().toString().replace(" TK", "");

@@ -3129,221 +3129,162 @@ public class AccessFalica {
     @SuppressLint("WrongConstant")
     private GMA_LOG_DATA[] GetLogHour() {
 
-        int i = 2;
-        int _index = bin2int(GetByteToBitString((byte[]) LogHour.get(0), IsEncryption.NotEncrypt, 0, 2));
-        if (_index > 1439) {
+        AccessFalica accessFalica = this;
+        int num = accessFalica.bin2int(accessFalica.GetByteToBitString(accessFalica.LogHour.get(0).clone(), AccessFalica.IsEncryption.NotEncrypt, 0, 2));
+        if (num > 1439) {
             throw new RuntimeException("LogHoer");
         }
-        String str;
-        int i2;
-        int i3;
-        double _latestGasValue = ((double) BCDTo(GetByteToBitString((byte[]) LogHour.get(0), IsEncryption.NotEncrypt, 2, 4))) / 1000.0d;
-        String _s = GetByteToBitString((byte[]) LogHour.get(0), IsEncryption.NotEncrypt, 6, 5);
-        Long _n = BCDToLong(_s.substring(0, 40));
-        Boolean bLastDay = Boolean.valueOf(true);
-        String _ymd = String.format("%010d", new Object[]{_n});
-        Calendar _latestGasTime = Calendar.getInstance();
-        if (_ymd.equals("0000000000")) {
-            bLastDay = Boolean.valueOf(false);
+        //num2 - latestvalue
+        double num2 = ((double) accessFalica.BCDTo(accessFalica.GetByteToBitString( accessFalica.LogHour.get(0).clone(), AccessFalica.IsEncryption.NotEncrypt, 2, 4))) / 1000.0d;
+        String byteToBitString = accessFalica.GetByteToBitString(accessFalica.LogHour.get(0).clone(), AccessFalica.IsEncryption.NotEncrypt, 6, 5);
+        Long _n = accessFalica.BCDToLong(byteToBitString.substring(0, 40));
+        String text = String.format("%010d", new Object[]{_n});
+        Calendar datetime = Calendar.getInstance();
+        if (text.equals("0000000000")) {
+            datetime = null;
+
         } else {
             try {
-                _latestGasTime.setTime(new SimpleDateFormat("yyMMddHHmm").parse(_ymd));
+                datetime.setTime(new SimpleDateFormat("yyMMddHHmm").parse(text));
             } catch (ParseException e) {
-                str = _s;
-                i2 = _index;
                 throw new RuntimeException("GasTime");
             }
         }
-        ArrayList sdFormat = new ArrayList();
-        int _col = 0;
-        int _row = 1;
-        int i4 = 0;
-        while (true) {
-            i3 = DateTimeConstants.MINUTES_PER_DAY;
-            if (i4 >= DateTimeConstants.MINUTES_PER_DAY) {
-                break;
+
+        ArrayList<Integer> list = new ArrayList();
+        int num3 = 1;
+        int num4 = 0;
+        for (int i = 0; i < 1440 ; i++){
+            int item = accessFalica.LogHour.get(num3)[num4];
+            list.add(item);
+            num4++;
+            if(num4 > 15){
+                num4 = 0;
+                num3++;
             }
-            sdFormat.add(Integer.valueOf(hex2int(PadLeft(String.valueOf(((byte[]) LogHour.get(_row))[_col]), i, '0'))));
-            i = _col + 1;
-            if (i > 15) {
-                _row++;
-                _col = 0;
-            } else {
-                _col = i;
+        }
+        ArrayList<Integer> list2 = new ArrayList<>();
+        for (int j = num; j >= 0; j--){
+
+            list2.add(list.get(j));
+        }
+
+        for (int k = 1439; k > num; k--){
+
+            list2.add(list.get(k));
+        }
+
+
+        GMA_LOG_DATA[] array = new GMA_LOG_DATA[DateTimeConstants.MINUTES_PER_DAY];
+        Calendar gasTime = null;
+        double num5 = 0.0d;
+        if(datetime != null){
+            gasTime = datetime;
+            num5 = num2;
+        }
+        for (int l = 0; l < 1440; l++){
+            array[l]= new GMA_LOG_DATA();
+            if (datetime == null){
+                array[l].GasTime = Calendar.getInstance();
+                array[l].GasValue = 0;
             }
-            i4++;
-            i = 2;
-        }
-        ArrayList<Integer> _sortedList = new ArrayList();
-        for (i = _index; i >= 0; i--) {
-            _sortedList.add((Integer) sdFormat.get(i));
-        }
-        int i5 = 1439;
-        while (true) {
-            i = i5;
-            if (i <= _index) {
-                break;
-            }
-            _sortedList.add((Integer) sdFormat.get(i));
-            i5 = i - 1;
-        }
-        GMA_LOG_DATA[] _log = new GMA_LOG_DATA[DateTimeConstants.MINUTES_PER_DAY];
-        Calendar _gasTime = Calendar.getInstance();
-        double _gasValue = 0.0d;
-        if (bLastDay.booleanValue()) {
-            _gasTime = _latestGasTime;
-            _gasValue = _latestGasValue;
-        }
-        int i6 = 0;
-        while (true) {
-            i4 = i6;
-            if (i4 < i3) {
-                ArrayList<Integer> _list;
-                _log[i4] = new GMA_LOG_DATA();
-                if (bLastDay.booleanValue()) {
-                    str = _s;
-                    _list = sdFormat;
-                    _log[i4].GasTime = (Calendar) _gasTime.clone();
-                    if (i4 > 0) {
-                        i2 = _index;
-                        _log[i4].GasValue = _gasValue - ((((double) ((Integer) _sortedList.get(i4 - 1)).intValue()) * 20.0d) / 1000.0d);
-//                        _log[i4].GasValue = sdFormat;
-                        sdFormat.add(_log[i4].GasValue);
-                    } else {
-                        i2 = _index;
-                        _log[i4].GasValue = _gasValue;
-                    }
-//                    _log[i4].GasValue = sdFormat;
-                    _gasTime.add(10, -1);
-                    sdFormat.add(_gasValue);
-                } else {
-                    _log[i4].GasTime.clear();
-                    str = _s;
-                    _list = sdFormat;
-                    _log[i4].GasValue = 0.0;
-                    i2 = _index;
+            else {
+
+                System.out.println("Gas Time: "+(Calendar) gasTime.clone());
+                array[l].GasTime = (Calendar) gasTime.clone();
+                if (l > 0) {
+
+                    int num6 = list2.get(l - 1);
+                    num5 = num5 - (double) (num6 * 20) / 1000.0d;
+                    array[l].GasValue = num5;
                 }
-                i6 = i4 + 1;
-                _s = str;
-                Object sdFormat2 = _list;
-                _index = i2;
-                i3 = DateTimeConstants.MINUTES_PER_DAY;
-            } else {
-//                SimpleDateFormat simpleDateFormat = sdFormat2;
-                i2 = _index;
-                return _log;
+
+                array[l].GasValue = num5;
+                gasTime.add(Calendar.HOUR, -1);
+
             }
         }
+
+        return  array;
     }
 
     private GMA_LOG_DATA[] GetLogDay() {
-        int i = 2;
-        int _index = bin2int(GetByteToBitString((byte[]) LogDay.get(0), IsEncryption.NotEncrypt, 0, 2));
-        if (_index > 367) {
-            throw new RuntimeException("LogDay");
+        AccessFalica accessFalica = this;
+        int num = accessFalica.bin2int(accessFalica.GetByteToBitString(accessFalica.LogDay.get(0).clone(), AccessFalica.IsEncryption.NotEncrypt, 0, 2));
+        if (num > 367) {
+            throw new RuntimeException("LogDayError");
         }
-        String str;
-        int i2;
-        int i3;
-        double _latestGasValue = ((double) BCDTo(GetByteToBitString((byte[]) LogDay.get(0), IsEncryption.NotEncrypt, 2, 4))) / 1000.0d;
-        String _s = GetByteToBitString((byte[]) LogDay.get(0), IsEncryption.NotEncrypt, 6, 5);
-        Long _n = BCDToLong(_s.substring(0, 40));
-        Boolean bLastDay = Boolean.valueOf(true);
-        String _ymd = String.format("%010d", new Object[]{_n});
-        Calendar _latestGasTime = Calendar.getInstance();
-        if (_ymd.equals("0000000000")) {
-            bLastDay = Boolean.valueOf(false);
+        //num2 - latestvalue
+        double num2 = ((double) accessFalica.BCDTo(accessFalica.GetByteToBitString( accessFalica.LogDay.get(0).clone(), AccessFalica.IsEncryption.NotEncrypt, 2, 4))) / 1000.0d;
+        String byteToBitString = accessFalica.GetByteToBitString(accessFalica.LogDay.get(0).clone(), AccessFalica.IsEncryption.NotEncrypt, 6, 5);
+        Long _n = accessFalica.BCDToLong(byteToBitString.substring(0, 40));
+        String text = String.format("%010d", new Object[]{_n});
+        Calendar datetime = Calendar.getInstance();
+        if (text.equals("0000000000")) {
+            datetime = null;
+
         } else {
             try {
-                _latestGasTime.setTime(new SimpleDateFormat("yyMMddHHmm").parse(_ymd));
+                datetime.setTime(new SimpleDateFormat("yyMMddHHmm").parse(text));
             } catch (ParseException e) {
-                str = _s;
-                i2 = _index;
                 throw new RuntimeException("GasTime");
             }
         }
-        ArrayList sdFormat = new ArrayList();
-        int _col = 0;
-        int _row = 1;
-        int i4 = 0;
-        while (true) {
-            i3 = 368;
-            if (i4 >= 368) {
-                break;
+
+        ArrayList<Integer> list = new ArrayList();
+        int num3 = 1;
+        int num4 = 0;
+        for (int i = 0; i < 368 ; i++){
+            int item = accessFalica.LogDay.get(num3)[num4];
+            list.add(item);
+            num4++;
+            if(num4 > 15){
+                num4 = 0;
+                num3++;
             }
-            sdFormat.add(Integer.valueOf(hex2int(PadLeft(String.valueOf(((byte[]) LogDay.get(_row))[_col]), i, '0'))));
-            i = _col + 1;
-            if (i > 15) {
-                _row++;
-                _col = 0;
-            } else {
-                _col = i;
+        }
+        ArrayList<Integer> list2 = new ArrayList<>();
+        for (int j = num; j >= 0; j--){
+
+            list2.add(list.get(j));
+        }
+
+        for (int k = 367; k > num; k--){
+
+            list2.add(list.get(k));
+        }
+
+
+        GMA_LOG_DATA[] array = new GMA_LOG_DATA[368];
+        Calendar gasTime = null;
+        double num5 = 0.0d;
+        if(datetime != null){
+            gasTime = datetime;
+            num5 = num2;
+        }
+        for (int l = 0; l < 368; l++){
+            array[l]= new GMA_LOG_DATA();
+            if (datetime == null){
+                array[l].GasTime = Calendar.getInstance();
+                array[l].GasValue = 0.0d;
             }
-            i4++;
-            i = 2;
-        }
-        ArrayList<Integer> _sortedList = new ArrayList();
-        for (i = _index; i >= 0; i--) {
-            _sortedList.add((Integer) sdFormat.get(i));
-        }
-        //RND BY ANWAR
-        Collections.sort(_sortedList);
-        //END RND BY ANWAR
-        int i5 = 367;
-        while (true) {
-            i = i5;
-            if (i <= _index) {
-                break;
-            }
-            _sortedList.add((Integer) sdFormat.get(i));
-            i5 = i - 1;
-        }
-        GMA_LOG_DATA[] _log = new GMA_LOG_DATA[368];
-        Calendar _gasTime = Calendar.getInstance();
-        double _gasValue = 0.0d;
-        if (bLastDay.booleanValue()) {
-            _gasTime = _latestGasTime;
-            _gasValue = _latestGasValue;
-        }
-        int i6 = 0;
-        while (true) {
-            int i7 = i6;
-            if (i7 < i3) {
-                ArrayList<Integer> _list;
-                _log[i7] = new GMA_LOG_DATA();
-                if (bLastDay.booleanValue()) {
-                    str = _s;
-                    _list = sdFormat;
-                    _log[i7].GasTime = (Calendar) _gasTime.clone();
-                    if (i7 > 0) {
-                        i2 = _index;
-                        //_log[i7].GasValue = _gasValue - ((((double) ((Integer) _sortedList.get(i7 - 1)).intValue()) * 100.0d) / 1000.0d);
-                        _log[i7].GasValue = _gasValue - ((((double) ((Integer) _sortedList.get(i7 - 1)).intValue())));
-                    } else {
-                        i2 = _index;
-                        _log[i7].GasValue = _gasValue;
-                    }
-//                    _log[i7].GasValue = sdFormat;
-                    _gasTime.add(5, -1);
-//                    _gasValue = sdFormat;
-                } else {
-                    _log[i7].GasTime.clear();
-                    str = _s;
-                    _list = sdFormat;
-//                    _log[i7].GasValue = null;
-                    i2 = _index;
+            else {
+
+                array[l].GasTime = (Calendar) gasTime.clone();
+                if (l > 0) {
+
+                    int num6 = list2.get(l - 1);
+                    num5 -=  (double) (num6 * 100) / 1000.0d;
+                    array[l].GasValue = num5;
                 }
-                i6 = i7 + 1;
-                _s = str;
-                Object sdFormat2 = _list;
-                _index = i2;
-                i3 = 368;
-            } else {
-//                SimpleDateFormat simpleDateFormat = sdFormat2;
-                i2 = _index;
-                return _log;
+
+                array[l].GasValue = num5;
+                gasTime.add(Calendar.HOUR, -24);
+
             }
         }
+
+        return  array;
     }
 
     public static int hex2decimal(String s) {
