@@ -1,6 +1,8 @@
 package com.kaicomsol.kpos.activity;
 
+import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.bluetooth.BluetoothAdapter;
@@ -48,8 +50,6 @@ import com.kaicomsol.kpos.models.Item;
 import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.presenters.StatePresenter;
 import com.kaicomsol.kpos.printer.BluetoothPrinter;
-import com.kaicomsol.kpos.services.NetworkChangeReceiver;
-import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.PrinterCommands;
 import com.kaicomsol.kpos.utils.RechargeStatus;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
@@ -91,10 +91,9 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     private boolean isPrint = false;
     private IntentFilter intentFilter;
     private BluetoothSocket mBluetoothSocket = null;
+    private ProgressDialog mProgressDialog;
 
     //print component bind
-    @BindView(R.id.progressBar)
-    ProgressBar mProgressBar;
     @BindView(R.id.layout_print)
     RelativeLayout layout_print;
     @BindView(R.id.recycler_list)
@@ -119,8 +118,8 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     TextView txt_deposit_amount;
     @BindView(R.id.txt_total)
     TextView txt_total;
-    @BindView(R.id.layout_again)
-    LinearLayout layout_again;
+    @BindView(R.id.layout_card_again)
+    LinearLayout layout_card_again;
     @BindView(R.id.layout_try_print)
     LinearLayout layout_try_print;
     @BindView(R.id.btn_try_again)
@@ -150,6 +149,8 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         // Write a message to the database
         mDatabase = FirebaseDatabase.getInstance();
 
+        mProgressDialog = new ProgressDialog(CardWriteActivity.this);
+
         //internet connectivity receiver
         intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_ACTION);
@@ -166,6 +167,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         Bundle arg = new Bundle();
         arg.putString("msg", "Until payment cancel");
         mCancelCardDialog.setArguments(arg);
+        mCancelCardDialog.setCancelable(false);
 
         Intent intent = getIntent();
         cardIdm = intent.getStringExtra("cardIdm");
@@ -221,46 +223,77 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.enableForegroundDispatch(CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mAdapter.disableForegroundDispatch(this);
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag != null) {
             if (!isCancel){
-                mAccessFalica.ReadTag(tag);
-                String checkStatus = mAccessFalica.getCardStatus(tag);
-                if (checkStatus != null && checkStatus.equals("15")) {
-                    rechargeCardDismiss();
-                    receiptPayment(mTransaction.getPaymentId() + "");
-                    capturePayment(mTransaction.getPaymentId() + "");
-                } else {
-                    new WriteAsyncTask(mTransaction).execute();
-                }
+               cardWriteForFirstAttempt(tag);
             }else {
-                mAccessFalica.ReadTag(tag);
-                final String historyNo = mAccessFalica.getHistoryNo(tag);
-                mTransactionViewModel.getTransactionByCardIdm(cardIdm).observeForever(new Observer<Transaction>() {
-                    @Override
-                    public void onChanged(@Nullable Transaction transaction) {
-                        if (transaction != null) {
-                            if (historyNo.equalsIgnoreCase(transaction.getHistoryNo())){
-                                cancelPayment(mTransaction.getPaymentId() + "");
-                            }else {
-                                mAccessFalica.ReadTag(tag);
-                                boolean response = mAccessFalica.writeHistory(tag, Integer.parseInt(transaction.getHistoryNo()), mDatabase);
-                                if (response) cancelPayment(mTransaction.getPaymentId() + "");
-                            }
-                        }
-                        cancelCardDismiss();
-                    }
-                });
+                cardCheckForCancelAttempt(tag);
             }
 
         } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
 
     }
 
+    private void cardWriteForFirstAttempt(final Tag tag){
+        mAccessFalica.ReadTag(tag);
+        String checkStatus = mAccessFalica.getCardStatus(tag);
+        if (checkStatus != null && checkStatus.equals("15")) {
+            rechargeCardDismiss();
+            receiptPayment(mTransaction.getPaymentId() + "");
+            capturePayment(mTransaction.getPaymentId() + "");
+        } else {
+            new WriteAsyncTask(mTransaction).execute();
+        }
+    }
+
+    private void cardCheckForCancelAttempt(final Tag tag){
+        mAccessFalica.ReadTag(tag);
+        String checkStatus = mAccessFalica.getCardStatus(tag);
+        if (checkStatus != null && checkStatus.equals("15")) {
+            rechargeCardDismiss();
+            Toast.makeText(CardWriteActivity.this,"Transaction already successful", Toast.LENGTH_SHORT).show();
+            receiptPayment(mTransaction.getPaymentId() + "");
+            capturePayment(mTransaction.getPaymentId() + "");
+        } else {
+            mAccessFalica.ReadTag(tag);
+            final String historyNo = mAccessFalica.getHistoryNo(tag);
+            mTransactionViewModel.getTransactionByCardIdm(cardIdm).observeForever(new Observer<Transaction>() {
+                @Override
+                public void onChanged(@Nullable Transaction transaction) {
+                    if (transaction != null) {
+                        if (historyNo.equalsIgnoreCase(transaction.getHistoryNo())){
+                            cancelPayment(mTransaction.getPaymentId() + "");
+                        }else {
+                            mAccessFalica.ReadTag(tag);
+                            boolean response = mAccessFalica.writeHistory(tag, Integer.parseInt(transaction.getHistoryNo()), mDatabase);
+                            if (response) cancelPayment(mTransaction.getPaymentId() + "");
+                            else showTryAgain();
+                        }
+                    }
+                    cancelCardDismiss();
+                }
+            });
+        }
+    }
+
     public void showConfirmPrintAlert() {
-        new ChooseAlertDialog(this)
+      ChooseAlertDialog alertDialog = new ChooseAlertDialog(this)
                 .setDialogType(PromptDialog.DIALOG_TYPE_SUCCESS)
                 .setAnimationEnable(true)
                 .setTitleText(getString(R.string.confirmation))
@@ -278,7 +311,11 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
                         dialog.dismiss();
 
                     }
-                }).show();
+                });
+        if(!((Activity) this).isFinishing())
+        {
+            alertDialog.show();
+        }
     }
 
     @Override
@@ -314,7 +351,6 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     public void onBackPressed() {
         if (isPrint) {
             super.onBackPressed();
-            showTryAgain();
         } else {
             mTransactionViewModel.getTransactionByCardIdm(cardIdm).observeForever(new Observer<Transaction>() {
                 @Override
@@ -330,7 +366,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     }
 
     public void showCancelDialog() {
-        new ChooseAlertDialog(this)
+        ChooseAlertDialog alertDialog= new ChooseAlertDialog(this)
                 .setDialogType(PromptDialog.DIALOG_TYPE_WRONG)
                 .setAnimationEnable(true)
                 .setTitleText(R.string.warning)
@@ -345,18 +381,26 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
                     @Override
                     public void onClick(ChooseAlertDialog dialog) {
                         isCancel = true;
+                        hideAllView();
                         cancelCardDialog();
                         dialog.dismiss();
 
                     }
-                }).show();
+                });
+        if(!((Activity) this).isFinishing())
+        {
+            alertDialog.show();
+        }
     }
 
     private void receiptPayment(String paymentId) {
 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         if (checkConnection()) {
-            mProgressBar.setVisibility(View.VISIBLE);
+            showLoading("Loading print receipt");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            layout_card_again.setVisibility(View.GONE);
             mPresenter.receiptPayment(token, paymentId);
         } else {
             showReceiptAgain();
@@ -367,8 +411,13 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     private void rechargeCardDialog() {
         if (mRechargeCardDialog != null) {
             if (!mRechargeCardDialog.isAdded()) {
-                mAdapter.enableForegroundDispatch(CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
-                mRechargeCardDialog.show(getSupportFragmentManager(), mRechargeCardDialog.getTag());
+                try {
+                    mAdapter.enableForegroundDispatch(CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+                    mRechargeCardDialog.show(getSupportFragmentManager(), mRechargeCardDialog.getTag());
+                }catch (Exception e){
+                      e.printStackTrace();
+                }
+
             }
         }
     }
@@ -377,22 +426,37 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     private void rechargeCardDismiss() {
         if (mRechargeCardDialog != null) {
             mRechargeCardDialog.dismiss();
+            try {
+                mAdapter.disableForegroundDispatch(CardWriteActivity.this);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
     private void cancelCardDialog() {
-        if (mRechargeCardDialog != null) {
-            if (!mRechargeCardDialog.isAdded()) {
-                mAdapter.enableForegroundDispatch(CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
-                mRechargeCardDialog.show(getSupportFragmentManager(), mRechargeCardDialog.getTag());
+        if (mCancelCardDialog != null) {
+            if (!mCancelCardDialog.isAdded()) {
+                try {
+                    mAdapter.enableForegroundDispatch(CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+                    mCancelCardDialog.show(getSupportFragmentManager(), mCancelCardDialog.getTag());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
         }
     }
 
 
     private void cancelCardDismiss() {
-        if (mRechargeCardDialog != null) {
-            mRechargeCardDialog.dismiss();
+        if (mCancelCardDialog != null) {
+            mCancelCardDialog.dismiss();
+            try {
+                mAdapter.disableForegroundDispatch(CardWriteActivity.this);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -648,7 +712,9 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
 
     @Override
     public void onSuccess(Receipt receipt) {
-        mProgressBar.setVisibility(View.GONE);
+        mProgressDialog.dismiss();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         print(receipt);
     }
 
@@ -659,7 +725,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
 
     @Override
     public void onCancelSuccess(int paymentId) {
-        mProgressBar.setVisibility(View.GONE);
+        mProgressDialog.dismiss();
         Toast.makeText(CardWriteActivity.this, "Recharge canceled!", Toast.LENGTH_SHORT).show();
         mTransactionViewModel.deleteAll();
         finish();
@@ -672,8 +738,14 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
             case RECEIPT_ERROR:
                 showReceiptAgain();
                 break;
+            case CANCEL_ERROR:
+                showTryAgain();
+                break;
+            default:
+                showTryAgain();
+                break;
         }
-        mProgressBar.setVisibility(View.GONE);
+        mProgressDialog.dismiss();
         Toast.makeText(CardWriteActivity.this, error, Toast.LENGTH_SHORT).show();
 
     }
@@ -750,13 +822,19 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     private void showTryAgain() {
         layout_print.setVisibility(View.GONE);
         layout_try_print.setVisibility(View.GONE);
-        layout_again.setVisibility(View.VISIBLE);
+        layout_card_again.setVisibility(View.VISIBLE);
     }
 
     private void showReceiptAgain() {
         layout_print.setVisibility(View.GONE);
         layout_try_print.setVisibility(View.VISIBLE);
-        layout_again.setVisibility(View.GONE);
+        layout_card_again.setVisibility(View.GONE);
+    }
+
+    private void hideAllView(){
+        layout_print.setVisibility(View.GONE);
+        layout_try_print.setVisibility(View.GONE);
+        layout_card_again.setVisibility(View.GONE);
     }
 
     private void print(Receipt receipt) {
@@ -780,16 +858,26 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
 
     private void cancelPayment(String paymentId) {
         if (checkConnection()) {
-            mProgressBar.setVisibility(View.VISIBLE);
+            showLoading("Loading recharge cancel");
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
             mPresenter.cancelPayment(token, paymentId);
         } else SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed), true);
     }
 
+    private void showLoading(String msg){
+        mProgressDialog.setTitle(msg);
+        mProgressDialog.setCancelable(false);
+        if(!((Activity) this).isFinishing())
+        {
+            mProgressDialog.show();
+        }
+
+    }
+
     private void showPrintLayout(Receipt receipt) {
 
         layout_print.setVisibility(View.VISIBLE);
-        layout_again.setVisibility(View.GONE);
+        layout_card_again.setVisibility(View.GONE);
         layout_try_print.setVisibility(View.GONE);
 
         Date date = new Date(receipt.getPaymentDate());
@@ -859,7 +947,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     }
 
     public void showEnableBluetoothDialog() {
-        new ChooseAlertDialog(this)
+        ChooseAlertDialog alertDialog = new ChooseAlertDialog(this)
                 .setDialogType(PromptDialog.DIALOG_TYPE_SUCCESS)
                 .setAnimationEnable(true)
                 .setTitleText(getString(R.string.bluetooth_enable))
@@ -878,7 +966,12 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
                         dialog.dismiss();
 
                     }
-                }).show();
+                });
+
+        if(!((Activity) this).isFinishing())
+        {
+            alertDialog.show();
+        }
     }
 
     private void bluetoothEnabled() {

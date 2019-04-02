@@ -304,6 +304,7 @@ public class AccessFalica {
         }
     }
 
+
     public boolean getReadCard(Tag tag) {
 
         NfcF nfc = NfcF.get(tag);
@@ -2561,17 +2562,11 @@ public class AccessFalica {
 
             nfc.connect();
             BlockDataList dataList = new BlockDataList();
+
             byte[][] data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
             CheckDataLength(data);
             dataList.AddReadBlockData(data[0], 5, false);
-            SetCardHistoryNo(data[0], CardHistoryNo);
-
-            //Get Card Status
-            byte[][] statusData = parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 3)));
-            CheckDataLength(statusData);
-            //Add status data in blog
-            dataList.AddReadBlockData(statusData[0], 3, false);
-            SetCredit(dataList.GetReadBlockData(3), 0.0);
+            SetCardHistoryNo(dataList.GetReadBlockData(5), CardHistoryNo);
 
             writeWithoutEncryption(nfc, dataList);
 

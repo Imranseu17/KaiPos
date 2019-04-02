@@ -1,18 +1,14 @@
 package com.kaicomsol.kpos.activity;
 
+import android.app.Activity;
 import android.app.PendingIntent;
-import android.arch.lifecycle.LiveData;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -26,70 +22,35 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.airbnb.lottie.LottieAnimationView;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.adapter.PrintAdapter;
 import com.kaicomsol.kpos.callbacks.CloseClickListener;
 import com.kaicomsol.kpos.callbacks.PaymentView;
 import com.kaicomsol.kpos.dialogs.CardCheckDialog;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
-import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.fragment.InvoiceFragment;
-import com.kaicomsol.kpos.golobal.Constants;
-import com.kaicomsol.kpos.golobal.GlobalBus;
 import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.Invoices;
-import com.kaicomsol.kpos.models.Item;
-import com.kaicomsol.kpos.models.LogState;
-import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.models.Payment;
-import com.kaicomsol.kpos.models.ReadCard;
-import com.kaicomsol.kpos.models.Receipt;
-import com.kaicomsol.kpos.nfcfelica.HttpResponsAsync;
 import com.kaicomsol.kpos.presenters.PaymentPresenter;
-import com.kaicomsol.kpos.printer.BluetoothPrinter;
-import com.kaicomsol.kpos.services.NetworkChangeReceiver;
-import com.kaicomsol.kpos.utils.CardPropertise;
-import com.kaicomsol.kpos.utils.DebugLog;
-import com.kaicomsol.kpos.utils.PrinterCommands;
 import com.kaicomsol.kpos.utils.RechargeStatus;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
-import com.kaicomsol.kpos.utils.Utils;
-import com.squareup.otto.Subscribe;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -115,12 +76,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     private PaymentPresenter mPresenter;
     private Vibrator vibrator;
     private IntentFilter intentFilter;
+    private ProgressDialog mProgressDialog;
 
     //Bind component
     @BindView(R.id.layout_recharge)
     LinearLayout layout_recharge;
-    @BindView(R.id.animation_view)
-    LottieAnimationView animationView;
     @BindView(R.id.txt_account_no)
     TextView txt_account_no;
     @BindView(R.id.layout_price)
@@ -178,7 +138,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         if (checkConnection()) {
             isRecharge = true;
-            showAnimationInvoice();
+            showLoading("Loading invoice...");
             mPresenter.getInvoices(token, cardNo);
             new ReadAsyncTask(tag).execute();
         } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
@@ -224,6 +184,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         //internet connectivity receiver
         intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_ACTION);
+        mProgressDialog = new ProgressDialog(RechargeActivity.this);
         //Vibrator init
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         // Get a new or existing ViewModel from the ViewModelProvider.
@@ -387,7 +348,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String amount = txt_total_amount.getText().toString().trim();
         if (cardHistoryNo != null) {
             SharedDataSaveLoad.save(this, getString(R.string.preference_temp_history), cardHistoryNo);
-            showAnimation();
+            showLoading("Loading authorize...");
             mPresenter.addPayment(token, amount, cardIdm, cardHistoryNo, "1");
         }
 
@@ -397,7 +358,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     public void onSuccess(Payment payment) {
         //Add local authorise data
-        hideAnimation();
+        mProgressDialog.dismiss();
 
         Transaction transaction = new Transaction(cardIdm, payment.getPaymentId(), payment.getReceipt().getGasUnit(), payment.getUnitPrice(),
                 payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo(), cardHistoryNo, payment.getNewHistoryNo(),
@@ -421,7 +382,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     public void onSuccess(Invoices invoices) {
         mAdapter.disableForegroundDispatch(this);
-        hideAnimationInvoice();
+        mProgressDialog.dismiss();
+        layout_recharge.setVisibility(View.VISIBLE);
         if (invoices != null) {
             if (invoices.getInvoices() != null && invoices.getInvoices().size() > 0) {
                 String invoiceList = new Gson().toJson(invoices);
@@ -449,15 +411,16 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         RechargeStatus rechargeStatus = RechargeStatus.getByCode(code);
         switch (rechargeStatus) {
             case PAYMENT_ERROR:
-                hideAnimation();
+                mProgressDialog.dismiss();
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             case INVOICE_ERROR:
-                hideAnimationInvoice();
+                layout_recharge.setVisibility(View.GONE);
+                mProgressDialog.dismiss();
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             default:
-                hideAnimation();
+                mProgressDialog.dismiss();
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
 
@@ -608,33 +571,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 }).show();
     }
 
-    public void showAnimationInvoice() {
-        layout_recharge.setVisibility(View.GONE);
-        animationView.setVisibility(View.VISIBLE);
-        animationView.setAnimation("animation_loading.json");
-        animationView.playAnimation();
-        animationView.loop(true);
-    }
-
-    public void hideAnimationInvoice() {
-        layout_recharge.setVisibility(View.VISIBLE);
-        if (animationView.isAnimating()) animationView.cancelAnimation();
-        animationView.setVisibility(View.GONE);
-    }
-
-    public void showAnimation() {
-        layout_recharge.setVisibility(View.GONE);
-        animationView.setVisibility(View.VISIBLE);
-        animationView.setAnimation("animation_loading.json");
-        animationView.playAnimation();
-        animationView.loop(true);
-    }
-
-    public void hideAnimation() {
-        layout_recharge.setVisibility(View.GONE);
-        animationView.setVisibility(View.GONE);
-        if (animationView.isAnimating()) animationView.cancelAnimation();
-
+    private void showLoading(String msg){
+        mProgressDialog.setTitle(msg);
+        mProgressDialog.setCancelable(false);
+        if(!((Activity) this).isFinishing())
+        {
+            mProgressDialog.show();
+        }
     }
 
 
