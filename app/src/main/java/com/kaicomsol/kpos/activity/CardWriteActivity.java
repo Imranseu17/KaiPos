@@ -241,7 +241,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag != null) {
             if (!isCancel){
-               cardWriteForFirstAttempt(tag);
+                cardWriteForFirstAttempt(tag);
             }else {
                 cardCheckForCancelAttempt(tag);
             }

@@ -494,7 +494,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                 activeButton(btn_delete);
                 disableButton(btn_lost);
                 disableButton(btn_damage);
-                disableButton(btn_add);
+                activeButton(btn_add);
                 activeButton(btn_active);
                 break;
             case "I":
@@ -519,7 +519,7 @@ public class AddCardInfoFragment extends Fragment implements View.OnClickListene
                 activeButton(btn_lost);
                 activeButton(btn_active);
                 disableButton(btn_damage);
-                disableButton(btn_add);
+                activeButton(btn_add);
                 break;
         }
 

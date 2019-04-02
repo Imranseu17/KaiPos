@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,6 +51,7 @@ import com.kaicomsol.kpos.models.Payment;
 import com.kaicomsol.kpos.presenters.PaymentPresenter;
 import com.kaicomsol.kpos.utils.RechargeStatus;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
+
 import java.text.DecimalFormat;
 
 import butterknife.BindView;
@@ -99,6 +101,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     TextView txt_total_amount;
     @BindView(R.id.btn_submit)
     Button btn_submit;
+    @BindView(R.id.txt_tax)
+    TextView txt_tax;
 
 
     @Override
@@ -229,10 +233,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 String amount = txt_total_amount.getText().toString().trim();
                 double creditAmount = Double.parseDouble(amount);
 
-                if (creditAmount < 5000) {
+                if (creditAmount <= 5000 && creditAmount > 0.0) {
                     showConfirmDialog();
-                } else
-                    CustomAlertDialog.showWarning(RechargeActivity.this, "Maximum payment limit is 5000 BDT");
+                } else if (creditAmount <= 0.0) {
+                    CustomAlertDialog.showError(RechargeActivity.this, "Amount can not be less equal zero");
+                } else {
+                    CustomAlertDialog.showError(RechargeActivity.this, "Maximum payment limit is 5000 BDT");
+                }
+
 
             }
         });
@@ -290,7 +298,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             public void onClick(DialogInterface dialog, int item) {
                 String amount = items[item].toString();
                 if (amount.equals("Manual")) {
+                    txt_price.setText("Manual");
+                    txt_taka.setText("0.0");
+                    txt_gas.setText("0.0");
+                    txt_tax.setText("0.0");
+                    txt_total_amount.setText("0.0");
                     expand(inputLayoutAmount);
+                    inputLayoutAmount.requestFocus();
+
                 } else {
                     String value = amount.replace(" TK", "");
                     txt_price.setText(value);
@@ -305,7 +320,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+
         if (item.getTitle().equals("Manual")) {
+            txt_price.setText("Manual");
+            txt_taka.setText("0.0");
+            txt_gas.setText("0.0");
+            txt_tax.setText("0.0");
+            txt_total_amount.setText("0.0");
             expand(inputLayoutAmount);
         } else {
             String amount = item.getTitle().toString().replace(" TK", "");
@@ -340,6 +361,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             txt_price.setText(decimalFormat.format(Double.parseDouble(amount)));
             txt_total_amount.setText(decimalFormat.format(Double.parseDouble(amount)));
             txt_gas.setText(String.valueOf(decimalFormat.format(value)));
+        }else {
+            txt_taka.setText("0.0");
+            txt_price.setText("0.0");
+            txt_total_amount.setText("0.0");
+            txt_gas.setText("0.0");
         }
     }
 
@@ -471,6 +497,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         // 1dp/ms
         a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
+        InputMethodManager inputMethodManager = (InputMethodManager) v.getContext().getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInputFromWindow(v.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
     }
 
     public static void collapse(final View v) {
@@ -571,15 +599,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 }).show();
     }
 
-    private void showLoading(String msg){
+    private void showLoading(String msg) {
         mProgressDialog.setTitle(msg);
         mProgressDialog.setCancelable(false);
-        if(!((Activity) this).isFinishing())
-        {
+        if (!((Activity) this).isFinishing()) {
             mProgressDialog.show();
         }
     }
-
 
 
     class ReadAsyncTask extends AsyncTask<Void, Void, Boolean> {
