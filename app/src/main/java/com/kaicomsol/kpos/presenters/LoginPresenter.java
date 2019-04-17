@@ -56,7 +56,7 @@ public class LoginPresenter {
                             } else {
                                 mViewInterface.onError("Error fetching data");
                             }
-                        } else mViewInterface.onError(APIErrors.get500ErrorMessage(response.errorBody()));
+                        } else errorHandle(response.code(),response.errorBody());
                     }
 
                     @Override
@@ -84,7 +84,7 @@ public class LoginPresenter {
     private void errorHandle(int code, ResponseBody responseBody){
         if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
         else if(code == 406){
-            mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody));
+            mViewInterface.onError(APIErrors.get406LoginErrorMessage(responseBody));
         }else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }
 }

@@ -43,4 +43,15 @@ public class APIErrors {
             return "Error occurred Please try again";
         }
     }
+
+    public static String get406LoginErrorMessage(ResponseBody response) {
+        try {
+            String jsonStr = response.string();
+            JSONObject jObjError = new JSONObject(jsonStr);
+            String message = jObjError.getString("msg");
+            return message;
+        } catch (Exception e) {
+            return "Error occurred Please try again";
+        }
+    }
 }
