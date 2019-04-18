@@ -57,6 +57,9 @@ public interface TransactionDao {
     @Query("DELETE FROM `Transaction` WHERE cardIdm = :cardIdm")
     void deleteByCardIdm(String cardIdm);
 
+    @Query("DELETE FROM `Transaction` WHERE paymentId = :paymentId")
+    void deleteByPaymentId(int paymentId);
+
     @Query("DELETE FROM `Transaction`")
     void deleteAll();
 

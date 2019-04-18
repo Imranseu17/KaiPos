@@ -50,6 +50,12 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".activity.PendingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"></activity>
+
         <activity
             android:name=".activity.RefundActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

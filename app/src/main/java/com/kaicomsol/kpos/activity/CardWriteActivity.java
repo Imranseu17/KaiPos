@@ -721,14 +721,14 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
 
     @Override
     public void onCaptureSuccess(int paymentId) {
-
+        mTransactionViewModel.deleteByPaymentId(paymentId);
     }
 
     @Override
     public void onCancelSuccess(int paymentId) {
         mProgressDialog.dismiss();
         Toast.makeText(CardWriteActivity.this, "Recharge canceled!", Toast.LENGTH_SHORT).show();
-        mTransactionViewModel.deleteAll();
+        mTransactionViewModel.deleteByPaymentId(paymentId);
         finish();
     }
 
@@ -839,7 +839,6 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     }
 
     private void print(Receipt receipt) {
-        mTransactionViewModel.deleteAll();
         showPrintLayout(receipt);
         bluetoothPrint(receipt);
         isPrint = true;

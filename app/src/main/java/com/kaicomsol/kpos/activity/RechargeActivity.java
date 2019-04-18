@@ -168,6 +168,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                     case VALID_CARD:
                         cardIdm = mAccessFalica.GetCardIdm(tag.getId());
                         cardHistoryNo = mAccessFalica.getHistoryNo(tag);
+                        layout_recharge.setVisibility(View.VISIBLE);
                         txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
                         customerCardDismiss();
                         getInvoices(cardIdm);
@@ -197,7 +198,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         // Get a new or existing ViewModel from the ViewModelProvider.
         mTransactionViewModel = ViewModelProviders.of(this).get(TransactionViewModel.class);
-        mTransactionViewModel.deleteAll();
         //card check dialog
         mCardCheckDialog = CardCheckDialog.newInstance(this, "User");
         mCardCheckDialog.setCancelable(false);
@@ -422,7 +422,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     public void onSuccess(Invoices invoices) {
         mAdapter.disableForegroundDispatch(this);
         mProgressDialog.dismiss();
-        layout_recharge.setVisibility(View.VISIBLE);
         if (invoices != null) {
             if (invoices.getInvoices() != null && invoices.getInvoices().size() > 0) {
                 String invoiceList = new Gson().toJson(invoices);
@@ -454,7 +453,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             case INVOICE_ERROR:
-                layout_recharge.setVisibility(View.GONE);
                 mProgressDialog.dismiss();
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
