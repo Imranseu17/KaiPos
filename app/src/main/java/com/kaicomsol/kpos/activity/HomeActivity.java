@@ -20,6 +20,8 @@ import android.widget.LinearLayout;
 
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.PendingAdapter;
+import com.kaicomsol.kpos.dbhelper.Transaction;
+import com.kaicomsol.kpos.dbhelper.TransactionViewModel;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.utils.CountDrawable;

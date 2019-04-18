@@ -206,7 +206,7 @@ public class AccountSearchActivity extends AppCompatActivity implements CloseCli
                 likeSearch();
                 return true;
 
-            case R.id.card_search:
+            case R.id.action_card:
                 customerCardDialog();
                 return true;
         }

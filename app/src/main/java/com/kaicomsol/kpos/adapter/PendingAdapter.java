@@ -8,8 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.activity.Transaction;
 import com.kaicomsol.kpos.callbacks.PendingListener;
+import com.kaicomsol.kpos.dbhelper.Transaction;
 import com.kaicomsol.kpos.models.Item;
 
 import java.text.DecimalFormat;
