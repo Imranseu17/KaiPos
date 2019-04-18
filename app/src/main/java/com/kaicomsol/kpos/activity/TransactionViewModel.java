@@ -57,8 +57,11 @@ public class TransactionViewModel extends AndroidViewModel {
         mRepository.insert(transaction);
     }
 
-    void deleteOrder(Transaction transaction) {
+    void deleteByTransaction(Transaction transaction) {
         mRepository.deleteTransaction(transaction);
+    }
+    void deleteByPaymentId(int paymentId){
+        mRepository.deleteByPaymentId(paymentId);
     }
     void deleteAll() {
         mRepository.deleteAll();

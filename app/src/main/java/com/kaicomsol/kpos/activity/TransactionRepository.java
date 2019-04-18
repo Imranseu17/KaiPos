@@ -34,7 +34,6 @@ class TransactionRepository {
     private TransactionDao mTransactionDao;
     private LiveData<List<Transaction>> mAllTransaction;
     private LiveData<Transaction> mTransaction;
-    private Transaction mTransaction2;
 
     // Note that in order to unit test the TransactionRepository, you have to remove the Application
     // dependency. This adds complexity and much more code, and this sample is not about testing.
@@ -63,6 +62,10 @@ class TransactionRepository {
     // thread, blocking the UI.
     void insert(Transaction transaction) {
         new insertAsyncTask(mTransactionDao).execute(transaction);
+    }
+
+    void deleteByPaymentId(int paymentId){
+        new deleteByPaymentIdAsyncTask(mTransactionDao).execute(paymentId);
     }
 
     void deleteAll() {
@@ -102,6 +105,22 @@ class TransactionRepository {
             return null;
         }
     }
+
+    private static class deleteByPaymentIdAsyncTask extends AsyncTask<Integer, Void, Void> {
+
+        private TransactionDao mAsyncTaskDao;
+
+        deleteByPaymentIdAsyncTask(TransactionDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Integer... params) {
+            mAsyncTaskDao.deleteByPaymentId(params[0]);
+            return null;
+        }
+    }
+
 
     private static class deleteAllAsyncTask extends AsyncTask<Transaction, Void, Void> {
 
