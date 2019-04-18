@@ -12,7 +12,8 @@ public enum RechargeStatus {
     ERROR_CODE_100(8,100),
     ERROR_CODE_406(9,406),
     INVOICE_ERROR(10,805),
-    RECEIPT_ERROR(11,806);
+    RECEIPT_ERROR(11,806),
+    COMMISSIONED_ERROR(12,412);
 
     private int key;
     private int code;

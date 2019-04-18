@@ -14,8 +14,7 @@ import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.models.Refund;
 import com.kaicomsol.kpos.models.SalesHistory;
 import com.kaicomsol.kpos.models.SubData;
-import com.kaicomsol.kpos.models.Success;
-import com.kaicomsol.kpos.models.Transaction;
+import com.kaicomsol.kpos.models.TransactionModel;
 import com.kaicomsol.kpos.models.UpdateResponse;
 
 import java.util.List;
@@ -84,7 +83,11 @@ public interface APIServices {
     Call<Meter> getMeterInfo(@HeaderMap Map<String, String> headers, @Path("accountNo") String accountNo);
 
     @GET("/api/v1/customer-payment/get-by-date")
-    Call<List<Transaction>> getTransitionInfo(@HeaderMap Map<String, String> headers, @Query("accountNumber") String accountNumber, @Query("customerCode") String customerCode);
+    Call<List<TransactionModel>> getTransitionInfo(@HeaderMap Map<String, String> headers,
+                                                   @Query("accountNumber") String accountNumber,
+                                                   @Query("customerCode") String customerCode,
+                                                   @Query("pageSize") int pageSize,
+                                                   @Query("pageNumber") int pageNumber);
 
     @GET("/api/v1/customerMeters/{meterSerial}/subscriptions")
     Call<SubData> getSubscriptionInfo(@HeaderMap Map<String, String> headers, @Path("meterSerial") String meterSerial);

@@ -1,14 +1,13 @@
-package com.kaicomsol.kpos.activity;
+package com.kaicomsol.tpos.activity;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.os.Parcelable;
+import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,18 +19,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.adapter.SalesHistoryAdapter;
-import com.kaicomsol.kpos.callbacks.HistoryClickListener;
-import com.kaicomsol.kpos.callbacks.HistoryView;
-import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.golobal.Constants;
-import com.kaicomsol.kpos.models.Content;
-import com.kaicomsol.kpos.models.SalesHistory;
-import com.kaicomsol.kpos.presenters.HistoryPresenter;
-import com.kaicomsol.kpos.utils.DebugLog;
-import com.kaicomsol.kpos.utils.PaginationScrollListener;
-import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
+import com.kaicomsol.tpos.R;
+import com.kaicomsol.tpos.adapter.SalesHistoryAdapter;
+import com.kaicomsol.tpos.callbacks.HistoryClickListener;
+import com.kaicomsol.tpos.callbacks.HistoryView;
+import com.kaicomsol.tpos.dialogs.CustomAlertDialog;
+import com.kaicomsol.tpos.golobal.Constants;
+import com.kaicomsol.tpos.models.Content;
+import com.kaicomsol.tpos.models.SalesHistory;
+import com.kaicomsol.tpos.presenters.HistoryPresenter;
+import com.kaicomsol.tpos.utils.DebugLog;
+import com.kaicomsol.tpos.utils.PaginationScrollListener;
+import com.kaicomsol.tpos.utils.SharedDataSaveLoad;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -51,7 +50,6 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;
-    private DecimalFormat decimalFormat;
     private String startDate = "";
     private String endDate = "";
 
@@ -89,10 +87,11 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
     RecyclerView mRecyclerView;
     @BindView(R.id.amount_layout)
     RelativeLayout amount_layout;
-    @BindView(R.id.total_amount)
-    TextView total_amout;
+    @BindView(R.id.total)
+    TextView total;
 
     double totalAmount = 0.0;
+    int count = 0;
 
 
 
@@ -115,6 +114,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
             @Override
             public void onClick(View v) {
                 totalAmount = 0.0;
+                count = 0;
                 getSalesHistory(currentPage);
             }
         });
@@ -149,8 +149,6 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
         edt_start_date.setText(currentDateFormatted);
         edt_end_date.setText(currentDateFormatted);
-
-        decimalFormat = new DecimalFormat(".##");
 
         dateFormatter = new SimpleDateFormat(Constants.DATE_FORMAT);
         mRecyclerView.setHasFixedSize(false);
@@ -232,10 +230,13 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
        List<Content> contentList = salesHistory.getContentList();
        for (Content content : contentList){
           totalAmount += content.getAmount();
+          count += 1;
        }
        if (totalAmount > 0.0) amount_layout.setVisibility(View.VISIBLE);
        else amount_layout.setVisibility(View.GONE);
-       total_amout.setText("Total Amount: " +decimalFormat.format(totalAmount)+ " TK");
+        DecimalFormat decimalFormat = new DecimalFormat(".##");
+        total.setText("Total Amount: " +decimalFormat.format(totalAmount)+ " TK" +"\n"
+                +"Total Number of TransactionModel: "+count);
 
         hideAnimation();
         if (salesHistory != null) MY_TOTAL_PAGE = salesHistory.getTotalPages();
@@ -271,9 +272,9 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     @Override
     public void onLogout(int code) {
-        SharedDataSaveLoad.remove(SalesHistoryActivity.this, getString(R.string.preference_access_token));
-        SharedDataSaveLoad.remove(SalesHistoryActivity.this, getString(R.string.preference_is_service_check));
-        Intent intent = new Intent(SalesHistoryActivity.this, LoginActivity.class);
+        SharedDataSaveLoad.remove(com.kaicomsol.tpos.activity.SalesHistoryActivity.this, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(com.kaicomsol.tpos.activity.SalesHistoryActivity.this, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(com.kaicomsol.tpos.activity.SalesHistoryActivity.this, com.kaicomsol.tpos.activity.LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
@@ -313,7 +314,7 @@ public class SalesHistoryActivity extends AppCompatActivity implements HistoryVi
 
     @Override
     public void onHistoryClick(Content content) {
-        Intent intent = new Intent(SalesHistoryActivity.this, SalesHistoryDetailsActivity.class) ;
+        Intent intent = new Intent(com.kaicomsol.tpos.activity.SalesHistoryActivity.this, com.kaicomsol.tpos.activity.SalesHistoryDetailsActivity.class) ;
              intent.putExtra("content",content);
              startActivity(intent);
 

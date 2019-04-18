@@ -28,6 +28,7 @@ import com.kaicomsol.kpos.nfcfelica.MaxFlowModel;
 import com.kaicomsol.kpos.nfcfelica.OpenCockModel;
 import com.kaicomsol.kpos.nfcfelica.ParModel;
 import com.kaicomsol.kpos.nfcfelica.SettingData;
+import com.kaicomsol.kpos.utils.CardCheck;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.StringUtils;
 
@@ -3201,6 +3202,54 @@ public class AccessFalica {
         }
 
         return  array;
+    }
+
+    public int checkCardGroup(Tag tag) {
+        NfcF nfc = NfcF.get(tag);
+        try {
+            nfc.connect();
+            BlockDataList datalist = new BlockDataList();
+            datalist.AddReadBlockData(parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 2)))[0], 2, true);
+
+            cardGroup = String.format("%02X", new Object[]{Integer.valueOf(Integer.valueOf(GetCardGroup(datalist.GetReadBlockData(2))).intValue() & 255)});
+            if (cardGroup.equals("77")) {
+                if (nfc != null) {
+                    try {
+                        nfc.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return CardCheck.VALID_CARD.getCode();
+            }
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return CardCheck.INVALID_CARD.getCode();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e2) {
+                    e.printStackTrace();
+                    if (nfc != null) {
+                        try {
+                            nfc.close();
+                        } catch (Exception e3) {
+
+                        }
+                    }
+                }
+            }
+            return CardCheck.EXCEPTION_CARD.getCode();
+        }
     }
 
     private GMA_LOG_DATA[] GetLogDay() {

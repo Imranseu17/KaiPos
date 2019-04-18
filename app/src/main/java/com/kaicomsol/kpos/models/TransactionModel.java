@@ -1,13 +1,16 @@
 package com.kaicomsol.kpos.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Transaction {
+public class TransactionModel implements Parcelable {
 
     @SerializedName("id")
     @Expose
-    private int id;
+    private Long id;
     @SerializedName("invoiceType")
     @Expose
     private String invoiceType;
@@ -30,12 +33,43 @@ public class Transaction {
     @Expose
     private long paymentDate;
 
-    public int getId() {
+    public TransactionModel(Parcel in) {
+        id = in.readLong();
+        invoiceType = in.readString();
+        quantity = in.readDouble();
+        price = in.readDouble();
+        amount = in.readDouble();
+        description = in.readString();
+        percentage = in.readByte() != 0;
+        paymentDate = in.readLong();
+    }
+
+    public static final Creator<TransactionModel> CREATOR = new Creator<TransactionModel>() {
+        @Override
+        public TransactionModel createFromParcel(Parcel in) {
+            return new TransactionModel(in);
+        }
+
+        @Override
+        public TransactionModel[] newArray(int size) {
+            return new TransactionModel[size];
+        }
+    };
+
+    public TransactionModel() {
+
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isPercentage() {
+        return percentage;
     }
 
     public String getInvoiceType() {
@@ -92,5 +126,22 @@ public class Transaction {
 
     public void setPaymentDate(long paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(invoiceType);
+        dest.writeDouble(quantity);
+        dest.writeDouble(price);
+        dest.writeDouble(amount);
+        dest.writeString(description);
+        dest.writeByte((byte) (percentage ? 1 : 0));
+        dest.writeLong(paymentDate);
     }
 }

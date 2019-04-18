@@ -1,4 +1,4 @@
-package com.kaicomsol.kpos.activity;
+package com.kaicomsol.tpos.activity;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -18,10 +18,10 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,31 +33,34 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.adapter.PrintAdapter;
-import com.kaicomsol.kpos.callbacks.CloseClickListener;
-import com.kaicomsol.kpos.callbacks.StateView;
-import com.kaicomsol.kpos.dbhelper.Transaction;
-import com.kaicomsol.kpos.dbhelper.TransactionViewModel;
-import com.kaicomsol.kpos.dialogs.CancelCardDialog;
-import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
-import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.dialogs.PromptDialog;
-import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
-import com.kaicomsol.kpos.golobal.Constants;
-import com.kaicomsol.kpos.models.AccessFalica;
-import com.kaicomsol.kpos.models.Item;
-import com.kaicomsol.kpos.models.Receipt;
-import com.kaicomsol.kpos.presenters.StatePresenter;
-import com.kaicomsol.kpos.printer.BluetoothPrinter;
-import com.kaicomsol.kpos.utils.PrinterCommands;
-import com.kaicomsol.kpos.utils.RechargeStatus;
-import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
-import com.kaicomsol.kpos.utils.Utils;
+import com.kaicomsol.tpos.R;
+import com.kaicomsol.tpos.adapter.PrintAdapter;
+import com.kaicomsol.tpos.callbacks.CloseClickListener;
+import com.kaicomsol.tpos.callbacks.StateView;
+import com.kaicomsol.tpos.dbhelper.Transaction;
+import com.kaicomsol.tpos.dbhelper.TransactionViewModel;
+import com.kaicomsol.tpos.dialogs.CancelCardDialog;
+import com.kaicomsol.tpos.dialogs.ChooseAlertDialog;
+import com.kaicomsol.tpos.dialogs.CustomAlertDialog;
+import com.kaicomsol.tpos.dialogs.PromptDialog;
+import com.kaicomsol.tpos.dialogs.RechargeCardDialog;
+import com.kaicomsol.tpos.golobal.Constants;
+import com.kaicomsol.tpos.models.AccessFalica;
+import com.kaicomsol.tpos.models.Item;
+import com.kaicomsol.tpos.models.Receipt;
+import com.kaicomsol.tpos.presenters.StatePresenter;
+import com.kaicomsol.tpos.printer.BluetoothPrinter;
+import com.kaicomsol.tpos.utils.DebugLog;
+import com.kaicomsol.tpos.utils.PrinterCommands;
+import com.kaicomsol.tpos.utils.RechargeStatus;
+import com.kaicomsol.tpos.utils.SharedDataSaveLoad;
+import com.kaicomsol.tpos.utils.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -67,7 +70,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static com.kaicomsol.kpos.golobal.Constants.CONNECTIVITY_ACTION;
+import static com.kaicomsol.tpos.golobal.Constants.CONNECTIVITY_ACTION;
 
 public class CardWriteActivity extends AppCompatActivity implements StateView, CloseClickListener {
 
@@ -127,12 +130,15 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     Button tryAgain;
     @BindView(R.id.btn_print)
     Button btn_print;
+    @BindView(R.id.titas_gas)
+    TextView titasGas;
+    @BindView(R.id.customer_support)
+    TextView supportNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_write);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(R.string.add_gas);
@@ -142,7 +148,6 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         viewConfig();
 
         cardConfig();
-
     }
 
     private void viewConfig() {
@@ -150,7 +155,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         // Write a message to the database
         mDatabase = FirebaseDatabase.getInstance();
 
-        mProgressDialog = new ProgressDialog(CardWriteActivity.this);
+        mProgressDialog = new ProgressDialog(com.kaicomsol.tpos.activity.CardWriteActivity.this);
 
         //internet connectivity receiver
         intentFilter = new IntentFilter();
@@ -226,7 +231,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     @Override
     protected void onResume() {
         super.onResume();
-        mAdapter.enableForegroundDispatch(CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+        mAdapter.enableForegroundDispatch(com.kaicomsol.tpos.activity.CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
 
     }
 
@@ -259,7 +264,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
             receiptPayment(mTransaction.getPaymentId() + "");
             capturePayment(mTransaction.getPaymentId() + "");
         } else {
-            new WriteAsyncTask(mTransaction).execute();
+            new com.kaicomsol.tpos.activity.CardWriteActivity.WriteAsyncTask(mTransaction).execute();
         }
     }
 
@@ -268,7 +273,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         String checkStatus = mAccessFalica.getCardStatus(tag);
         if (checkStatus != null && checkStatus.equals("15")) {
             rechargeCardDismiss();
-            Toast.makeText(CardWriteActivity.this,"TransactionModel already successful", Toast.LENGTH_SHORT).show();
+            Toast.makeText(com.kaicomsol.tpos.activity.CardWriteActivity.this,"TransactionModel already successful", Toast.LENGTH_SHORT).show();
             receiptPayment(mTransaction.getPaymentId() + "");
             capturePayment(mTransaction.getPaymentId() + "");
         } else {
@@ -294,7 +299,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     }
 
     public void showConfirmPrintAlert() {
-      ChooseAlertDialog alertDialog = new ChooseAlertDialog(this)
+        ChooseAlertDialog alertDialog = new ChooseAlertDialog(this)
                 .setDialogType(PromptDialog.DIALOG_TYPE_SUCCESS)
                 .setAnimationEnable(true)
                 .setTitleText(getString(R.string.confirmation))
@@ -413,10 +418,10 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         if (mRechargeCardDialog != null) {
             if (!mRechargeCardDialog.isAdded()) {
                 try {
-                    mAdapter.enableForegroundDispatch(CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+                    mAdapter.enableForegroundDispatch(com.kaicomsol.tpos.activity.CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
                     mRechargeCardDialog.show(getSupportFragmentManager(), mRechargeCardDialog.getTag());
                 }catch (Exception e){
-                      e.printStackTrace();
+                    e.printStackTrace();
                 }
 
             }
@@ -428,7 +433,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         if (mRechargeCardDialog != null) {
             mRechargeCardDialog.dismiss();
             try {
-                mAdapter.disableForegroundDispatch(CardWriteActivity.this);
+                mAdapter.disableForegroundDispatch(com.kaicomsol.tpos.activity.CardWriteActivity.this);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -439,7 +444,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         if (mCancelCardDialog != null) {
             if (!mCancelCardDialog.isAdded()) {
                 try {
-                    mAdapter.enableForegroundDispatch(CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+                    mAdapter.enableForegroundDispatch(com.kaicomsol.tpos.activity.CardWriteActivity.this, pendingIntent, intentFiltersArray, techListsArray);
                     mCancelCardDialog.show(getSupportFragmentManager(), mCancelCardDialog.getTag());
                 }catch (Exception e){
                     e.printStackTrace();
@@ -454,7 +459,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         if (mCancelCardDialog != null) {
             mCancelCardDialog.dismiss();
             try {
-                mAdapter.disableForegroundDispatch(CardWriteActivity.this);
+                mAdapter.disableForegroundDispatch(com.kaicomsol.tpos.activity.CardWriteActivity.this);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -479,8 +484,8 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
             Date date = new Date(receipt.getPaymentDate());
             SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT + " " + Constants.TIME_FORMAT);
 
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
-            printCustom(getFormatStringByLength("Date and Time.", dateFormat.format(date)), 0, 1);
+            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
+            printCustom(getFormatStringByLength("Date & Time.", dateFormat.format(date)), 0, 1);
             printCustom(getFormatStringByLength("TransactionModel No.", String.valueOf(receipt.getPaymentId())), 0, 1);
             printCustom(getFormatStringByLength("Customer Code", receipt.getCustomerCode()), 0, 1);
             printCustom(getFormatStringByLength("Prepaid No", receipt.getPrePaidCode()), 0, 1);
@@ -488,26 +493,28 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
             printCustom(getFormatStringByLength("Card No.", receipt.getCardNo()), 0, 1);
             printCustom(getFormatStringByLength("POS ID", String.valueOf(receipt.getPosId())), 0, 1);
             printCustom(getFormatStringByLength("Operator Name", receipt.getOperatorName()), 0, 1);
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
             printCustom(getFormatStringByLength("Deposit Amount(TK)", String.valueOf(decimalFormat.format(receipt.getAmountPaid()))), 0, 1);
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
             printCustom(getFormatStringByItem("Item", "Price", "Qty", "Amount"), 0, 1);
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
 
             for (int i = 0; i < receipt.getItems().getItems().size(); i++) {
                 Item item = receipt.getItems().getItems().get(i);
-                if (item.getName().length() > 18) {
-                    printCustom(getFormatStringByItem(item.getName().substring(0, 18), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
+                if (item.getName().length() > 12) {
+                    printCustom(getFormatStringByItem(item.getName().substring(0, 12), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
                 } else {
                     printCustom(getFormatStringByItem(item.getName(), String.valueOf(decimalFormat.format(item.getPrice())), String.valueOf(decimalFormat.format(item.getQuantity())), String.valueOf(decimalFormat.format(item.getTotal()))), 0, 1);
                 }
             }
 
-            printCustom(new String(new char[42]).replace("\0", "-"), 0, 1);
+            printCustom(new String(new char[32]).replace("\0", "-"), 0, 1);
             printCustom(getFormatStringByTotal("Total:", String.valueOf(decimalFormat.format(receipt.getItems().getTotal()))), 0, 1);
-            printCustom(new String(new char[42]).replace("\0", "."), 0, 1);
-            printCustom("Customer Support <01707074462>", 0, 1);
-            printCustom("Karnaphuli Gas Distribution Company Ltd.", 0, 1);
+            printCustom(new String(new char[32]).replace("\0", "."), 0, 1);
+            printCustom("Customer Support Number: ", 0, 1);
+            printCustom("<01703729389(pre-paid customer)>", 0, 1);
+            printCustom("<01703729451 , 01703729505>", 0, 1);
+            printCustom("Titas Gas T&D Co.Ltd", 0, 1);
             printNewLine();
             printNewLine();
             printNewLine();
@@ -655,7 +662,8 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         String concatenation = title + value;
         int count = concatenation.length();
         StringBuilder builder = new StringBuilder();
-        String space = new String(new char[42 - count]).replace("\0", " ");
+        DebugLog.e("Count: "+count);
+        String space = new String(new char[32 - count]).replace("\0", " ");
         builder.append(title);
         builder.append(space);
         builder.append(value);
@@ -667,9 +675,9 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         StringBuilder builder = new StringBuilder();
         int count = (qty + amount).length();
         builder.append(item);
-        builder.append(getSpace(19 - item.length()));
+        builder.append(getSpace(12 - item.length()));
         builder.append(price);
-        builder.append(getSpace(9 - price.length()));
+        builder.append(getSpace(6 - price.length()));
         builder.append(qty);
         builder.append(getSpace(14 - count));
         builder.append(amount);
@@ -679,9 +687,9 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     private String getFormatStringByTotal(String total, String amount) {
         StringBuilder builder = new StringBuilder();
         int count = (total + amount).length();
-        builder.append(getSpace(23));
+        builder.append(getSpace(18));
         builder.append(total);
-        builder.append(getSpace(19 - count));
+        builder.append(getSpace(14 - count));
         builder.append(amount);
         return builder.toString();
     }
@@ -727,7 +735,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     @Override
     public void onCancelSuccess(int paymentId) {
         mProgressDialog.dismiss();
-        Toast.makeText(CardWriteActivity.this, "Recharge canceled!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(com.kaicomsol.tpos.activity.CardWriteActivity.this, "Recharge canceled!", Toast.LENGTH_SHORT).show();
         mTransactionViewModel.deleteAll();
         finish();
     }
@@ -747,15 +755,15 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
                 break;
         }
         mProgressDialog.dismiss();
-        Toast.makeText(CardWriteActivity.this, error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(com.kaicomsol.tpos.activity.CardWriteActivity.this, error, Toast.LENGTH_SHORT).show();
 
     }
 
     @Override
     public void onLogout(int code) {
-        SharedDataSaveLoad.remove(CardWriteActivity.this, getString(R.string.preference_access_token));
-        SharedDataSaveLoad.remove(CardWriteActivity.this, getString(R.string.preference_is_service_check));
-        Intent intent = new Intent(CardWriteActivity.this, LoginActivity.class);
+        SharedDataSaveLoad.remove(com.kaicomsol.tpos.activity.CardWriteActivity.this, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(com.kaicomsol.tpos.activity.CardWriteActivity.this, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(com.kaicomsol.tpos.activity.CardWriteActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
@@ -860,6 +868,9 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     private void cancelPayment(String paymentId) {
         if (checkConnection()) {
             showLoading("Loading recharge cancel");
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-4-" + timestamp.getTime());
+            myRef.setValue(mTransaction.getCardIdm()+" || "+mTransaction.getPaymentId());
             String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
             mPresenter.cancelPayment(token, paymentId);
         } else SharedDataSaveLoad.save(this, getString(R.string.preference_cancel_failed), true);
@@ -868,7 +879,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     private void showLoading(String msg){
         mProgressDialog.setTitle(msg);
         mProgressDialog.setCancelable(false);
-        if(!((Activity) this).isFinishing())
+        if(!(this).isFinishing())
         {
             mProgressDialog.show();
         }
@@ -894,6 +905,8 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         txt_operator_name.setText(receipt.getOperatorName());
         txt_deposit_amount.setText(String.valueOf(decimalFormat.format(receipt.getAmountPaid())));
         txt_total.setText(String.valueOf(decimalFormat.format(receipt.getItems().getTotal())));
+        supportNumber.setText("Customer Support Number: "+"\n"+"<01703729389(pre-paid customer)>"+"\n"+"<01703729451 , 01703729505>");
+        titasGas.setText("Titas Gas T&D Co.Ltd");
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -922,20 +935,20 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
                             public void onConnected() {
 
                                 mBluetoothSocket = mPrinter.getSocket();
-                                new PrintAsyncTask(receipt).execute();
+                                new com.kaicomsol.tpos.activity.CardWriteActivity.PrintAsyncTask(receipt).execute();
 
                             }
 
                             @Override
                             public void onFailed() {
-                                CustomAlertDialog.showError(CardWriteActivity.this, "Printer Connection Failed ! Please try again");
+                                CustomAlertDialog.showError(com.kaicomsol.tpos.activity.CardWriteActivity.this, "Printer Connection Failed ! Please try again");
                             }
                         });
                     } else {
-                        new PrintAsyncTask(receipt).execute();
+                        new com.kaicomsol.tpos.activity.CardWriteActivity.PrintAsyncTask(receipt).execute();
                     }
                 } else {
-                    CustomAlertDialog.showError(CardWriteActivity.this, "Printer Not Found ! Please try again");
+                    CustomAlertDialog.showError(com.kaicomsol.tpos.activity.CardWriteActivity.this, "Printer Not Found ! Please try again");
                 }
 
 
@@ -958,7 +971,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
                     public void onClick(ChooseAlertDialog dialog) {
                         dialog.dismiss();
                         bluetoothEnabled();
-                        Toast.makeText(CardWriteActivity.this, getString(R.string.bluetooth_enabling), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(com.kaicomsol.tpos.activity.CardWriteActivity.this, getString(R.string.bluetooth_enabling), Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setPositiveListener(getString(R.string.no), new ChooseAlertDialog.OnPositiveListener() {
@@ -999,5 +1012,4 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
                     }
                 }).show();
     }
-
 }

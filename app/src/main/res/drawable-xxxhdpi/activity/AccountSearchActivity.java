@@ -1,4 +1,4 @@
-package com.kaicomsol.kpos.activity;
+package com.kaicomsol.tpos.activity;
 
 
 import android.app.PendingIntent;
@@ -22,21 +22,21 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.callbacks.CloseClickListener;
-import com.kaicomsol.kpos.dialogs.CardCheckDialog;
-import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.models.AccessFalica;
-import com.kaicomsol.kpos.models.Like;
-import com.kaicomsol.kpos.utils.CardCheck;
+import com.kaicomsol.tpos.R;
+import com.kaicomsol.tpos.callbacks.CloseClickListener;
+import com.kaicomsol.tpos.dialogs.CardCheckDialog;
+import com.kaicomsol.tpos.dialogs.CustomAlertDialog;
+import com.kaicomsol.tpos.models.AccessFalica;
+import com.kaicomsol.tpos.models.Like;
+import com.kaicomsol.tpos.utils.CardCheck;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static com.kaicomsol.kpos.golobal.Constants.CONNECTIVITY_ACTION;
+import static com.kaicomsol.tpos.golobal.Constants.CONNECTIVITY_ACTION;
 
-public class AccountSearchActivity extends AppCompatActivity implements CloseClickListener {
+public class AccountSearchActivity extends AppCompatActivity  implements CloseClickListener {
 
     //input layout bind
     @BindView(R.id.animation_view)
@@ -99,6 +99,8 @@ public class AccountSearchActivity extends AppCompatActivity implements CloseCli
     private Tag tag;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,11 +125,10 @@ public class AccountSearchActivity extends AppCompatActivity implements CloseCli
         cardConfig();
 
 
-
-
     }
 
     private void viewConfig() {
+
         intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_ACTION);
 
@@ -178,7 +179,7 @@ public class AccountSearchActivity extends AppCompatActivity implements CloseCli
         like.apartment = !TextUtils.isEmpty(apartment) ? "like:"+apartment : "";
         like.area = !TextUtils.isEmpty(area) ? "like:"+area : "";
 
-        Intent intent = new Intent(AccountSearchActivity.this, AccountListActivity.class);
+        Intent intent = new Intent(com.kaicomsol.tpos.activity.AccountSearchActivity.this, com.kaicomsol.tpos.activity.AccountListActivity.class);
         intent.putExtra("like", like);
         startActivity(intent);
     }
@@ -315,38 +316,28 @@ public class AccountSearchActivity extends AppCompatActivity implements CloseCli
             if (!mCardCheckDialog.isAdded()) {
                 //show card dialog
                 mCardCheckDialog.show(getSupportFragmentManager(), mCardCheckDialog.getTag());
-                try {
-                    mAdapter.enableForegroundDispatch(AccountSearchActivity.this, pendingIntent, intentFiltersArray, techListsArray);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
             }
         }
-
-
     }
 
     private void customerCardDismiss() {
         if (mCardCheckDialog != null) {
             mCardCheckDialog.dismiss();
         }
-
-
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.enableForegroundDispatch(com.kaicomsol.tpos.activity.AccountSearchActivity.this, pendingIntent, intentFiltersArray, techListsArray);
 
+    }
 
     @Override
     protected void onPause() {
         super.onPause();
-        try {
-            mAdapter.disableForegroundDispatch(this);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
+        mAdapter.disableForegroundDispatch(this);
     }
 
     @Override
@@ -384,9 +375,10 @@ public class AccountSearchActivity extends AppCompatActivity implements CloseCli
     }
 
     private void searchCardNo(String cardNo){
+
         Like like = new Like();
         like.cardNo = !TextUtils.isEmpty(cardNo) ? "like:"+cardNo : "";
-        Intent intent = new Intent(AccountSearchActivity.this, AccountListActivity.class);
+        Intent intent = new Intent(com.kaicomsol.tpos.activity.AccountSearchActivity.this, com.kaicomsol.tpos.activity.AccountListActivity.class);
         intent.putExtra("like", like);
         startActivity(intent);
     }

@@ -84,7 +84,7 @@
     <string name="customer">顧客</string>
     <string name="meter">METER</string>
     <string name="card">カード</string>
-    <string name="transactions">取引</string>
+    <string name="transactionModels">取引</string>
     <string name="subscriptions">サブスクリプション</string>
     <string name="account_list">アカウントリスト</string>
     <string name="label_erp_code">ERPコード</string>

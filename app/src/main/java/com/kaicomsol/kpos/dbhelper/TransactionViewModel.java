@@ -1,4 +1,4 @@
-package com.kaicomsol.kpos.activity;
+package com.kaicomsol.kpos.dbhelper;
 
 /*
  * Copyright (C) 2017 Google Inc.
@@ -48,19 +48,19 @@ public class TransactionViewModel extends AndroidViewModel {
         return mAllTransaction;
     }
 
-    LiveData<Transaction> getTransactionByCardIdm(String cardIdm) {
+    public LiveData<Transaction> getTransactionByCardIdm(String cardIdm) {
         mTransaction = mRepository.getTransactionByCardIdm(cardIdm);
         return mTransaction;
     }
 
-    void insert(Transaction transaction) {
+    public void insert(Transaction transaction) {
         mRepository.insert(transaction);
     }
 
     void deleteOrder(Transaction transaction) {
         mRepository.deleteTransaction(transaction);
     }
-    void deleteAll() {
+    public void deleteAll() {
         mRepository.deleteAll();
     }
 

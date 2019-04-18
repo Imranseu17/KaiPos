@@ -1,4 +1,4 @@
-package com.kaicomsol.kpos.activity;
+package com.kaicomsol.kpos.dbhelper;
 
 /*
  * Copyright (C) 2017 Google Inc.
@@ -19,8 +19,6 @@ package com.kaicomsol.kpos.activity;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-
-import com.kaicomsol.kpos.utils.DebugLog;
 
 import java.util.List;
 

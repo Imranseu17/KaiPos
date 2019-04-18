@@ -8,6 +8,7 @@ import com.kaicomsol.kpos.models.Emergency;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.CardEnum;
 import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.ErrorCode;
 
 import org.json.JSONObject;
 
@@ -48,7 +49,7 @@ public class CardPresenter {
                     @Override
                     public void onResponse(Call<Emergency> call, Response<Emergency> response) {
 
-                        if (response.code() == 401){
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()){
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -69,7 +70,7 @@ public class CardPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401){
+                            if (code == ErrorCode.LOGOUTERROR.getCode()){
                                 mViewInterface.onLogout(code);
                             }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
@@ -99,7 +100,7 @@ public class CardPresenter {
                     @Override
                     public void onResponse(Call<CardData> call, Response<CardData> response) {
 
-                        if (response.code() == 401){
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()){
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -120,7 +121,7 @@ public class CardPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401){
+                            if (code == ErrorCode.LOGOUTERROR.getCode()){
                                 mViewInterface.onLogout(code);
                             }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
@@ -155,7 +156,7 @@ public class CardPresenter {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                        if (response.code() == 401){
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()){
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -173,7 +174,7 @@ public class CardPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401){
+                            if (code == ErrorCode.LOGOUTERROR.getCode()){
                                 mViewInterface.onLogout(code);
                             }else {
 
@@ -208,7 +209,7 @@ public class CardPresenter {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                        if (response.code() == 401){
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()){
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -225,7 +226,7 @@ public class CardPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401){
+                            if (code == ErrorCode.LOGOUTERROR.getCode()){
                                 mViewInterface.onLogout(code);
                             }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
@@ -256,7 +257,7 @@ public class CardPresenter {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                        if (response.code() == 401){
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()){
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -272,7 +273,7 @@ public class CardPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401){
+                            if (code == ErrorCode.LOGOUTERROR.getCode()){
                                 mViewInterface.onLogout(code);
                             }
                             ResponseBody responseBody = ((HttpException) e).response().errorBody();
@@ -317,7 +318,7 @@ public class CardPresenter {
                         DebugLog.e(response.message());
                         DebugLog.e(response.toString());
 
-                        if (response.code() == 401){
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()){
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -337,7 +338,7 @@ public class CardPresenter {
 
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401){
+                            if (code == ErrorCode.LOGOUTERROR.getCode()){
                                 mViewInterface.onLogout(code);
                             }
 
@@ -373,7 +374,7 @@ public class CardPresenter {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                        if (response.code() == 401){
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()){
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -393,7 +394,7 @@ public class CardPresenter {
 
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401){
+                            if (code == ErrorCode.LOGOUTERROR.getCode()){
                                 mViewInterface.onLogout(code);
                             }
 
@@ -414,19 +415,28 @@ public class CardPresenter {
 
     private void errorHandle(int code,int errorType, ResponseBody responseBody){
 
-        switch (code){
-            case 500:
-                 mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),errorType);
-                 break;
-            case 406:
-                mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody),errorType);
-                break;
-            case 400:
-                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),errorType);
-                break;
-            default:
-                mViewInterface.onError(APIErrors.getErrorMessage(responseBody),errorType);
-                break;
+        ErrorCode errorCode = ErrorCode.getByCode(code);
+
+        if(errorCode != null){
+            switch (errorCode){
+                case ERRORCODE500:
+                    mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),errorType);
+                    break;
+                case ERRORCODE406:
+                    mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody),errorType);
+                    break;
+                case ERRORCODE400:
+                    mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody),errorType);
+                    break;
+                default:
+                    mViewInterface.onError(APIErrors.getErrorMessage(responseBody),errorType);
+                    break;
+            }
+        }else{
+
+            mViewInterface.onError("Error occurred Please try again",code);
+
         }
+
     }
 }

@@ -1,18 +1,18 @@
-package com.kaicomsol.kpos.activity;
+package com.kaicomsol.tpos.activity;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.adapter.ViewPagerAdapter;
-import com.kaicomsol.kpos.fragment.AddCardInfoFragment;
-import com.kaicomsol.kpos.fragment.SubscriptionFragment;
-import com.kaicomsol.kpos.fragment.TransactionFragment;
+import com.kaicomsol.tpos.R;
+import com.kaicomsol.tpos.adapter.ViewPagerAdapter;
+import com.kaicomsol.tpos.fragment.AddCardInfoFragment;
+import com.kaicomsol.tpos.fragment.SubscriptionFragment;
+import com.kaicomsol.tpos.fragment.TransactionFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,7 +48,7 @@ public class MeterDetailsActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new AddCardInfoFragment(), getString(R.string.card));
-        adapter.addFragment(new TransactionFragment(), getString(R.string.transactionModels));
+        adapter.addFragment(new TransactionFragment(), getString(R.string.transactions));
         adapter.addFragment(new SubscriptionFragment(), getString(R.string.subscriptions));
         viewPager.setAdapter(adapter);
     }

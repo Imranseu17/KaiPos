@@ -1,10 +1,11 @@
-package com.kaicomsol.kpos.activity;
+package com.kaicomsol.tpos.activity;
 
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,19 +15,20 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
@@ -35,40 +37,42 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.google.gson.Gson;
-import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.callbacks.CloseClickListener;
-import com.kaicomsol.kpos.callbacks.PaymentView;
-import com.kaicomsol.kpos.dbhelper.Transaction;
-import com.kaicomsol.kpos.dbhelper.TransactionViewModel;
-import com.kaicomsol.kpos.dialogs.CardCheckDialog;
-import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
-import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.dialogs.PromptDialog;
-import com.kaicomsol.kpos.fragment.InvoiceFragment;
-import com.kaicomsol.kpos.models.AccessFalica;
-import com.kaicomsol.kpos.models.Invoices;
-import com.kaicomsol.kpos.models.Payment;
-import com.kaicomsol.kpos.presenters.PaymentPresenter;
-import com.kaicomsol.kpos.utils.CardCheck;
-import com.kaicomsol.kpos.utils.RechargeStatus;
-import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
+import com.kaicomsol.tpos.R;
+import com.kaicomsol.tpos.callbacks.CloseClickListener;
+import com.kaicomsol.tpos.callbacks.PaymentView;
+import com.kaicomsol.tpos.dbhelper.Transaction;
+import com.kaicomsol.tpos.dbhelper.TransactionViewModel;
+import com.kaicomsol.tpos.dialogs.CardCheckDialog;
+import com.kaicomsol.tpos.dialogs.ChooseAlertDialog;
+import com.kaicomsol.tpos.dialogs.CustomAlertDialog;
+import com.kaicomsol.tpos.dialogs.PromptDialog;
+import com.kaicomsol.tpos.fragment.InvoiceFragment;
+import com.kaicomsol.tpos.models.AccessFalica;
+import com.kaicomsol.tpos.models.Invoices;
+import com.kaicomsol.tpos.models.Payment;
+import com.kaicomsol.tpos.presenters.PaymentPresenter;
+import com.kaicomsol.tpos.utils.CardCheck;
+import com.kaicomsol.tpos.utils.RechargeStatus;
+import com.kaicomsol.tpos.utils.SharedDataSaveLoad;
 
 import java.text.DecimalFormat;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static com.kaicomsol.kpos.golobal.Constants.CONNECTIVITY_ACTION;
+import static com.kaicomsol.tpos.golobal.Constants.CONNECTIVITY_ACTION;
 
 public class RechargeActivity extends AppCompatActivity implements PaymentView, CloseClickListener {
 
+    private static final String phoneregex = "(^([+]{1}[8]{2}|0088)?(01){1}[3-9]{1}\\d{8})$";
     private TransactionViewModel mTransactionViewModel;
     private static final int REQUEST_ENABLE_BT = 0;
     private CardCheckDialog mCardCheckDialog = null;
     private boolean isRecharge = false;
+    private boolean isProvider = false;
     private DecimalFormat decimalFormat;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
@@ -107,6 +111,21 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @BindView(R.id.txt_tax)
     TextView txt_tax;
 
+    //Bind Operator component
+    @BindView(R.id.layout_operator)
+    LinearLayout layoutOperator;
+    @BindView(R.id.input_layout_phone)
+    TextInputLayout inputLayoutPhone;
+    @BindView(R.id.input_layout_pin)
+    TextInputLayout inputLayoutPin;
+    @BindView(R.id.edt_phone)
+    TextInputEditText edtPhone;
+    @BindView(R.id.edt_pin)
+    TextInputEditText edtPin;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +137,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         getSupportActionBar().setTitle(R.string.add_gas);
 
         ButterKnife.bind(this);
-        String paymentID = SharedDataSaveLoad.load(this, getString(R.string.preference_payment_id));
         //view init
         viewConfig();
         //card configuration
@@ -130,7 +148,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     protected void onResume() {
         super.onResume();
-        mAdapter.enableForegroundDispatch(RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+        //show card dialog
+        mAdapter.enableForegroundDispatch(com.kaicomsol.tpos.activity.RechargeActivity.this, pendingIntent, intentFiltersArray, techListsArray);
 
     }
 
@@ -139,6 +158,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         super.onPause();
         mAdapter.disableForegroundDispatch(this);
     }
+
 
     private void getInvoices(String cardNo) {
 
@@ -169,11 +189,12 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                         cardIdm = mAccessFalica.GetCardIdm(tag.getId());
                         cardHistoryNo = mAccessFalica.getHistoryNo(tag);
                         txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
+                        layout_recharge.setVisibility(View.VISIBLE);
                         customerCardDismiss();
                         getInvoices(cardIdm);
                         break;
                     case INVALID_CARD:
-                        CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
+                        CustomAlertDialog.showError(com.kaicomsol.tpos.activity.RechargeActivity.this, getString(R.string.err_card_not_valid));
                         break;
                     case EXCEPTION_CARD:
                         CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
@@ -184,7 +205,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             }
 
         } else CustomAlertDialog.showWarning(this, getString(R.string.err_card_read_failed));
-
     }
 
     private void viewConfig() {
@@ -192,7 +212,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         //internet connectivity receiver
         intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_ACTION);
-        mProgressDialog = new ProgressDialog(RechargeActivity.this);
+        mProgressDialog = new ProgressDialog(com.kaicomsol.tpos.activity.RechargeActivity.this);
         //Vibrator init
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         // Get a new or existing ViewModel from the ViewModelProvider.
@@ -203,6 +223,11 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         mCardCheckDialog.setCancelable(false);
         customerCardDialog();
 
+        //is provider conditional view show/hide
+        isProvider = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_is_provider));
+        if (isProvider) layoutOperator.setVisibility(View.VISIBLE);
+        else layoutOperator.setVisibility(View.GONE);
+
         decimalFormat = new DecimalFormat(".##");
         mPresenter = new PaymentPresenter(this);
         layoutPrice.setOnClickListener(new View.OnClickListener() {
@@ -211,6 +236,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 showAmount();
             }
         });
+
         edtAmount.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -236,28 +262,25 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
                 String amount = txt_total_amount.getText().toString().trim();
                 double creditAmount = Double.parseDouble(amount);
-                    if(!validateAmount(creditAmount))
-                        return;
 
-                    showConfirmDialog();
+                if (!validateAmount(creditAmount)) {
+                    return;
+                }
+
+                if (isProvider) {
+                    if (!validatePhone()) {
+                        return;
+                    }
+
+                    if (!validatePin()) {
+                        return;
+                    }
+                }
+
+                showConfirmDialog();
 
             }
         });
-    }
-
-    private boolean validateAmount(double creditAmount){
-
-
-        if (creditAmount <= 5000 && creditAmount > 0.0) {
-            return true;
-        } else if (creditAmount <= 0.0) {
-            CustomAlertDialog.showError(RechargeActivity.this, "Amount can not be less equal zero");
-            return false;
-        } else {
-            CustomAlertDialog.showError(RechargeActivity.this, "Maximum payment limit is 5000 BDT");
-            return false;
-        }
-
     }
 
     private void gasRecharge() {
@@ -305,13 +328,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     private void showAmount() {
         final CharSequence[] items = {"500 TK", "1000 TK", "1500 TK", "2000 TK", "2500 TK", "Manual"};
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.title_select_amount);
         builder.setItems(items, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 String amount = items[item].toString();
                 if (amount.equals("Manual")) {
-                    txt_price.setText("0.0");
+                    txt_price.setText("Manual");
                     txt_taka.setText("0.0");
                     txt_gas.setText("0.0");
                     txt_tax.setText("0.0");
@@ -333,20 +357,26 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        try {
 
-        if (item.getTitle().equals("Manual")) {
-            txt_price.setText("0.0");
-            txt_taka.setText("0.0");
-            txt_gas.setText("0.0");
-            txt_tax.setText("0.0");
-            txt_total_amount.setText("0.0");
-            expand(inputLayoutAmount);
-        } else {
-            String amount = item.getTitle().toString().replace(" TK", "");
-            txt_price.setText(amount);
-            takaToGas(amount);
-            collapse(inputLayoutAmount);
+            if (item.getTitle().equals("Manual")) {
+                txt_price.setText("Manual");
+                txt_taka.setText("0.0");
+                txt_gas.setText("0.0");
+                txt_tax.setText("0.0");
+                txt_total_amount.setText("0.0");
+                expand(inputLayoutAmount);
+            } else {
+                String amount = item.getTitle().toString().replace(" TK", "");
+                txt_price.setText(amount);
+                takaToGas(amount);
+                collapse(inputLayoutAmount);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return true;
     }
 
@@ -366,7 +396,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         return super.onOptionsItemSelected(item);
     }
 
-
     private void takaToGas(String amount) {
         if (!TextUtils.isEmpty(amount)) {
             double value = Double.parseDouble(amount) / 9.1;
@@ -374,7 +403,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             txt_price.setText(decimalFormat.format(Double.parseDouble(amount)));
             txt_total_amount.setText(decimalFormat.format(Double.parseDouble(amount)));
             txt_gas.setText(String.valueOf(decimalFormat.format(value)));
-        }else {
+        } else {
             txt_taka.setText("0.0");
             txt_price.setText("0.0");
             txt_total_amount.setText("0.0");
@@ -386,9 +415,10 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         String amount = txt_total_amount.getText().toString().trim();
         if (cardHistoryNo != null) {
-            SharedDataSaveLoad.save(this, getString(R.string.preference_temp_history), cardHistoryNo);
             showLoading("Loading authorize...");
-            mPresenter.addPayment(token, amount, cardIdm, cardHistoryNo, "1");
+            String phone = edtPhone.getText().toString().trim();
+            String pin = edtPin.getText().toString().trim();
+            mPresenter.addPayment(token, amount, cardIdm, cardHistoryNo, phone, pin,"1");
         }
 
     }
@@ -396,6 +426,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onSuccess(Payment payment) {
+
         //Add local authorise data
         mProgressDialog.dismiss();
 
@@ -408,21 +439,20 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             public void onChanged(@Nullable Transaction transaction) {
                 if (transaction != null) {
 
-                    Intent intent = new Intent(RechargeActivity.this, CardWriteActivity.class);
+                    Intent intent = new Intent(com.kaicomsol.tpos.activity.RechargeActivity.this, com.kaicomsol.tpos.activity.CardWriteActivity.class);
                     intent.putExtra("cardIdm", cardIdm);
                     startActivity(intent);
                     finish();
                 }
             }
         });
-
     }
+
 
     @Override
     public void onSuccess(Invoices invoices) {
         mAdapter.disableForegroundDispatch(this);
         mProgressDialog.dismiss();
-        layout_recharge.setVisibility(View.VISIBLE);
         if (invoices != null) {
             if (invoices.getInvoices() != null && invoices.getInvoices().size() > 0) {
                 String invoiceList = new Gson().toJson(invoices);
@@ -437,8 +467,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     }
 
+
     @Override
     public void onSuccess(String readCard) {
+        try {
+            if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -454,7 +490,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             case INVOICE_ERROR:
-                layout_recharge.setVisibility(View.GONE);
                 mProgressDialog.dismiss();
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
@@ -464,18 +499,64 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 break;
 
         }
-
-
     }
 
     @Override
     public void onLogout(int code) {
-        SharedDataSaveLoad.remove(RechargeActivity.this, getString(R.string.preference_access_token));
-        SharedDataSaveLoad.remove(RechargeActivity.this, getString(R.string.preference_is_service_check));
-        Intent intent = new Intent(RechargeActivity.this, LoginActivity.class);
+        SharedDataSaveLoad.remove(com.kaicomsol.tpos.activity.RechargeActivity.this, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(com.kaicomsol.tpos.activity.RechargeActivity.this, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(com.kaicomsol.tpos.activity.RechargeActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private boolean validateAmount(double creditAmount) {
+        if (creditAmount <= 5000 && creditAmount > 0.0) {
+            return true;
+        } else if (creditAmount <= 0.0) {
+            CustomAlertDialog.showError(com.kaicomsol.tpos.activity.RechargeActivity.this, "Amount Can not be less equal zero");
+            return false;
+        } else {
+            CustomAlertDialog.showError(com.kaicomsol.tpos.activity.RechargeActivity.this, "Maximum payment limit is 5000 BDT");
+            return false;
+        }
+    }
+
+    private boolean validatePhone() {
+        String phone = edtPhone.getText().toString().trim();
+
+        if (phone.isEmpty() || !isValidPhone(phone)) {
+            inputLayoutPhone.setError(getString(R.string.err_msg_phone));
+            requestFocus(edtPhone);
+            return false;
+        } else {
+            inputLayoutPhone.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+
+    private boolean validatePin() {
+        if (edtPin.getText().toString().trim().isEmpty()) {
+            inputLayoutPin.setError(getString(R.string.err_msg_pin));
+            requestFocus(edtPin);
+            return false;
+        } else {
+            inputLayoutPin.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+
+    private static boolean isValidPhone(String phone) {
+        return !TextUtils.isEmpty(phone) && Pattern.matches(phoneregex, phone);
+    }
+
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
     }
 
     private boolean checkConnection() {
@@ -485,7 +566,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
 
-    public static void expand(final View v) {
+    public void expand(final View v) {
         v.measure(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
         final int targetHeight = v.getMeasuredHeight();
 
@@ -510,8 +591,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         // 1dp/ms
         a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
-        InputMethodManager inputMethodManager = (InputMethodManager) v.getContext().getSystemService(INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInputFromWindow(v.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInputFromWindow(
+                v.getApplicationWindowToken(),
+                InputMethodManager.SHOW_FORCED, 0);
+
     }
 
     public static void collapse(final View v) {
@@ -566,10 +652,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     protected void onDestroy() {
-        boolean isCancelFailed = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_cancel_failed));
-        if (!isCancelFailed) {
-            SharedDataSaveLoad.remove(this, getString(R.string.preference_payment_id));
-        }
         super.onDestroy();
     }
 
@@ -587,39 +669,20 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
+
             case REQUEST_ENABLE_BT:
-                if (resultCode == RESULT_OK) {
-                    //bluetooth is on
-                    //bluetoothPrint();
-                } else Toast.makeText(this, "Could't on bluetooth", Toast.LENGTH_SHORT).show();
+                if (resultCode == Activity.RESULT_OK) {
+                    Intent connectIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(connectIntent, REQUEST_ENABLE_BT);
+                } else {
+                    Toast.makeText(this, "Bluetooth Connection Failed Please Try Again", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
-    public void showErrorDialog(String message) {
-        new PromptDialog(this)
-                .setDialogType(PromptDialog.DIALOG_TYPE_WRONG)
-                .setAnimationEnable(true)
-                .setTitleText(getString(R.string.error))
-                .setContentText(message)
-                .setPositiveListener(getString(R.string.ok), new PromptDialog.OnPositiveListener() {
-                    @Override
-                    public void onClick(PromptDialog dialog) {
-                        dialog.dismiss();
-                    }
-                }).show();
     }
-
-    private void showLoading(String msg) {
-        mProgressDialog.setTitle(msg);
-        mProgressDialog.setCancelable(false);
-        if (!((Activity) this).isFinishing()) {
-            mProgressDialog.show();
-        }
-    }
-
 
     class ReadAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
@@ -640,10 +703,21 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         @Override
         protected void onPostExecute(Boolean response) {
             if (response) {
-                String token = SharedDataSaveLoad.load(RechargeActivity.this, getString(R.string.preference_access_token));
+                String token = SharedDataSaveLoad.load(com.kaicomsol.tpos.activity.RechargeActivity.this, getString(R.string.preference_access_token));
                 readCard(token, mAccessFalica);
             }
+
+
         }
     }
+
+    private void showLoading(String msg) {
+        mProgressDialog.setTitle(msg);
+        mProgressDialog.setCancelable(false);
+        if (!((Activity) this).isFinishing()) {
+            mProgressDialog.show();
+        }
+    }
+
 
 }

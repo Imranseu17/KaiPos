@@ -7,6 +7,7 @@ import com.kaicomsol.kpos.models.CustomerData;
 import com.kaicomsol.kpos.models.Like;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.ErrorCode;
 
 import org.json.JSONObject;
 
@@ -47,7 +48,7 @@ public class CustomerPresenter {
                     @Override
                     public void onResponse(Call<CustomerData> call, Response<CustomerData> response) {
 
-                        if (response.code() == 401){
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()){
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -74,7 +75,7 @@ public class CustomerPresenter {
                         DebugLog.e(call.request().toString());
                         if (e instanceof HttpException) {
                             int code = ((HttpException) e).response().code();
-                            if (code == 401){
+                            if (code == ErrorCode.LOGOUTERROR.getCode()){
                                 mViewInterface.onLogout(code);
                                 return;
                             }
@@ -99,8 +100,8 @@ public class CustomerPresenter {
     }
 
     private void errorHandle(int code, ResponseBody responseBody){
-        if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
-        else if(code == 406){
+        if (code == ErrorCode.ERRORCODE500.getCode()) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
+        else if(code == ErrorCode.ERRORCODE406.getCode()){
             mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody));
         }else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }

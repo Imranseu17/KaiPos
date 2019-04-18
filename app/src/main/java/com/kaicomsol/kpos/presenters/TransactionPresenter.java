@@ -3,11 +3,10 @@ package com.kaicomsol.kpos.presenters;
 
 import com.kaicomsol.kpos.callbacks.TransactionView;
 import com.kaicomsol.kpos.models.APIErrors;
-import com.kaicomsol.kpos.models.Transaction;
+import com.kaicomsol.kpos.models.TransactionModel;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
-
-import org.json.JSONObject;
+import com.kaicomsol.kpos.utils.ErrorCode;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -34,7 +33,7 @@ public class TransactionPresenter {
         }
     }
 
-    public void getTransactionInfo(String token, String deviceId, String accountNo, String customerCode) {
+    public void getTransactionInfo(String token,final int currentPage,  String deviceId, String accountNo, String customerCode) {
         Map<String, String> map = new HashMap<>();
         DebugLog.e(token);
         map.put("Authorization", token);
@@ -42,20 +41,20 @@ public class TransactionPresenter {
         map.put("Content-Type", "application/json");
 
         mApiClient.getAPI()
-                .getTransitionInfo(map, accountNo, customerCode)
-                .enqueue(new Callback<List<Transaction>>() {
+                .getTransitionInfo(map, accountNo, customerCode,20,currentPage)
+                .enqueue(new Callback<List<TransactionModel>>() {
                     @Override
-                    public void onResponse(Call<List<Transaction>> call, Response<List<Transaction>> response) {
+                    public void onResponse(Call<List<TransactionModel>> call, Response<List<TransactionModel>> response) {
 
-                        if (response.code() == 401){
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()){
                             mViewInterface.onLogout(response.code());
                             return;
                         }
 
                         if (response.isSuccessful()){
-                            List<Transaction> transactionList = response.body();
-                            if (transactionList != null) {
-                                mViewInterface.onSuccess(transactionList);
+                            List<TransactionModel> transactionModelList = response.body();
+                            if (transactionModelList != null) {
+                                mViewInterface.onSuccess(transactionModelList,currentPage);
                             } else {
                                 mViewInterface.onError("Error fetching data");
                             }
@@ -63,12 +62,12 @@ public class TransactionPresenter {
                     }
 
                     @Override
-                    public void onFailure(Call<List<Transaction>> call, Throwable e) {
+                    public void onFailure(Call<List<TransactionModel>> call, Throwable e) {
                         e.printStackTrace();
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401){
+                            if (code == ErrorCode.LOGOUTERROR.getCode()){
                                 mViewInterface.onLogout(code);
                                 return;
                             }
@@ -89,8 +88,8 @@ public class TransactionPresenter {
     }
 
     private void errorHandle(int code, ResponseBody responseBody){
-        if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
-        else if(code == 406){
+        if (code == ErrorCode.ERRORCODE500.getCode()) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
+        else if(code == ErrorCode.ERRORCODE406.getCode()){
             mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody));
         }else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }

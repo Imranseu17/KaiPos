@@ -7,6 +7,7 @@ import com.kaicomsol.kpos.models.PaymentID;
 import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.ErrorCode;
 import com.kaicomsol.kpos.utils.RechargeStatus;
 
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class StatePresenter {
                     @Override
                     public void onResponse(Call<PaymentID> call, Response<PaymentID> response) {
 
-                        if (response.code() == 401) {
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()) {
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -68,7 +69,7 @@ public class StatePresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401) {
+                            if (code == ErrorCode.LOGOUTERROR.getCode()) {
                                 mViewInterface.onLogout(code);
                                 return;
                             } else {
@@ -102,7 +103,7 @@ public class StatePresenter {
                     @Override
                     public void onResponse(Call<PaymentID> call, Response<PaymentID> response) {
 
-                        if (response.code() == 401) {
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()) {
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -125,7 +126,7 @@ public class StatePresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401) {
+                            if (code == ErrorCode.LOGOUTERROR.getCode()) {
                                 mViewInterface.onLogout(code);
                                 return;
                             } else {
@@ -159,7 +160,7 @@ public class StatePresenter {
                     @Override
                     public void onResponse(Call<Receipt> call, Response<Receipt> response) {
 
-                        if (response.code() == 401) {
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()) {
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -184,7 +185,7 @@ public class StatePresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401) {
+                            if (code == ErrorCode.LOGOUTERROR.getCode()) {
                                 mViewInterface.onLogout(code);
                                 return;
                             } else {
@@ -206,21 +207,34 @@ public class StatePresenter {
     }
 
     private void getErrorMessage(int code, ResponseBody responseBody) {
-        switch (code) {
-            case 500:
-                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
-                break;
-            case 400:
-                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
-                break;
-            case 401:
-                mViewInterface.onLogout(code);
-                break;
-            case 406:
-                mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody),RechargeStatus.ERROR_CODE_406.getCode());
-                break;
-            default:
-                mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
+        ErrorCode errorCode = ErrorCode.getByCode(code);
+
+        if (errorCode != null) {
+            switch (errorCode) {
+                case ERRORCODE500:
+                    mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
+                    break;
+                case ERRORCODE400:
+                    mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
+                    break;
+                case LOGOUTERROR:
+                    mViewInterface.onLogout(code);
+                    break;
+                case ERRORCODE406:
+                    mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody), RechargeStatus.ERROR_CODE_406.getCode());
+                    break;
+                case ERRORCODE412:
+                    mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.COMMISSIONED_ERROR.getCode());
+                    break;
+                default:
+                    mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
+            }
+
+
+        } else {
+
+            mViewInterface.onError("Error occurred Please try again", code);
+
         }
     }
 }

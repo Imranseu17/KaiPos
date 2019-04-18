@@ -4,6 +4,7 @@ import com.kaicomsol.kpos.callbacks.PosDeviceView;
 import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.ErrorCode;
 
 import org.json.JSONObject;
 
@@ -70,8 +71,8 @@ public class PosDevicePresenter {
     }
 
     private void errorHandle(int code, ResponseBody responseBody){
-        if (code == 500) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
-        else if(code == 406){
+        if (code == ErrorCode.ERRORCODE500.getCode()) mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody));
+        else if(code == ErrorCode.ERRORCODE406.getCode()){
             mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody));
         }else mViewInterface.onError(APIErrors.getErrorMessage(responseBody));
     }

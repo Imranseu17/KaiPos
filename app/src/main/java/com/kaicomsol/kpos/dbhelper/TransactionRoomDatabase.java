@@ -1,4 +1,4 @@
-package com.kaicomsol.kpos.activity;
+package com.kaicomsol.kpos.dbhelper;
 
 /*
  * Copyright (C) 2017 Google Inc.

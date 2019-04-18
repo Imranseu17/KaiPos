@@ -83,7 +83,7 @@
     <string name="customer">ক্রেতা</string>
     <string name="meter">মিটার</string>
     <string name="card">কার্ড</string>
-    <string name="transactions">লেনদেন</string>
+    <string name="transactionModels">লেনদেন</string>
     <string name="subscriptions">সদস্যতাগুলি</string>
     <string name="account_list">অ্যাকাউন্ট তালিকা</string>
     <string name="label_card_no">কার্ড নাম্বার</string>

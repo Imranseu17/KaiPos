@@ -112,7 +112,7 @@
     <string name="customer">CUSTOMER</string>
     <string name="meter">METER</string>
     <string name="card">CARD</string>
-    <string name="transactions">TRANSACTIONS</string>
+    <string name="transactionModels">TRANSACTIONS</string>
     <string name="subscriptions">SUBSCRIPTIONS</string>
     <string name="account_list">Account List</string>
     <string name="label_card_no">Card no</string>

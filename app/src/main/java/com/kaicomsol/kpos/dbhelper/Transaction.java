@@ -1,4 +1,4 @@
-package com.kaicomsol.kpos.activity;
+package com.kaicomsol.kpos.dbhelper;
 
 /*
  * Copyright (C) 2017 Google Inc.
@@ -20,10 +20,6 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import com.kaicomsol.kpos.models.Receipt;
 
 /**
  * A basic class representing an entity that is a row in a one-column database table.

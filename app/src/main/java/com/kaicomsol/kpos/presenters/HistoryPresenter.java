@@ -6,6 +6,7 @@ import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.models.SalesHistory;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.ErrorCode;
 
 import org.json.JSONObject;
 
@@ -54,7 +55,7 @@ public class HistoryPresenter {
                 .enqueue(new Callback<SalesHistory>() {
                     @Override
                     public void onResponse(Call<SalesHistory> call, Response<SalesHistory> response) {
-                        if (response.code() == 401) {
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()) {
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -75,7 +76,7 @@ public class HistoryPresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401) {
+                            if (code == ErrorCode.LOGOUTERROR.getCode()) {
                                 mViewInterface.onLogout(code);
                                 return;
                             }
