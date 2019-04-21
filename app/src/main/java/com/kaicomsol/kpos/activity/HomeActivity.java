@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +18,6 @@ import android.widget.LinearLayout;
 
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.adapter.PendingAdapter;
 import com.kaicomsol.kpos.dbhelper.Transaction;
 import com.kaicomsol.kpos.dbhelper.TransactionViewModel;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
@@ -208,8 +206,7 @@ public class HomeActivity extends AppCompatActivity {
         mTransactionViewModel.getAllTransaction().observe(this, new Observer<List<Transaction>>() {
             @Override
             public void onChanged(@Nullable List<Transaction> transactionList) {
-                //if (transactionList != null) setCount(HomeActivity.this, transactionList.size()+"");
-                setCount(HomeActivity.this, "3");
+                if (transactionList != null) setCount(HomeActivity.this, transactionList.size()+"");
             }
         });
         return super.onPrepareOptionsMenu(menu);
