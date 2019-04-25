@@ -6,41 +6,31 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.google.firebase.database.FirebaseDatabase;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.PendingAdapter;
 import com.kaicomsol.kpos.callbacks.CaptureView;
 import com.kaicomsol.kpos.callbacks.PendingListener;
-import com.kaicomsol.kpos.callbacks.StateView;
-import com.kaicomsol.kpos.dialogs.CancelCardDialog;
+import com.kaicomsol.kpos.dbhelper.Transaction;
+import com.kaicomsol.kpos.dbhelper.TransactionViewModel;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
-import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
-import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.presenters.CapturePresenter;
-import com.kaicomsol.kpos.presenters.StatePresenter;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
-
-import static com.kaicomsol.kpos.golobal.Constants.CONNECTIVITY_ACTION;
 
 public class PendingActivity extends AppCompatActivity implements CaptureView, PendingListener {
 

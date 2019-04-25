@@ -44,7 +44,7 @@ public class TransactionViewModel extends AndroidViewModel {
         mAllTransaction = mRepository.getAllTransaction();
     }
 
-    LiveData<List<Transaction>> getAllTransaction() {
+    public LiveData<List<Transaction>> getAllTransaction() {
         return mAllTransaction;
     }
 
