@@ -52,6 +52,7 @@ import com.kaicomsol.kpos.models.Item;
 import com.kaicomsol.kpos.models.Receipt;
 import com.kaicomsol.kpos.presenters.StatePresenter;
 import com.kaicomsol.kpos.printer.BluetoothPrinter;
+import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.PrinterCommands;
 import com.kaicomsol.kpos.utils.RechargeStatus;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
@@ -183,6 +184,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
             public void onChanged(@Nullable Transaction transaction) {
                 if (transaction != null) {
                     mTransaction = transaction;
+                    DebugLog.e(" Payment ID: "+transaction.getPaymentId());
                     rechargeCardDialog();
                 }
             }
@@ -271,7 +273,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         mAccessFalica.ReadTag(tag);
         String checkStatus = mAccessFalica.getCardStatus(tag);
         if (checkStatus != null && checkStatus.equals("15")) {
-            rechargeCardDismiss();
+            cancelCardDismiss();
             Toast.makeText(CardWriteActivity.this,"TransactionModel already successful", Toast.LENGTH_SHORT).show();
             receiptPayment(mTransaction.getPaymentId() + "");
             capturePayment(mTransaction.getPaymentId() + "");
@@ -726,6 +728,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     @Override
     public void onCaptureSuccess(int paymentId) {
         mTransactionViewModel.deleteByPaymentId(paymentId);
+
     }
 
     @Override
