@@ -271,4 +271,37 @@
     <string name="gd_No" translatable="false">GD Number is required</string>
 
 
+    //customer properties
+
+    <string name="customer_code" translatable="false">CustomerCode</string>
+    <string name="accountNo" translatable="false">AccountNo</string>
+    <string name="address_no" translatable="false">Address</string>
+    <string name="apartment_no" translatable="false">Apartment</string>
+    <string name="house_no" translatable="false">House</string>
+    <string name="road_no" translatable="false">Road</string>
+    <string name="block_no" translatable="false">Block</string>
+    <string name="sector_no" translatable="false">Sector</string>
+    <string name="section_no" translatable="false">Section</string>
+    <string name="zipCode_no" translatable="false">ZipCode</string>
+    <string name="metroID_no" translatable="false">MetroId</string>
+    <string name="metro_no" translatable="false">Metro</string>
+    <string name="zoneID_no" translatable="false">ZoneId</string>
+    <string name="zone_no" translatable="false">Zone</string>
+    <string name="areaID_no" translatable="false">AreaId</string>
+    <string name="area_no" translatable="false">Area</string>
+    <string name="subArea_no" translatable="false">Sub Area</string>
+    <string name="title_no" translatable="false">Title</string>
+    <string name="postal_code" translatable="false">PostalCode</string>
+    <string name="first_name" translatable="false">FirstName</string>
+    <string name="last_name" translatable="false">LastName</string>
+    <string name="full_name" translatable="false">FullName</string>
+    <string name="email_no" translatable="false">Email</string>
+    <string name="mobile_no" translatable="false">MobileNumber</string>
+    <string name="identity_no" translatable="false">IdentityNo</string>
+    <string name="balance_no" translatable="false">Balance</string>
+    <string name="statusID_no" translatable="false">StatusId</string>
+    <string name="status_no" translatable="false">Status</string>
+
+
+
 </resources>

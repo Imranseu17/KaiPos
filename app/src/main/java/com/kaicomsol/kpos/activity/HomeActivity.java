@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.dbhelper.Transaction;
 import com.kaicomsol.kpos.dbhelper.TransactionViewModel;

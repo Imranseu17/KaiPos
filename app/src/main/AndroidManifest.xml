@@ -23,7 +23,8 @@
         android:roundIcon="@drawable/smalltile"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.TransactionDetailsActivity"></activity>
+        <activity android:name=".adapter.customerAdapter"></activity>
+        <activity android:name=".activity.TransactionDetailsActivity" />
         <activity android:name=".activity.SalesHistoryDetailsActivity" />
         <activity android:name=".activity.ChangePassActivity" />
         <activity
@@ -50,12 +51,10 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-
         <activity
             android:name=".activity.PendingActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"></activity>
-
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.RefundActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

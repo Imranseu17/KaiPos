@@ -210,13 +210,18 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
             mAccessFalica.ReadTag(tag);
             mAccessFalica.writeHistoryStatus(tag, Integer.parseInt(historyNo)+1);
         }
-        if (response){
+         if (response){
             rechargeCardDismiss();
             updatedData();
             Toast.makeText(this, "Refund update successfully!", Toast.LENGTH_LONG).show();
         }else if (value > 999.00){
             CustomAlertDialog.showError(this, "Gas volume limit exceed!");
-        }else CustomAlertDialog.showError(this, "Update failed please try again");
+        }else{
+             rechargeCardDismiss();
+             CustomAlertDialog.showError(this, "Update failed please try again");
+
+         }
+
 
     }
 

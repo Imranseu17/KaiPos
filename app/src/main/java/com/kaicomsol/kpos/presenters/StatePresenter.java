@@ -1,6 +1,5 @@
 package com.kaicomsol.kpos.presenters;
 
-import com.kaicomsol.kpos.callbacks.PaymentView;
 import com.kaicomsol.kpos.callbacks.StateView;
 import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.models.PaymentID;
@@ -74,7 +73,7 @@ public class StatePresenter {
                                 return;
                             } else {
                                 ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                if (code == 500)
+                                if (code == ErrorCode.ERRORCODE500.getCode())
                                     mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.CAPTURE_ERROR.getCode());
                                 else
                                     mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.CAPTURE_ERROR.getCode());
@@ -131,7 +130,7 @@ public class StatePresenter {
                                 return;
                             } else {
                                 ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                if (code == 500)
+                                if (code == ErrorCode.ERRORCODE500.getCode())
                                     mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.CANCEL_ERROR.getCode());
                                 else
                                     mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.CANCEL_ERROR.getCode());
@@ -190,7 +189,7 @@ public class StatePresenter {
                                 return;
                             } else {
                                 ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                if (code == 500)
+                                if (code == ErrorCode.ERRORCODE500.getCode())
                                     mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.RECEIPT_ERROR.getCode());
                                 else
                                     mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.RECEIPT_ERROR.getCode());

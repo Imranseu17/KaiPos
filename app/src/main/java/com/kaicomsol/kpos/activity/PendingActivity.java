@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -24,6 +25,7 @@ import com.kaicomsol.kpos.dbhelper.Transaction;
 import com.kaicomsol.kpos.dbhelper.TransactionViewModel;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.presenters.CapturePresenter;
+import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import java.util.List;
@@ -38,6 +40,7 @@ public class PendingActivity extends AppCompatActivity implements CaptureView, P
     private ProgressDialog mProgressDialog;
     private TransactionViewModel mTransactionViewModel;
     private PendingAdapter mAdapter;
+    private int paymentId = 0;
     //component bind
     @BindView(R.id.main_view)
     RelativeLayout main_view;
@@ -75,6 +78,7 @@ public class PendingActivity extends AppCompatActivity implements CaptureView, P
                 mAdapter = new PendingAdapter(transactionList, PendingActivity.this);
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(PendingActivity.this));
                 mRecyclerView.setAdapter(mAdapter);
+
             }
         });
         mPresenter = new CapturePresenter(this);
@@ -129,6 +133,11 @@ public class PendingActivity extends AppCompatActivity implements CaptureView, P
     public void onError(String error, int code) {
        if (mProgressDialog != null)  mProgressDialog.dismiss();
         if (error != null) CustomAlertDialog.showError(this, error);
+        if(code == 455 && paymentId > 0 ){
+            mTransactionViewModel.deleteByPaymentId(paymentId);
+            mAdapter.notifyDataSetChanged();
+        }
+
     }
 
     @Override
@@ -149,6 +158,7 @@ public class PendingActivity extends AppCompatActivity implements CaptureView, P
 
     @Override
     public void onClick(int paymentId) {
+           this.paymentId = paymentId;
            capturePayment(paymentId+"");
     }
 }

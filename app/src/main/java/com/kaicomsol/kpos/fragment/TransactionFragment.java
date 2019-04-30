@@ -91,6 +91,7 @@ public class TransactionFragment extends Fragment implements TransactionView, Tr
         View view = inflater.inflate(R.layout.fragment_transaction, container, false);
         ButterKnife.bind(this, view);
         mPresenter = new TransactionPresenter(this);
+        getTransitionInfo(currentPage);
         viewConfig();
 
         return view;

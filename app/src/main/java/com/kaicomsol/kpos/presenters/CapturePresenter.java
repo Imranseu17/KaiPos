@@ -1,11 +1,11 @@
 package com.kaicomsol.kpos.presenters;
 
 import com.kaicomsol.kpos.callbacks.CaptureView;
-import com.kaicomsol.kpos.callbacks.StateView;
 import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.models.PaymentID;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.ErrorCode;
 import com.kaicomsol.kpos.utils.RechargeStatus;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class CapturePresenter {
                     @Override
                     public void onResponse(Call<PaymentID> call, Response<PaymentID> response) {
 
-                        if (response.code() == 401) {
+                        if (response.code() == ErrorCode.LOGOUTERROR.getCode()) {
                             mViewInterface.onLogout(response.code());
                             return;
                         }
@@ -54,7 +54,7 @@ public class CapturePresenter {
                             if (payment != null) {
                                 mViewInterface.onCaptureSuccess(payment.getPaymentId());
                             } else {
-                                mViewInterface.onError("Error fetching data", RechargeStatus.CAPTURE_ERROR.getCode());
+                                getErrorMessage(response.code(), response.errorBody());
                             }
                         } else getErrorMessage(response.code(), response.errorBody());
 
@@ -67,12 +67,12 @@ public class CapturePresenter {
                         if (e instanceof HttpException) {
 
                             int code = ((HttpException) e).response().code();
-                            if (code == 401) {
+                            if (code == ErrorCode.LOGOUTERROR.getCode()) {
                                 mViewInterface.onLogout(code);
                                 return;
                             } else {
                                 ResponseBody responseBody = ((HttpException) e).response().errorBody();
-                                if (code == 500)
+                                if (code == ErrorCode.ERRORCODE500.getCode())
                                     mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.CAPTURE_ERROR.getCode());
                                 else
                                     mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.CAPTURE_ERROR.getCode());
@@ -90,18 +90,24 @@ public class CapturePresenter {
     }
 
     private void getErrorMessage(int code, ResponseBody responseBody) {
-        switch (code) {
-            case 500:
+
+        ErrorCode errorCode = ErrorCode.getByCode(code);
+        switch (errorCode) {
+            case ERRORCODE500:
                 mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
                 break;
-            case 400:
+            case ERRORCODE400:
                 mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
                 break;
-            case 401:
+            case LOGOUTERROR:
                 mViewInterface.onLogout(code);
                 break;
-            case 406:
+            case ERRORCODE406:
                 mViewInterface.onError(APIErrors.get406ErrorMessage(responseBody),RechargeStatus.ERROR_CODE_406.getCode());
+                break;
+
+            case ERRORCODE455:
+                mViewInterface.onError(APIErrors.get500ErrorMessage(responseBody), RechargeStatus.CAPTUREAlREADY_ERROR.getCode());
                 break;
             default:
                 mViewInterface.onError(APIErrors.getErrorMessage(responseBody), RechargeStatus.ERROR_CODE_100.getCode());
