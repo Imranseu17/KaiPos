@@ -1,16 +1,22 @@
 package com.kaicomsol.kpos.activity;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.AsyncQueryHandler;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.MenuItem;
@@ -25,13 +31,17 @@ import android.widget.TextView;
 import com.airbnb.lottie.LottieAnimationView;
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.LoginView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.models.Login;
+import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.presenters.LoginPresenter;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
+
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,7 +82,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
         ButterKnife.bind(this);
 
-        final String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
+        final String deviceId = Settings.Secure.getString(getContentResolver(),Settings.Secure.ANDROID_ID);
+
         DebugLog.e(deviceId);
 
         //init presenter
@@ -109,7 +120,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     private void getLogin() {
         if (checkConnection()) {
             showAnimation();
-            final String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
+            final String deviceId = Settings.Secure.getString(getContentResolver(),Settings.Secure.ANDROID_ID);
             DebugLog.e(deviceId);
             SharedDataSaveLoad.save(this,getString(R.string.preference_meter_serial), deviceId);
             String email = edt_email.getText().toString().trim();
@@ -278,4 +289,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             return "";
         }
     }
+
+
 }

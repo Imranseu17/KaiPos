@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.adapter.PrintAdapter;
 import com.kaicomsol.kpos.callbacks.CloseClickListener;
@@ -143,7 +144,10 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
 
         cardConfig();
 
+
     }
+
+
 
     private void viewConfig() {
 

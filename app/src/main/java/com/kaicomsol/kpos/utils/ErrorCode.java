@@ -8,8 +8,6 @@ public enum ErrorCode {
     ERRORCODE406(3, 406),
     ERRORCODE412(4, 412);
 
-
-
     private int key;
     private int code;
 
