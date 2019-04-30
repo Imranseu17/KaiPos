@@ -218,6 +218,8 @@ public class RefundActivity extends AppCompatActivity implements RefundView, Clo
             CustomAlertDialog.showError(this, "Gas volume limit exceed!");
         }else{
              rechargeCardDismiss();
+             btn_submit.setEnabled(false);
+             btn_submit.setBackground(ContextCompat.getDrawable(this,R.drawable.circle_bg_gray));
              CustomAlertDialog.showError(this, "Update failed please try again");
 
          }
