@@ -301,7 +301,7 @@
     <string name="balance_no" translatable="false">Balance</string>
     <string name="statusID_no" translatable="false">StatusId</string>
     <string name="status_no" translatable="false">Status</string>
-
+    <string name="support">Support</string>
 
 
 </resources>

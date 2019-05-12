@@ -95,7 +95,7 @@ public class DeviceRegisterActivity extends AppCompatActivity implements PosDevi
     private void getDeviceRegister() {
         if (checkConnection()) {
             showAnimation();
-            final String deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
+            final String deviceId = Settings.Secure.getString(getContentResolver(),Settings.Secure.ANDROID_ID);
             String pos_token = edt_token.getText().toString().trim();
             mPresenter.activatePosDevice(token, pos_token, deviceId);
 

@@ -336,6 +336,12 @@ public class AccountSearchActivity extends AppCompatActivity implements CloseCli
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.enableForegroundDispatch(AccountSearchActivity.this, pendingIntent, intentFiltersArray, techListsArray);
+
+    }
 
 
     @Override

@@ -125,6 +125,10 @@ public interface APIServices {
     @POST("/api/v1/user/changePassword")
     Call<ResponseBody> resetPassword(@HeaderMap Map<String, String> headers, @Body JsonObject jsonObject);
 
+    @GET("/api/v1/payment/getLastAuthorization/{cardNo}")
+    Call<Payment>getLastAuthorization(@HeaderMap Map<String, String> headers,
+                                      @Path("cardNo") String cardNo);
+
 
 
 }

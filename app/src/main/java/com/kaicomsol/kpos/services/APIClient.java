@@ -1,7 +1,12 @@
 package com.kaicomsol.kpos.services;
 
 
+import android.widget.Toast;
+
+import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.golobal.Constants;
+import com.kaicomsol.kpos.utils.DebugLog;
+import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
@@ -35,13 +40,26 @@ public class APIClient {
      */
     public static APIServices getAPI() {
 
-        if (retrofit == null) {
-            retrofit = new Retrofit
-                    .Builder()
-                    .baseUrl(Constants.BASE_URL)
-                    .client(getUnsafeOkHttpClient().build())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+        String dc_dr = SharedDataSaveLoad.load(KPosApp.getContext(), KPosApp.getContext().getString(R.string.preference_dc_dr));
+
+        if (dc_dr.equalsIgnoreCase("dc")){
+            if (retrofit == null) {
+                retrofit = new Retrofit
+                        .Builder()
+                        .baseUrl(Constants.BASE_URL_DC)
+                        .client(getUnsafeOkHttpClient().build())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            }
+        }else {
+            if (retrofit == null) {
+                retrofit = new Retrofit
+                        .Builder()
+                        .baseUrl(Constants.BASE_URL_DR)
+                        .client(getUnsafeOkHttpClient().build())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            }
         }
 
         return retrofit.create(APIServices.class);

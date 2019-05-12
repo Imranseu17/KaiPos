@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_pending"
-        android:icon="@drawable/pending_icon"
-        android:title="Pending"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/action_setting"
         android:orderInCategory="100"
         android:title="Settings"

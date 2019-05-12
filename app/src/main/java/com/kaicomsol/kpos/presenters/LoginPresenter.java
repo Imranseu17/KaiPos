@@ -1,12 +1,15 @@
 package com.kaicomsol.kpos.presenters;
 
 
+import android.content.Context;
+
 import com.google.gson.JsonObject;
 import com.kaicomsol.kpos.callbacks.LoginView;
 import com.kaicomsol.kpos.models.APIErrors;
 import com.kaicomsol.kpos.models.Login;
 import com.kaicomsol.kpos.services.APIClient;
 import com.kaicomsol.kpos.utils.ErrorCode;
+import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import org.json.JSONObject;
 

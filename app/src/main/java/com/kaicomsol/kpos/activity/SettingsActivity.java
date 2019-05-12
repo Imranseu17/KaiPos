@@ -28,6 +28,7 @@ import com.kaicomsol.kpos.callbacks.LanguageSelectListener;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.LanguageCustomDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
+import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
 import java.util.Locale;
@@ -39,6 +40,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class SettingsActivity extends AppCompatActivity implements LanguageSelectListener {
 
     private boolean isSettings = false;
+    private String dc_dr = "";
     private LanguageCustomDialog mLanguageDialog;
     private BluetoothAdapter mBluetoothAdapter;
     //Bind component
@@ -120,6 +122,18 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
                 showLogoutDialog();
             }
         });
+        String check = SharedDataSaveLoad.load(this, getString(R.string.preference_dc_dr));
+        if (check.equalsIgnoreCase("dc")){
+            btn_dc.setEnabled(false);
+            btn_dr.setEnabled(true);
+            btn_dc.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.green));
+            btn_dr.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.light_gray));
+        }else {
+            btn_dc.setEnabled(true);
+            btn_dr.setEnabled(false);
+            btn_dr.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.green));
+            btn_dc.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.light_gray));
+        }
 
         btn_dc.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,6 +142,7 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
                 btn_dr.setEnabled(true);
                 btn_dc.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.green));
                 btn_dr.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.light_gray));
+                dc_dr = "dc";
 
             }
         });
@@ -138,6 +153,7 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
                 btn_dr.setEnabled(false);
                 btn_dr.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.green));
                 btn_dc.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.light_gray));
+                dc_dr = "dr";
             }
         });
 
@@ -229,7 +245,6 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
         String deviceId = txt_device_id.getText().toString();
         String printerName = txt_printer_name.getText().toString();
         String printerAddress = txt_printer_address.getText().toString();
-        String dc_dr = btn_dc.isEnabled() ? "dc" : "dr";
         String operatorName = edt_name.getText().toString();
         String customerSupport = edt_support.getText().toString();
 
@@ -239,6 +254,7 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
         SharedDataSaveLoad.save(this, getString(R.string.preference_dc_dr),dc_dr);
         SharedDataSaveLoad.save(this, getString(R.string.preference_operator_name),operatorName);
         SharedDataSaveLoad.save(this, getString(R.string.preference_customer_support),customerSupport);
+        onLogout();
     }
 
     public void showLogoutDialog() {
@@ -280,6 +296,15 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
             e.printStackTrace();
             return "";
         }
+    }
+
+    private void onLogout(){
+        SharedDataSaveLoad.remove(SettingsActivity.this, getString(R.string.preference_access_token));
+        SharedDataSaveLoad.remove(SettingsActivity.this, getString(R.string.preference_is_service_check));
+        Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
 

@@ -73,6 +73,8 @@ import static com.kaicomsol.kpos.golobal.Constants.CONNECTIVITY_ACTION;
 
 public class CardWriteActivity extends AppCompatActivity implements StateView, CloseClickListener {
 
+
+    public static CardWriteActivity cardActivity = null;
     private TransactionViewModel mTransactionViewModel;
     private Transaction mTransaction;
     private boolean isCancel = false;
@@ -152,6 +154,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
 
     private void viewConfig() {
 
+        this.cardActivity =  this;
         // Write a message to the database
         mDatabase = FirebaseDatabase.getInstance();
 
@@ -817,7 +820,6 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
                     rechargeCardDismiss();
                     receiptPayment(mTransaction.getPaymentId() + "");
                     capturePayment(mTransaction.getPaymentId() + "");
-
                 } else {
                     rechargeCardDismiss();
                     showTryAgain();

@@ -195,46 +195,96 @@
 
         </LinearLayout>
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/card_history"
-            android:layout_width="@dimen/_236sdp"
-            android:layout_height="@dimen/_120sdp"
-            android:layout_margin="@dimen/_8sdp"
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_history"
+                android:layout_width="@dimen/_110sdp"
+                android:layout_height="@dimen/_120sdp"
+                android:layout_margin="@dimen/_8sdp"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
-                <ImageView
-                    android:layout_width="@dimen/_46sdp"
-                    android:layout_height="@dimen/_46sdp"
-                    android:background="@drawable/circle_bg_limegreen"
-                    android:padding="@dimen/_8sdp"
-                    android:src="@drawable/ic_outline_history"
-                    android:tint="@android:color/white" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:text="@string/label_sales_history"
-                    android:textSize="15sp"
-                    android:textAppearance="@style/TextAppearance.FontPath"
-                    android:textStyle="bold" />
+                    <ImageView
+                        android:layout_width="@dimen/_46sdp"
+                        android:layout_height="@dimen/_46sdp"
+                        android:background="@drawable/circle_bg_limegreen"
+                        android:padding="@dimen/_8sdp"
+                        android:src="@drawable/ic_outline_history"
+                        android:tint="@android:color/white" />
 
-                <View
-                    android:id="@+id/line_history"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="2dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@color/black_overlay" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:text="@string/label_sales_history"
+                        android:textSize="15sp"
+                        android:textAppearance="@style/TextAppearance.FontPath"
+                        android:textStyle="bold" />
 
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+                    <View
+                        android:id="@+id/line_history"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="2dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/black_overlay" />
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_support"
+                android:layout_width="@dimen/_110sdp"
+                android:layout_height="@dimen/_120sdp"
+                android:layout_margin="@dimen/_8sdp"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="@dimen/_46sdp"
+                        android:layout_height="@dimen/_46sdp"
+                        android:background="@drawable/circle_bg_purple"
+                        android:padding="@dimen/_8sdp"
+                        android:src="@drawable/ic_help_outline_white_24dp"
+                        android:tint="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:text="@string/support"
+                        android:textSize="15sp"
+                        android:textAppearance="@style/TextAppearance.FontPath"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@+id/line_support"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="2dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/black_overlay" />
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

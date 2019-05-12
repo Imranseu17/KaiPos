@@ -305,6 +305,44 @@ public class AccessFalica {
         }
     }
 
+    public String getCardCredit(Tag tag) {
+        NfcF nfc = NfcF.get(tag);
+        try {
+            nfc.connect();
+            BlockDataList datalist = new BlockDataList();
+            datalist.AddReadBlockData(parse(nfc.transceive(readWithoutEncryption(TargetIDm, size, targetServiceCode, 3)))[0], 3, true);
+
+            credit = String.valueOf(GetCredit(datalist.GetReadBlockData(3)));
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return credit;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (nfc != null) {
+                try {
+                    nfc.close();
+                } catch (IOException e2) {
+                    e.printStackTrace();
+                    if (nfc != null) {
+                        try {
+                            nfc.close();
+                        } catch (Exception e3) {
+
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
 
     public boolean getReadCard(Tag tag) {
 

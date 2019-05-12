@@ -167,9 +167,7 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         new ReadAsyncTask(tag).execute();
 
-
     }
-
 
     @Override
     protected void onPause() {
@@ -218,5 +216,6 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
             vibrator.cancel();
         }
     }
+
 
 }

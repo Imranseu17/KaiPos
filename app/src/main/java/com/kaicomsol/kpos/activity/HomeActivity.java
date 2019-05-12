@@ -1,13 +1,8 @@
 package com.kaicomsol.kpos.activity;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -17,11 +12,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.kaicomsol.kpos.R;
-import com.kaicomsol.kpos.dbhelper.Transaction;
-import com.kaicomsol.kpos.dbhelper.TransactionViewModel;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
-import com.kaicomsol.kpos.utils.CountDrawable;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 import com.kaicomsol.kpos.utils.WaterMarkBg;
 
@@ -36,9 +28,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private TransactionViewModel mTransactionViewModel;
     public static HomeActivity home;
-    private Menu defaultMenu;
 
     @BindView(R.id.layout_main)
     LinearLayout layout_main;
@@ -62,6 +52,10 @@ public class HomeActivity extends AppCompatActivity {
     CardView cardHistory;
     @BindView(R.id.line_history)
     View line_history;
+    @BindView(R.id.card_support)
+    CardView cardSupport;
+    @BindView(R.id.line_support)
+    View line_support;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +81,7 @@ public class HomeActivity extends AppCompatActivity {
                 line_inspect.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
                 line_refund.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
                 line_history.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
+                line_support.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
 
                 Intent intent = new Intent(HomeActivity.this, RechargeActivity.class);
                 startActivity(intent);
@@ -102,6 +97,7 @@ public class HomeActivity extends AppCompatActivity {
                 line_inspect.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
                 line_refund.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
                 line_history.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
+                line_support.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
 
                 Intent intent = new Intent(HomeActivity.this, AccountSearchActivity.class);
                 intent.putExtra("path", "account");
@@ -118,6 +114,7 @@ public class HomeActivity extends AppCompatActivity {
                 line_inspect.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.green));
                 line_refund.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
                 line_history.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
+                line_support.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
 
                 Intent intent = new Intent(HomeActivity.this, InspectActivity.class);
                 startActivity(intent);
@@ -133,6 +130,7 @@ public class HomeActivity extends AppCompatActivity {
                 line_inspect.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
                 line_refund.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.green));
                 line_history.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
+                line_support.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
 
                 Intent intent = new Intent(HomeActivity.this, RefundActivity.class);
                 startActivity(intent);
@@ -148,10 +146,26 @@ public class HomeActivity extends AppCompatActivity {
                 line_inspect.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
                 line_refund.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
                 line_history.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.green));
-
+                line_support.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
 
                 Intent intent = new Intent(HomeActivity.this, SalesHistoryActivity.class);
                 intent.putExtra("path", "history");
+                startActivity(intent);
+            }
+        });
+
+        cardSupport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                line_gas.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
+                line_account.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
+                line_inspect.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
+                line_refund.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
+                line_history.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.black_overlay));
+                line_support.setBackgroundColor(ContextCompat.getColor(HomeActivity.this, R.color.green));
+
+                Intent intent = new Intent(HomeActivity.this, AuthorizeActivity.class);
                 startActivity(intent);
             }
         });
@@ -178,7 +192,6 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        defaultMenu = menu;
         return true;
     }
 
@@ -189,46 +202,12 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.action_setting:
                 startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
                 return true;
-            case R.id.action_pending:
-                startActivity(new Intent(HomeActivity.this, PendingActivity.class));
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // Get a new or existing ViewModel from the ViewModelProvider.
-        mTransactionViewModel = ViewModelProviders.of(this).get(TransactionViewModel.class);
-        mTransactionViewModel.getAllTransaction().observe(this, new Observer<List<Transaction>>() {
-            @Override
-            public void onChanged(@Nullable List<Transaction> transactionList) {
-                if (transactionList != null) setCount(HomeActivity.this, transactionList.size()+"");
-            }
-        });
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    public void setCount(Context context, String count) {
-        MenuItem menuItem = defaultMenu.findItem(R.id.action_pending);
-        LayerDrawable icon = (LayerDrawable) menuItem.getIcon();
-
-        CountDrawable badge;
-
-        // Reuse drawable if possible
-        Drawable reuse = icon.findDrawableByLayerId(R.id.ic_pending_count);
-        if (reuse != null && reuse instanceof CountDrawable) {
-            badge = (CountDrawable) reuse;
-        } else {
-            badge = new CountDrawable(context);
-        }
-
-        badge.setCount(count);
-        icon.mutate();
-        icon.setDrawableByLayerId(R.id.ic_pending_count, badge);
-    }
 
     @Override
     public void onBackPressed() {

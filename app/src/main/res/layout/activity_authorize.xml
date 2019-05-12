@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.AuthorizeActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/layout_try_print"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_marginBottom="@dimen/_16sdp"
+                android:src="@drawable/printer" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Print Error"
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textColor="@color/colorAccent"
+                android:textSize="22sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Please Try Again to print receipt"
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textColor="@color/black_overlay"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_try_again_print"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@drawable/drop_shadow_strocke"
+                android:paddingLeft="@dimen/_30sdp"
+                android:paddingRight="@dimen/_30sdp"
+                android:text="Try Again"
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textColor="@color/colorWhite" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_print"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_10sdp"
+            android:visibility="gone">
+
+            <include
+                android:id="@+id/invoice_layout"
+                layout="@layout/invoice_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:id="@+id/btn_print"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="@dimen/_150sdp"
+                android:layout_height="@dimen/_44sdp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/drop_shadow"
+                android:padding="@dimen/_8sdp"
+                android:text="@string/label_print"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.FontPath"
+                android:textColor="@color/colorWhite" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

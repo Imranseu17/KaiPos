@@ -16,14 +16,13 @@
         android:required="true" />
 
     <application
-        android:name="android.support.multidex.MultiDexApplication"
+        android:name=".services.KPosApp"
         android:allowBackup="false"
         android:icon="@drawable/smalltile"
         android:label="@string/app_name"
         android:roundIcon="@drawable/smalltile"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".adapter.customerAdapter"></activity>
         <activity android:name=".activity.TransactionDetailsActivity" />
         <activity android:name=".activity.SalesHistoryDetailsActivity" />
         <activity android:name=".activity.ChangePassActivity" />
@@ -57,6 +56,14 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.RefundActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
+        </activity>
+        <activity
+            android:name=".activity.AuthorizeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <meta-data

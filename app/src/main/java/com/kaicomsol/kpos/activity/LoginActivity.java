@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.auth0.android.jwt.Claim;
@@ -35,6 +36,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.LoginView;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
+import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.models.Login;
 import com.kaicomsol.kpos.models.NFCData;
 import com.kaicomsol.kpos.presenters.LoginPresenter;
@@ -82,8 +84,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
         ButterKnife.bind(this);
 
-        final String deviceId = Settings.Secure.getString(getContentResolver(),Settings.Secure.ANDROID_ID);
-
+        final String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         DebugLog.e(deviceId);
 
         //init presenter
