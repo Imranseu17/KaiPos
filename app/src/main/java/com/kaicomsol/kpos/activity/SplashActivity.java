@@ -34,7 +34,6 @@ public class SplashActivity extends AppCompatActivity {
     @BindView(R.id.txt_copyright)
     TextView txtCopyright;
     private String token = "";
-    private boolean isService = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +45,6 @@ public class SplashActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.transition);
         token = SharedDataSaveLoad.load(SplashActivity.this, getString(R.string.preference_access_token));
-        isService = SharedDataSaveLoad.loadBoolean(this, getString(R.string.preference_is_service_check));
 
         //start animation
         imageLogo.startAnimation(animation);
@@ -73,9 +71,7 @@ public class SplashActivity extends AppCompatActivity {
     private void checkLogin(){
         if (TextUtils.isEmpty(token)){
             goLogin();
-        }else if (!isService){
-            goService();
-        }else if (!TextUtils.isEmpty(token) && isService){
+        }else if (!TextUtils.isEmpty(token)){
             goHome();
         }
     }
@@ -88,13 +84,6 @@ public class SplashActivity extends AppCompatActivity {
 
     private void goLogin(){
         Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    private void goService(){
-        Intent intent = new Intent(SplashActivity.this, NFCCheckActivity.class);
-        intent.putExtra("path","service");
         startActivity(intent);
         finish();
     }

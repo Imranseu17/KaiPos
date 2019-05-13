@@ -715,7 +715,6 @@ public class AuthorizeActivity extends AppCompatActivity implements AuthorizeVie
             }
         }
 
-
     }
 
     private void customerCardDismiss() {

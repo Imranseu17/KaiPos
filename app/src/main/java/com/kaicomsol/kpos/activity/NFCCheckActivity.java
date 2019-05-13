@@ -114,7 +114,6 @@ public class NFCCheckActivity extends AppCompatActivity {
             falica.ReadTag(tag);
             cardGroup = falica.getCardGroup(tag);
             if (!TextUtils.isEmpty(cardGroup) && cardGroup.equals(CardPropertise.SERVICE_CARD.getCode())) {
-                SharedDataSaveLoad.save(this, getString(R.string.preference_is_service_check), true);
                 activityHome();
 
 //                String userId = SharedDataSaveLoad.load(this, getString(R.string.preference_user_id));
