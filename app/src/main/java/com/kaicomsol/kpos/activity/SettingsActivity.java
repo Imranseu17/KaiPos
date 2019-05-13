@@ -258,8 +258,7 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
         SharedDataSaveLoad.save(this, getString(R.string.preference_operator_name),operatorName);
         SharedDataSaveLoad.save(this, getString(R.string.preference_customer_support),customerSupport);
 
-
-        CustomAlertDialog.showSuccess(this, "Server settings saved!");
+        Toast.makeText(this, "Server settings saved!", Toast.LENGTH_SHORT).show();
 
         //onLogout();
     }
