@@ -638,6 +638,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
         @Override
         protected void onPostExecute(Boolean response) {
+
             if (response) {
                 String token = SharedDataSaveLoad.load(RechargeActivity.this, getString(R.string.preference_access_token));
                 readCard(token, mAccessFalica);

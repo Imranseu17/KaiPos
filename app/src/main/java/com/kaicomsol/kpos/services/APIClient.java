@@ -42,24 +42,24 @@ public class APIClient {
 
         String dc_dr = SharedDataSaveLoad.load(KPosApp.getContext(), KPosApp.getContext().getString(R.string.preference_dc_dr));
 
-        if (dc_dr.equalsIgnoreCase("dc")){
-            if (retrofit == null) {
+        if (dc_dr.equals("dc")){
+                DebugLog.e(Constants.BASE_URL_DC);
                 retrofit = new Retrofit
                         .Builder()
                         .baseUrl(Constants.BASE_URL_DC)
                         .client(getUnsafeOkHttpClient().build())
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
-            }
+
         }else {
-            if (retrofit == null) {
+                DebugLog.e(Constants.BASE_URL_DR);
+
                 retrofit = new Retrofit
                         .Builder()
                         .baseUrl(Constants.BASE_URL_DR)
                         .client(getUnsafeOkHttpClient().build())
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
-            }
         }
 
         return retrofit.create(APIServices.class);

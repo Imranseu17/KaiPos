@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.kaicomsol.kpos.R;
 import com.kaicomsol.kpos.callbacks.LanguageSelectListener;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
+import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
 import com.kaicomsol.kpos.dialogs.LanguageCustomDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
 import com.kaicomsol.kpos.utils.DebugLog;
@@ -238,7 +239,9 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
             txt_printer_name.setText(name);
             txt_printer_address.setText(address);
 
-        }else Toast.makeText(this," There no printer connected",Toast.LENGTH_LONG).show();
+        }else {
+            //Toast.makeText(this," There no printer connected",Toast.LENGTH_LONG).show();
+        }
     }
 
     private void infoSave(){
@@ -254,7 +257,11 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
         SharedDataSaveLoad.save(this, getString(R.string.preference_dc_dr),dc_dr);
         SharedDataSaveLoad.save(this, getString(R.string.preference_operator_name),operatorName);
         SharedDataSaveLoad.save(this, getString(R.string.preference_customer_support),customerSupport);
-        onLogout();
+
+
+        CustomAlertDialog.showSuccess(this, "Server settings saved!");
+
+        //onLogout();
     }
 
     public void showLogoutDialog() {
