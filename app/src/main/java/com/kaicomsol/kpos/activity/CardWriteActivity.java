@@ -857,12 +857,12 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
     }
 
     private void capturePayment(String paymentId) {
-//        if (checkConnection()) {
-//            String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
-//            mPresenter.capturePayment(token, paymentId);
-//        } else {
-//            SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed), true);
-//        }
+        if (checkConnection()) {
+            String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
+            mPresenter.capturePayment(token, paymentId);
+        } else {
+            SharedDataSaveLoad.save(this, getString(R.string.preference_capture_failed), true);
+        }
 
     }
 
