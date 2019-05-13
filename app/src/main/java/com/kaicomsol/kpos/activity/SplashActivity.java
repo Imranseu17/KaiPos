@@ -51,9 +51,6 @@ public class SplashActivity extends AppCompatActivity {
         textWelcome.startAnimation(animation);
         txtCopyright.startAnimation(animation);
 
-//        CardCustomDialog dialog = new CardCustomDialog();
-//        dialog.showDialog(this);
-
         new Handler().postDelayed(new Runnable() {
 
             @Override

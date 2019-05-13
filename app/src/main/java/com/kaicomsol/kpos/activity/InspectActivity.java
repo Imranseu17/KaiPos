@@ -217,5 +217,4 @@ public class InspectActivity extends AppCompatActivity implements CloseClickList
         }
     }
 
-
 }

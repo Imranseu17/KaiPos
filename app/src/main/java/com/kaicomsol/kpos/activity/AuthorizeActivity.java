@@ -418,7 +418,7 @@ public class AuthorizeActivity extends AppCompatActivity implements AuthorizeVie
 
         mProgressDialog.dismiss();
 
-        if (Integer.parseInt(historyNo) < payment.getNewHistoryNo() || !status.equalsIgnoreCase("15")) {
+        if (Integer.parseInt(historyNo) < payment.getNewHistoryNo()) {
             Transaction transaction = new Transaction(cardId, payment.getPaymentId(), payment.getReceipt().getGasUnit(), payment.getUnitPrice(),
                     payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo(), historyNo, payment.getNewHistoryNo(),
                     "authorize");
@@ -435,7 +435,25 @@ public class AuthorizeActivity extends AppCompatActivity implements AuthorizeVie
                     }
                 }
             });
-        } else {
+        }else if ((status.equalsIgnoreCase("06") || status.equalsIgnoreCase("30")) && Double.parseDouble(credit) > 0.0){
+
+            Transaction transaction = new Transaction(cardId, payment.getPaymentId(), payment.getReceipt().getGasUnit(), payment.getUnitPrice(),
+                    payment.getBaseFee(), payment.getEmergencyValue(), payment.getReceipt().getMeterSerialNo(), historyNo, payment.getNewHistoryNo(),
+                    "authorize");
+            mTransactionViewModel.insert(transaction);
+            mTransactionViewModel.getTransactionByCardIdm(cardId).observe(this, new Observer<Transaction>() {
+                @Override
+                public void onChanged(@Nullable Transaction transaction) {
+                    if (transaction != null) {
+                        if (CardWriteActivity.cardActivity != null) CardWriteActivity.cardActivity.finish();
+                        Intent intent = new Intent(AuthorizeActivity.this, CardWriteActivity.class);
+                        intent.putExtra("cardIdm", cardId);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+            });
+        }else  {
             capturePayment(payment.getPaymentId() + "");
             receiptPayment(payment.getPaymentId() + "");
         }
