@@ -245,7 +245,7 @@ public class AccessFalica {
             StringBuilder stringBuilder2 = new StringBuilder();
             stringBuilder2.append("Exception Check: ");
             stringBuilder2.append(e.getMessage());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-14-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-15-" + timestamp.getTime());
             myRef.setValue(stringBuilder2.toString());
 
             if (nfc != null) {
@@ -2609,7 +2609,7 @@ public class AccessFalica {
 
             writeWithoutEncryption(nfc, dataList);
 
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-14-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-15-" + timestamp.getTime());
             data = parse(nfc.transceive(readWithoutEncryption(TargetIDm, this.size, this.targetServiceCode, 5)));
             CheckDataLength(data);
             if (GetCardHistoryNo(data[0]) != CardHistoryNo) {
@@ -2641,7 +2641,7 @@ public class AccessFalica {
             StringBuilder stringBuilder2 = new StringBuilder();
             stringBuilder2.append("Exception Write HistoryNo: ");
             stringBuilder2.append(e.getMessage());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-14-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-15-" + timestamp.getTime());
             myRef.setValue(stringBuilder2.toString());
             if (nfc != null) {
                 try {
@@ -2712,7 +2712,7 @@ public class AccessFalica {
             StringBuilder stringBuilder2 = new StringBuilder();
             stringBuilder2.append("Exception Status: ");
             stringBuilder2.append(e.getMessage());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-14-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-15-" + timestamp.getTime());
             myRef.setValue(stringBuilder2.toString());
             if (nfc != null) {
                 try {
@@ -2738,7 +2738,7 @@ public class AccessFalica {
         NfcF nfc = NfcF.get(tag);
         try {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-14-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-15-" + timestamp.getTime());
 
             nfc.connect();
             byte[][] data = parse(nfc.transceive(readWithoutEncryption(this.TargetIDm, this.size, this.targetServiceCode, 5)));
@@ -2791,7 +2791,7 @@ public class AccessFalica {
             return true;
         } catch (Exception e) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            DatabaseReference myRef = mDatabase.getReference("Version-1-1-14-" + timestamp.getTime());
+            DatabaseReference myRef = mDatabase.getReference("Version-1-1-15-" + timestamp.getTime());
             myRef.setValue("Exception Write Status and History");
             if (nfc != null) {
                 try {

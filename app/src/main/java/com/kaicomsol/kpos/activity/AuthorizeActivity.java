@@ -71,7 +71,6 @@ public class AuthorizeActivity extends AppCompatActivity implements AuthorizeVie
     private Transaction mTransaction;
     private FirebaseDatabase mDatabase;
     private static final int REQUEST_ENABLE_BT = 0;
-    private RechargeCardDialog mRechargeCardDialog = null;
     private DecimalFormat decimalFormat;
     private AuthorizePresenter mPresenter;
     private IntentFilter[] intentFiltersArray;
@@ -155,10 +154,6 @@ public class AuthorizeActivity extends AppCompatActivity implements AuthorizeVie
         //internet connectivity receiver
         intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_ACTION);
-        mRechargeCardDialog = new RechargeCardDialog();
-        Bundle args = new Bundle();
-        args.putString("msg", "Authorize loading...");
-        mRechargeCardDialog.setArguments(args);
 
         decimalFormat = new DecimalFormat(".##");
         mPresenter = new AuthorizePresenter(this);

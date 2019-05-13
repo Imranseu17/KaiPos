@@ -41,7 +41,7 @@ public class TransactionPresenter {
         map.put("Content-Type", "application/json");
 
         mApiClient.getAPI()
-                .getTransitionInfo(map, accountNo, customerCode,20,currentPage)
+                .getTransitionInfo(map, accountNo, customerCode,20,currentPage,"-paymentDate")
                 .enqueue(new Callback<List<TransactionModel>>() {
                     @Override
                     public void onResponse(Call<List<TransactionModel>> call, Response<List<TransactionModel>> response) {

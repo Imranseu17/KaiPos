@@ -170,6 +170,7 @@ public class CardWriteActivity extends AppCompatActivity implements StateView, C
         Bundle args = new Bundle();
         args.putString("msg", "Until payment success");
         mRechargeCardDialog.setArguments(args);
+        mRechargeCardDialog.setCancelable(false);
 
         //Cancel card dialog init
         mCancelCardDialog = new CancelCardDialog();

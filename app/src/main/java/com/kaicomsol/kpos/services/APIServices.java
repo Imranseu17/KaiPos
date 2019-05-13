@@ -87,7 +87,8 @@ public interface APIServices {
                                                    @Query("accountNumber") String accountNumber,
                                                    @Query("customerCode") String customerCode,
                                                    @Query("pageSize") int pageSize,
-                                                   @Query("pageNumber") int pageNumber);
+                                                   @Query("pageNumber") int pageNumber,
+                                                   @Query("sort") String paymentDate);
 
     @GET("/api/v1/customerMeters/{meterSerial}/subscriptions")
     Call<SubData> getSubscriptionInfo(@HeaderMap Map<String, String> headers, @Path("meterSerial") String meterSerial);
