@@ -124,16 +124,16 @@ public class SettingsActivity extends AppCompatActivity implements LanguageSelec
             }
         });
         String check = SharedDataSaveLoad.load(this, getString(R.string.preference_dc_dr));
-        if (check.equalsIgnoreCase("dc")){
-            btn_dc.setEnabled(false);
-            btn_dr.setEnabled(true);
-            btn_dc.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.green));
-            btn_dr.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.light_gray));
-        }else {
+        if (check.equalsIgnoreCase("dr")){
             btn_dc.setEnabled(true);
             btn_dr.setEnabled(false);
             btn_dr.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.green));
             btn_dc.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.light_gray));
+        }else {
+            btn_dc.setEnabled(false);
+            btn_dr.setEnabled(true);
+            btn_dc.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.green));
+            btn_dr.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.light_gray));
         }
 
         btn_dc.setOnClickListener(new View.OnClickListener() {

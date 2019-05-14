@@ -8,6 +8,7 @@ import com.kaicomsol.kpos.golobal.Constants;
 import com.kaicomsol.kpos.utils.DebugLog;
 import com.kaicomsol.kpos.utils.SharedDataSaveLoad;
 
+import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +25,10 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -41,25 +45,20 @@ public class APIClient {
     public static APIServices getAPI() {
 
         String dc_dr = SharedDataSaveLoad.load(KPosApp.getContext(), KPosApp.getContext().getString(R.string.preference_dc_dr));
-
-        if (dc_dr.equals("dc")){
-                DebugLog.e(Constants.BASE_URL_DC);
-                retrofit = new Retrofit
-                        .Builder()
-                        .baseUrl(Constants.BASE_URL_DC)
-                        .client(getUnsafeOkHttpClient().build())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-        }else {
-                DebugLog.e(Constants.BASE_URL_DR);
-
-                retrofit = new Retrofit
-                        .Builder()
-                        .baseUrl(Constants.BASE_URL_DR)
-                        .client(getUnsafeOkHttpClient().build())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+        if (dc_dr.equals("dr")) {
+            retrofit = new Retrofit
+                    .Builder()
+                    .baseUrl(Constants.BASE_URL_DR)
+                    .client(getUnsafeOkHttpClient().build())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        } else {
+            retrofit = new Retrofit
+                    .Builder()
+                    .baseUrl(Constants.BASE_URL_DC)
+                    .client(getUnsafeOkHttpClient().build())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
         }
 
         return retrofit.create(APIServices.class);
@@ -102,7 +101,18 @@ public class APIClient {
                 public boolean verify(String hostname, SSLSession session) {
                     return true;
                 }
+            }).addInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request request = chain.request();
+                    okhttp3.Response response = chain.proceed(request);
+                    if (response.code() == 500){
+
+                    }
+                    return response;
+                }
             });
+
             return builder;
         } catch (Exception e) {
             throw new RuntimeException(e);

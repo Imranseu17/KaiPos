@@ -6,8 +6,6 @@ public class Constants {
 //    public static String BASE_URL_DC = "https://103.86.197.138:8443";
 //    public static String BASE_URL_DR = "https://103.86.197.138:8443";
 
-    //KGDCL LIVE BASE URL
-    //public static String BASE_URL = "https://23.200.31.203:8443";
 
     //KGDCL LIVE BASE URL
     public static String BASE_URL_DC = "http://kpgm1.kgdcl.gov.bd:8443";
