@@ -42,8 +42,8 @@ public interface APIServices {
                                   @Query("token") String token,
                                   @Query("deviceId") String deviceId);
 
-    @GET("/api/v1/payment/dues/{cardNo}")
-    Call<Invoices> getInvoices(@HeaderMap Map<String, String> headers, @Path("cardNo") String cardNo);
+    @GET("/api/v1/payment/duesByAccountNo/{accountNo}")
+    Call<Invoices> getInvoices(@HeaderMap Map<String, String> headers, @Path("accountNo") String cardNo);
 
 
     @POST("/api/v1/payment/authorizePayment")

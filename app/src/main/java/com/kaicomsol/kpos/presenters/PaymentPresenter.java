@@ -103,14 +103,14 @@ public class PaymentPresenter {
     }
 
 
-    public void getInvoices(String token, String cardNo) {
+    public void getInvoices(String token, String accountNo) {
         Map<String, String> map = new HashMap<>();
-        DebugLog.e(cardNo);
+        DebugLog.e(accountNo);
         map.put("Authorization", token);
         map.put("Content-Type", "application/json");
 
         mApiClient.getAPI()
-                .getInvoices(map, cardNo)
+                .getInvoices(map, accountNo)
                 .enqueue(new Callback<Invoices>() {
                     @Override
                     public void onResponse(Call<Invoices> call, Response<Invoices> response) {

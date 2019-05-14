@@ -141,13 +141,13 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         mAdapter.disableForegroundDispatch(this);
     }
 
-    private void getInvoices(String cardNo) {
+    private void getInvoices(String accountNo) {
 
         String token = SharedDataSaveLoad.load(this, getString(R.string.preference_access_token));
         if (checkConnection()) {
             isRecharge = true;
             showLoading("Loading invoice...");
-            mPresenter.getInvoices(token, cardNo);
+            mPresenter.getInvoices(token, accountNo);
             new ReadAsyncTask(tag).execute();
         } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
     }
@@ -172,7 +172,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                         layout_recharge.setVisibility(View.VISIBLE);
                         txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
                         customerCardDismiss();
-                        getInvoices(cardIdm);
+                        getInvoices(mAccessFalica.getPrepaidCode(tag));
                         break;
                     case INVALID_CARD:
                         CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
