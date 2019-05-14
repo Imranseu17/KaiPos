@@ -101,16 +101,6 @@ public class APIClient {
                 public boolean verify(String hostname, SSLSession session) {
                     return true;
                 }
-            }).addInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request request = chain.request();
-                    okhttp3.Response response = chain.proceed(request);
-                    if (response.code() == 500){
-
-                    }
-                    return response;
-                }
             });
 
             return builder;

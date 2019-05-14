@@ -148,7 +148,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             isRecharge = true;
             showLoading("Loading invoice...");
             mPresenter.getInvoices(token, accountNo);
-            new ReadAsyncTask(tag).execute();
+            //new ReadAsyncTask(tag).execute();
         } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
     }
 
@@ -172,7 +172,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                         layout_recharge.setVisibility(View.VISIBLE);
                         txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
                         customerCardDismiss();
-                        getInvoices(mAccessFalica.getPrepaidCode(tag));
+                        new ReadAsyncTask(tag).execute();
+                        //getInvoices(mAccessFalica.getPrepaidCode(tag));
                         break;
                     case INVALID_CARD:
                         CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
@@ -641,8 +642,14 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
             if (response) {
                 String token = SharedDataSaveLoad.load(RechargeActivity.this, getString(R.string.preference_access_token));
+                //meter data sync
                 readCard(token, mAccessFalica);
-            }
+                //get invoice
+                mAccessFalica.ReadTag(tag);
+                if (!mAccessFalica.getPrepaidCode(tag).isEmpty()) getInvoices(mAccessFalica.getPrepaidCode(tag));
+                else CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
+
+            }else CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
         }
     }
 
