@@ -159,6 +159,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        mProgressDialog.setMessage("Meter Data Sync, please wait ...");
+        mProgressDialog.show();
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag != null) {
             if (!isRecharge) {
@@ -169,11 +171,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                     case VALID_CARD:
                         cardIdm = mAccessFalica.GetCardIdm(tag.getId());
                         cardHistoryNo = mAccessFalica.getHistoryNo(tag);
-                        layout_recharge.setVisibility(View.VISIBLE);
                         txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
-                        customerCardDismiss();
                         new ReadAsyncTask(tag).execute();
-                        //getInvoices(mAccessFalica.getPrepaidCode(tag));
                         break;
                     case INVALID_CARD:
                         CustomAlertDialog.showError(RechargeActivity.this, getString(R.string.err_card_not_valid));
@@ -204,6 +203,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         mCardCheckDialog = CardCheckDialog.newInstance(this, "User");
         mCardCheckDialog.setCancelable(false);
         customerCardDialog();
+
 
         decimalFormat = new DecimalFormat(".##");
         mPresenter = new PaymentPresenter(this);
@@ -295,6 +295,8 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             if (!mCardCheckDialog.isAdded()) {
                 //show card dialog
                 mCardCheckDialog.show(getSupportFragmentManager(), mCardCheckDialog.getTag());
+
+
             }
         }
     }
@@ -440,7 +442,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onSuccess(String readCard) {
-
+        mProgressDialog.dismiss();
 
     }
 
@@ -455,7 +457,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             case INVOICE_ERROR:
-                mProgressDialog.dismiss();
+                layout_recharge.setVisibility(View.GONE);
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             default:
@@ -646,10 +648,26 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 readCard(token, mAccessFalica);
                 //get invoice
                 mAccessFalica.ReadTag(tag);
-                if (!mAccessFalica.getPrepaidCode(tag).isEmpty()) getInvoices(mAccessFalica.getPrepaidCode(tag));
-                else CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
+                if (!mAccessFalica.getPrepaidCode(tag).isEmpty()){
+                    getInvoices(mAccessFalica.getPrepaidCode(tag));
+                    customerCardDismiss();
+                    layout_recharge.setVisibility(View.VISIBLE);
+                    mProgressDialog.dismiss();
+                }
+                else{
+                    CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
+                    mProgressDialog.dismiss();
+                }
 
-            }else CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
+            }else{
+                CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
+                mProgressDialog.dismiss();
+            }
+
+
+
+
+
         }
     }
 

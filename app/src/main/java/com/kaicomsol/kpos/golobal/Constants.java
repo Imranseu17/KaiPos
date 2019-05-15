@@ -3,13 +3,13 @@ package com.kaicomsol.kpos.golobal;
 public class Constants {
 
     //Local Development BASE URL HTTPS
-//    public static String BASE_URL_DC = "https://103.86.197.138:8443";
-//    public static String BASE_URL_DR = "https://103.86.197.138:8443";
+    public static String BASE_URL_DC = "https://103.86.197.138:8443";
+    public static String BASE_URL_DR = "https://103.86.197.138:8443";
 
 
     //KGDCL LIVE BASE URL
-    public static String BASE_URL_DC = "http://kpgm1.kgdcl.gov.bd:8443";
-    public static String BASE_URL_DR = "http://kpgm2.kgdcl.gov.bd:8080";
+//    public static String BASE_URL_DC = "http://kpgm1.kgdcl.gov.bd:8443";
+//    public static String BASE_URL_DR = "http://kpgm2.kgdcl.gov.bd:8080";
 
     //KGDCL PILOT BASE URL HTTPS
     //public static String BASE_URL = "https://23.101.20.169:8443";
