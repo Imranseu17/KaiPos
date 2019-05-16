@@ -45,7 +45,9 @@ import com.kaicomsol.kpos.dbhelper.TransactionViewModel;
 import com.kaicomsol.kpos.dialogs.CardCheckDialog;
 import com.kaicomsol.kpos.dialogs.ChooseAlertDialog;
 import com.kaicomsol.kpos.dialogs.CustomAlertDialog;
+import com.kaicomsol.kpos.dialogs.MeterSyncDialog;
 import com.kaicomsol.kpos.dialogs.PromptDialog;
+import com.kaicomsol.kpos.dialogs.RechargeCardDialog;
 import com.kaicomsol.kpos.fragment.InvoiceFragment;
 import com.kaicomsol.kpos.models.AccessFalica;
 import com.kaicomsol.kpos.models.Invoices;
@@ -68,7 +70,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     private TransactionViewModel mTransactionViewModel;
     private static final int REQUEST_ENABLE_BT = 0;
-    private CardCheckDialog mCardCheckDialog = null;
+    private MeterSyncDialog mMeterSyncDialog = null;
     private boolean isRecharge = false;
     private DecimalFormat decimalFormat;
     private IntentFilter[] intentFiltersArray;
@@ -148,7 +150,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
             isRecharge = true;
             showLoading("Loading invoice...");
             mPresenter.getInvoices(token, accountNo);
-            //new ReadAsyncTask(tag).execute();
         } else CustomAlertDialog.showError(this, getString(R.string.no_internet_connection));
     }
 
@@ -159,8 +160,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        mProgressDialog.setMessage("Meter Data Sync, please wait ...");
-        mProgressDialog.show();
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag != null) {
             if (!isRecharge) {
@@ -172,6 +171,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                         cardIdm = mAccessFalica.GetCardIdm(tag.getId());
                         cardHistoryNo = mAccessFalica.getHistoryNo(tag);
                         txt_account_no.setText(mAccessFalica.getPrepaidCode(tag));
+                        //meter data read
                         new ReadAsyncTask(tag).execute();
                         break;
                     case INVALID_CARD:
@@ -199,11 +199,12 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         // Get a new or existing ViewModel from the ViewModelProvider.
         mTransactionViewModel = ViewModelProviders.of(this).get(TransactionViewModel.class);
-        //card check dialog
-        mCardCheckDialog = CardCheckDialog.newInstance(this, "User");
-        mCardCheckDialog.setCancelable(false);
-        customerCardDialog();
 
+        //meter sync dialog
+        mMeterSyncDialog = MeterSyncDialog.newInstance(this,"To meter data sync");
+        mMeterSyncDialog.setCancelable(false);
+
+        meterSyncDialog();
 
         decimalFormat = new DecimalFormat(".##");
         mPresenter = new PaymentPresenter(this);
@@ -238,9 +239,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
                 String amount = txt_total_amount.getText().toString().trim();
                 double creditAmount = Double.parseDouble(amount);
-                    if(!validateAmount(creditAmount))
-                        return;
-
+                    if(!validateAmount(creditAmount)) return;
                     showConfirmDialog();
 
             }
@@ -248,7 +247,6 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
     }
 
     private boolean validateAmount(double creditAmount){
-
 
         if (creditAmount <= 5000 && creditAmount > 0.0) {
             return true;
@@ -289,23 +287,21 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     }
 
-
-    private void customerCardDialog() {
-        if (mCardCheckDialog != null) {
-            if (!mCardCheckDialog.isAdded()) {
+    private void meterSyncDialog() {
+        if (mMeterSyncDialog != null) {
+            if (!mMeterSyncDialog.isAdded()) {
                 //show card dialog
-                mCardCheckDialog.show(getSupportFragmentManager(), mCardCheckDialog.getTag());
-
-
+                mMeterSyncDialog.show(getSupportFragmentManager(), mMeterSyncDialog.getTag());
             }
         }
     }
 
-    private void customerCardDismiss() {
-        if (mCardCheckDialog != null) {
-            mCardCheckDialog.dismiss();
+    private void meterSyncDismiss() {
+        if (mMeterSyncDialog != null) {
+            mMeterSyncDialog.dismiss();
         }
     }
+
 
     private void showAmount() {
         final CharSequence[] items = {"500 TK", "1000 TK", "1500 TK", "2000 TK", "2500 TK", "Manual"};
@@ -442,7 +438,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
 
     @Override
     public void onSuccess(String readCard) {
-        mProgressDialog.dismiss();
+
 
     }
 
@@ -458,6 +454,7 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 break;
             case INVOICE_ERROR:
                 layout_recharge.setVisibility(View.GONE);
+                mProgressDialog.dismiss();
                 if (error != null) CustomAlertDialog.showError(this, error);
                 break;
             default:
@@ -650,24 +647,19 @@ public class RechargeActivity extends AppCompatActivity implements PaymentView, 
                 mAccessFalica.ReadTag(tag);
                 if (!mAccessFalica.getPrepaidCode(tag).isEmpty()){
                     getInvoices(mAccessFalica.getPrepaidCode(tag));
-                    customerCardDismiss();
+                    //customerCardDismiss();
+                    meterSyncDismiss();
                     layout_recharge.setVisibility(View.VISIBLE);
-                    mProgressDialog.dismiss();
                 }
                 else{
+                    layout_recharge.setVisibility(View.GONE);
                     CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
-                    mProgressDialog.dismiss();
                 }
 
             }else{
+                layout_recharge.setVisibility(View.GONE);
                 CustomAlertDialog.showWarning(RechargeActivity.this, getString(R.string.err_card_read_failed));
-                mProgressDialog.dismiss();
             }
-
-
-
-
-
         }
     }
 
